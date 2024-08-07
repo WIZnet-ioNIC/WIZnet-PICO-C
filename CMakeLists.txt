@@ -7,9 +7,8 @@ if(NOT DEFINED PICO_SDK_PATH)
     message(STATUS "PICO_SDK_PATH = ${PICO_SDK_PATH}")
 endif()
 
-include(rp2040_hat_c-patch.cmake)
 include(pico_sdk_import.cmake)
-include(rp2040_hat_c_sdk_version.cmake)
+include(wiznet_pico_c_sdk_version.cmake)
 
 # Set project name
 set(PROJECT_NAME RP2040-HAT-C)
