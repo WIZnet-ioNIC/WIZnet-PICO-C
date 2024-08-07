@@ -40,12 +40,13 @@ The ethernet examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - et
 - [**W5500-EVB-Pico**][link-w5500-evb-pico]
 
 
-- **W55RP20-EVB-Pico**
+- [**W55RP20-EVB-Pico**][link-w55rp20-evb-pico]
+
 
 <a name="ethernet_example_structure"></a>
 ## Ethernet example structure
 
-Examples are available at '**RP2040-HAT-C/examples/**' directory. As of now, following examples are provided.
+Examples are available at '**WIZnet-PICO-C/examples/**' directory. As of now, following examples are provided.
 
 - [**DHCP & DNS**][link-dhcp_dns]
 - [**FTP**][link-ftp]
@@ -68,24 +69,24 @@ Note that **ioLibrary_Driver**, **mbedtls**, **pico-sdk** are needed to run ethe
 - **pico-sdk** is made available by Pico to enable developers to build software applications for the Pico platform.
 - **pico-extras** has additional libraries that are not yet ready for inclusion the Pico SDK proper, or are just useful but don't necessarily belong in the Pico SDK.
 
-Libraries are located in the '**RP2040-HAT-C/libraries/**' directory.
+Libraries are located in the '**WIZnet-PICO-C/libraries/**' directory.
 
 - [**ioLibrary_Driver**][link-iolibrary_driver]
 - [**mbedtls**][link-mbedtls]
 - [**pico-sdk**][link-pico_sdk]
 - [**pico-extras**][link-pico_extras]
 
-If you want to modify the code that MCU-dependent and use a MCU other than **RP2040**, you can modify it in the '**RP2040-HAT-C/port/**' directory.
+If you want to modify the code that MCU-dependent and use a MCU other than **RP2040**, you can modify it in the '**WIZnet-PICO-C/port/**' directory.
 
-port is located in the '**RP2040-HAT-C/port/**' directory.
+port is located in the '**WIZnet-PICO-C/port/**' directory.
 
 - [**ioLibrary_Driver**][link-port_iolibrary_driver]
 - [**mbedtls**][link-port_mbedtls]
 - [**timer**][link-port_timer]
 
-The structure of this RP2040-HAT-C 2.0.0 version or higher has changed a lot compared to the previous version. If you want to refer to the previous version, please refer to the link below.
+The structure of this WIZnet-PICO-C 2.0.0 version or higher has changed a lot compared to the previous version. If you want to refer to the previous version, please refer to the link below.
 
-- [**RP2040-HAT-C 1.0.0 version**][link-rp2040_hat_c_1_0_0_version]
+- [**WIZnet-PICO-C 1.0.0 version**][link-rp2040_hat_c_1_0_0_version]
 
 
 
@@ -102,17 +103,17 @@ If the ethernet examples are cloned, the library set as a submodule is an empty 
 cd [user path]
 
 // e.g.
-cd D:/RP2040
+cd D:/WIZnet-PICO
 
 /* Clone */
-git clone --recurse-submodules https://github.com/Wiznet/RP2040-HAT-C.git
+git clone --recurse-submodules https://github.com/Wiznet/WIZnet-PICO-C.git
 ```
 
 With Visual Studio Code, the library set as a submodule is automatically downloaded, so it doesn't matter whether the library set as a submodule is an empty directory or not, so refer to it.
 
 2. Setup board
 
-Setup the board in '**CMakeLists.txt**' in '**RP2040-HAT-C/**' directory according to the evaluation board to be used referring to the following.
+Setup the board in '**CMakeLists.txt**' in '**WIZnet-PICO-C/**' directory according to the evaluation board to be used referring to the following.
 
 - WIZnet Ethernet HAT
 - W5100S-EVB-Pico
@@ -133,25 +134,7 @@ When using W5500-EVB-Pico :
 set(BOARD_NAME W5500_EVB_PICO)
 ```
 
-3. Patch
-
-With Visual Studio Code, each library set as a submodule is automatically patched, but if you do not use Visual Studio Code, each library set as a submodule must be manually patched with the Git commands below in each library directory.
-
-- ioLibrary_Driver
-
-```cpp
-/* Change directory */
-// change to the 'ioLibrary_Driver' library directory
-cd [user path]/RP2040-HAT-C/libraries/ioLibrary_Driver
-
-// e.g.
-cd D:/RP2040/RP2040-HAT-C/libraries/ioLibrary_Driver
-
-/* Patch */
-git apply ../../patches/01_iolibrary_driver_ftp_client.patch
-```
-
-4. Test
+3. Test
 
 Please refer to 'README.md' in each example directory to find detail guide for testing ethernet examples.
 
@@ -163,15 +146,19 @@ Please refer to 'README.md' in each example directory to find detail guide for t
 We moved the MCU dependent code to the port directory. The tree of port is shown below.
 
 ```
-RP2040-HAT-C
+WIZnet-PICO-C
 ┣ port
     ┣ ioLibrary_Driver
     ┃   ┣ inc
     ┃   ┃   ┣ w5x00_gpio_irq.h
-    ┃   ┃   ┗ w5x00_spi.h
+    ┃   ┃   ┣ w5x00_spi.h
+    ┃   ┃   ┣ wiznet_spi.h
+    ┃   ┃   ┗ wiznet_spi_pio.h
     ┃   ┗ src
     ┃   ┃   ┣ w5x00_gpio_irq.c
-    ┃   ┃   ┗ w5x00_spi.c
+    ┃   ┃   ┣ w5x00_spi.c
+    ┃   ┃   ┣ w5x00_spi_pio.c
+    ┃   ┃   ┗ w5x00_spi_pio.pio
     ┣ mbedtls
     ┃   ┗ inc
     ┃   ┃   ┗ ssl_config.h
@@ -184,7 +171,7 @@ RP2040-HAT-C
 
 - **ioLibrary_Driver**
 
-If you want to change things related to **SPI**, such as the SPI port number and SPI read/write function, or GPIO port number and function related to **interrupt** or use a different MCU without using the RP2040, you need to change the code in the '**RP2040-HAT-C/port/ioLibrary_Driver/**' directory. Here is information about functions.
+If you want to change things related to **SPI**, such as the SPI port number and SPI read/write function, or GPIO port number and function related to **interrupt** or use a different MCU without using the RP2040, you need to change the code in the '**WIZnet-PICO-C/port/ioLibrary_Driver/**' directory. Here is information about functions.
 
 ```cpp
 /* W5x00 */
@@ -366,7 +353,7 @@ static void wizchip_gpio_interrupt_callback(uint gpio, uint32_t events);
 
 - **timer**
 
-If you want to change things related to the **timer**. Also, if you use a different MCU without using the RP2040, you need to change the code in the '**RP2040-HAT-C/port/timer/**' directory. Here is information about functions.
+If you want to change things related to the **timer**. Also, if you use a different MCU without using the RP2040, you need to change the code in the '**WIZnet-PICO-C/port/timer/**' directory. Here is information about functions.
 
 ```cpp
 /* Timer */
@@ -409,6 +396,7 @@ Link
 [link-rp2040]: https://www.raspberrypi.org/products/rp2040/
 [link-w5100s]: https://docs.wiznet.io/Product/iEthernet/W5100S/overview
 [link-w5500]: https://docs.wiznet.io/Product/iEthernet/W5500/overview
+[link-w55rp20-evb-pico]: https://docs.wiznet.io/Product/ioNIC/W55RP20/w55rp20-evb-pico#overview
 [link-raspberry_pi_pico]: https://www.raspberrypi.org/products/raspberry-pi-pico/
 [link-raspberry_pi_pico_main]: https://github.com/Wiznet/RP2040-HAT-C/blob/main/static/images/getting_started/raspberry_pi_pico_main.png
 [link-wiznet_ethernet_hat]: https://docs.wiznet.io/Product/Open-Source-Hardware/wiznet_ethernet_hat

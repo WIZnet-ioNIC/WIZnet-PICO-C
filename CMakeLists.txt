@@ -11,7 +11,7 @@ include(pico_sdk_import.cmake)
 include(wiznet_pico_c_sdk_version.cmake)
 
 # Set project name
-set(PROJECT_NAME RP2040-HAT-C)
+set(PROJECT_NAME WIZNET-PICO-C)
 
 # Set project informations
 project(${PROJECT_NAME} C CXX ASM)
