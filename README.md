@@ -28,10 +28,7 @@ The ethernet examples were tested by configuring the development environment for
 
 The ethernet examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - ethernet I/O module built on WIZnet's [**W5100S**][link-w5100s] ethernet chip, **W5100S-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5100S**][link-w5100s] ethernet chip or **W5500-EVB-Pico** and **W55RP20-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5500**][link-w5500] ethernet chip.
 
-- [**Raspberry Pi Pico**][link-raspberry_pi_pico]
-
-
-- [**WIZnet Ethernet HAT**][link-wiznet_ethernet_hat]
+- [**Raspberry Pi Pico**][link-raspberry_pi_pico] & [**WIZnet Ethernet HAT**][link-wiznet_ethernet_hat]
 
 
 - [**W5100S-EVB-Pico**][link-w5100s-evb-pico]
