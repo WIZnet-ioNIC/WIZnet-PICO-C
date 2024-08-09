@@ -29,16 +29,11 @@ The ethernet examples were tested by configuring the development environment for
 The ethernet examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - ethernet I/O module built on WIZnet's [**W5100S**][link-w5100s] ethernet chip, **W5100S-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5100S**][link-w5100s] ethernet chip or **W5500-EVB-Pico** and **W55RP20-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5500**][link-w5500] ethernet chip.
 
 - [**Raspberry Pi Pico**][link-raspberry_pi_pico] & [**WIZnet Ethernet HAT**][link-wiznet_ethernet_hat]
-
-
 - [**W5100S-EVB-Pico**][link-w5100s-evb-pico]
-
-
 - [**W5500-EVB-Pico**][link-w5500-evb-pico]
-
-
 - [**W55RP20-EVB-Pico**][link-w55rp20-evb-pico]
-
+- W5100S-EVB-Pico2
+- W5500-EVB-Pico2
 
 <a name="ethernet_example_structure"></a>
 ## Ethernet example structure
@@ -64,14 +59,12 @@ Note that **ioLibrary_Driver**, **mbedtls**, **pico-sdk** are needed to run ethe
 - **ioLibrary_Driver** library is applicable to WIZnet's W5x00 ethernet chip.
 - **mbedtls** library supports additional algorithms and support related to SSL and TLS connections.
 - **pico-sdk** is made available by Pico to enable developers to build software applications for the Pico platform.
-- **pico-extras** has additional libraries that are not yet ready for inclusion the Pico SDK proper, or are just useful but don't necessarily belong in the Pico SDK.
 
 Libraries are located in the '**WIZnet-PICO-C/libraries/**' directory.
 
 - [**ioLibrary_Driver**][link-iolibrary_driver]
 - [**mbedtls**][link-mbedtls]
 - [**pico-sdk**][link-pico_sdk]
-- [**pico-extras**][link-pico_extras]
 
 If you want to modify the code that MCU-dependent and use a MCU other than **RP2040**, you can modify it in the '**WIZnet-PICO-C/port/**' directory.
 
@@ -83,7 +76,7 @@ port is located in the '**WIZnet-PICO-C/port/**' directory.
 
 The structure of this WIZnet-PICO-C 2.0.0 version or higher has changed a lot compared to the previous version. If you want to refer to the previous version, please refer to the link below.
 
-- [**WIZnet-PICO-C 1.0.0 version**][link-rp2040_hat_c_1_0_0_version]
+- [**WIZnet-PICO-C 2.0.0 version**][link-rp2040_hat_c_2_0_0_version]
 
 
 
@@ -116,6 +109,8 @@ Setup the board in '**CMakeLists.txt**' in '**WIZnet-PICO-C/**' directory accord
 - W5100S-EVB-Pico
 - W5500-EVB-Pico
 - W55RP20-EVB-Pico
+- W5100S-EVB-Pico2
+- W5500-EVB-Pico2
 
 For example, when using WIZnet Ethernet HAT :
 
@@ -418,7 +413,6 @@ Link
 [link-iolibrary_driver]: https://github.com/Wiznet/ioLibrary_Driver
 [link-mbedtls]: https://github.com/ARMmbed/mbedtls
 [link-pico_sdk]: https://github.com/raspberrypi/pico-sdk
-[link-pico_extras]: https://github.com/raspberrypi/pico-extras
 [link-port_iolibrary_driver]: https://github.com/Wiznet/RP2040-HAT-C/tree/main/port/ioLibrary_Driver
 [link-port_mbedtls]: https://github.com/Wiznet/RP2040-HAT-C/tree/main/port/mbedtls
 [link-port_timer]: https://github.com/Wiznet/RP2040-HAT-C/tree/main/port/timer
