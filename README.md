@@ -32,8 +32,8 @@ The ethernet examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - et
 - [**W5100S-EVB-Pico**][link-w5100s-evb-pico]
 - [**W5500-EVB-Pico**][link-w5500-evb-pico]
 - [**W55RP20-EVB-Pico**][link-w55rp20-evb-pico]
-- W5100S-EVB-Pico2
-- W5500-EVB-Pico2
+- [**W5100S-EVB-Pico2**][link-w5100s-evb-pico2]
+- [**W5500-EVB-Pico2**][link-w5500-evb-pico2]
 
 <a name="ethernet_example_structure"></a>
 ## Ethernet example structure
@@ -417,3 +417,5 @@ Link
 [link-port_mbedtls]: https://github.com/Wiznet/RP2040-HAT-C/tree/main/port/mbedtls
 [link-port_timer]: https://github.com/Wiznet/RP2040-HAT-C/tree/main/port/timer
 [link-rp2040_hat_c_1_0_0_version]: https://github.com/Wiznet/RP2040-HAT-C/tree/3e60654e71f9afdd586c3368f8994dc03c6274e4
+[link-w5100s-evb-pico2]: https://docs.wiznet.io/Product/iEthernet/W5100S/w5100s-evb-pico2
+[link-w5500-evb-pico2]: https://docs.wiznet.io/Product/iEthernet/W5500/w5500-evb-pico2
