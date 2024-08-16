@@ -12,13 +12,13 @@ The following serial terminal program is required for HTTP Server example test, 
 
 ## Step 2: Prepare hardware
 
-If you are using W5100S-EVB-Pico, W5500-EVB-Pico or W55RP20-EVB-Pico, you can skip '1. Combine...'
+If you are using W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2, you can skip '1. Combine...'
 
 1. Combine WIZnet Ethernet HAT with Raspberry Pi Pico.
 
-2. Connect ethernet cable to WIZnet Ethernet HAT, W5100S-EVB-Pico, W5500-EVB-Pico or W55RP20-EVB-Pico ethernet port.
+2. Connect ethernet cable to WIZnet Ethernet HAT, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 ethernet port.
 
-3. Connect Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico to desktop or laptop using 5 pin micro USB cable. W55RP20-EVB-Pico requires a USB Type-C cable.
+3. Connect Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico to desktop or laptop using 5 pin micro USB cable. W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 require a USB Type-C cable.
 
 
 
@@ -26,10 +26,10 @@ If you are using W5100S-EVB-Pico, W5500-EVB-Pico or W55RP20-EVB-Pico, you can sk
 
 To test the HTTP Server example, minor settings shall be done in code.
 
-1. Setup SPI port and pin in 'w5x00_spi.h' in 'RP2040-HAT-C/port/ioLibrary_Driver/' directory.
+1. Setup SPI port and pin in 'w5x00_spi.h' in 'WIZnet-PICO-C/port/ioLibrary_Driver/' directory.
 
 Setup the SPI interface you use.
-- If you use the W5100S-EVB-Pico or W5500-EVB-Pico,
+- If you use the W5100S-EVB-Pico, W5500-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2,
 
 ```cpp
 /* SPI */
@@ -60,7 +60,7 @@ If you want to test with the HTTP Server example using SPI DMA, uncomment USE_SP
 #define PIN_RST 25
 ```
 
-2. Setup network configuration such as IP in 'w5x00_http_server.c' which is the HTTP Server example in 'RP2040-HAT-C/examples/http/server/' directory.
+2. Setup network configuration such as IP in 'w5x00_http_server.c' which is the HTTP Server example in 'WIZnet-PICO-C/examples/http/server/' directory.
 
 Setup IP and other network settings to suit your network environment.
 
@@ -83,25 +83,25 @@ static wiz_NetInfo g_net_info =
 
 1. After completing the HTTP Server example configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
 
-2. When the build is completed, 'w5x00_http_server.uf2' is generated in 'RP2040-HAT-C/build/examples/http/server/' directory.
+2. When the build is completed, 'w5x00_http_server.uf2' is generated in 'WIZnet-PICO-C/build/examples/http/server/' directory.
 
 
 
 ## Step 5: Upload and Run
 
-1. While pressing the BOOTSEL button of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico or W55RP20-EVB-Pico power on the board, the USB mass storage 'RPI-RP2' is automatically mounted.
+1. While pressing the BOOTSEL button of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 power on the board, the USB mass storage 'RPI-RP2' is automatically mounted.
 
 ![][link-raspberry_pi_pico_usb_mass_storage]
 
 2. Drag and drop 'w5x00_http_server.uf2' onto the USB mass storage device 'RPI-RP2'.
 
-3. Connect to the serial COM port of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico or W55RP20-EVB-Pico with Tera Term.
+3. Connect to the serial COM port of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 with Tera Term.
 
 ![][link-connect_to_serial_com_port]
 
 4. Reset your board.
 
-5. If the HTTP Server example works normally on Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico or W55RP20-EVB-Pico, you can see the network information of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico or W55RP20-EVB-Pico and the HTTP server is open.
+5. If the HTTP Server example works normally on Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2, you can see the network information of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 and the HTTP server is open.
 
 ![][link-see_network_information_of_raspberry_pi_pico_and_open_http_server]
 
