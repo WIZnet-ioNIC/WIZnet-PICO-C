@@ -20,6 +20,7 @@
 #include "w5x00_spi.h"
 
 #include "timer.h"
+#include "time.h"
 
 #include "mbedtls/x509_crt.h"
 #include "mbedtls/error.h"
