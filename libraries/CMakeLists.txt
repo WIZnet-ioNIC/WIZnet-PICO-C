@@ -167,3 +167,18 @@ target_include_directories(SNTP_FILES PUBLIC
         ${WIZNET_DIR}/Ethernet
         ${WIZNET_DIR}/Internet/SNTP
         )
+
+# TFTP
+add_library(TFTP_FILES STATIC)
+target_sources(TFTP_FILES PUBLIC
+        ${WIZNET_DIR}/Internet/TFTP/netutil.c
+        ${WIZNET_DIR}/Internet/TFTP/tftp.c
+)
+target_include_directories(TFTP_FILES INTERFACE
+        ${WIZNET_DIR}/Internet
+        ${WIZNET_DIR}/Internet/TFTP        
+)
+target_link_libraries(TFTP_FILES PRIVATE
+        ETHERNET_FILES
+        pico_stdlib
+)
