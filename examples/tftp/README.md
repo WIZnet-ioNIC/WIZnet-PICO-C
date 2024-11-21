@@ -1,10 +1,10 @@
-# How to Test SNTP Example
+# How to Test TFTP client Example
 
 
 
 ## Step 1: Prepare software
 
-The following serial terminal program is required for SNTP example test, download and install from below link.
+The following serial terminal program is required for TFTP client example test, download and install from below link.
 
 - [**Tera Term**][link-tera_term]
 
@@ -22,9 +22,9 @@ If you are using W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-P
 
 
 
-## Step 3: Setup SNTP Example
+## Step 3: Setup TFTP client Example
 
-To test the SNTP example, minor settings shall be done in code.
+To test the TFTP client example, minor settings shall be done in code.
 
 1. Setup SPI port and pin in 'w5x00_spi.h' in 'WIZnet-PICO-C/port/ioLibrary_Driver/' directory.
 
@@ -42,7 +42,7 @@ Setup the SPI interface you use.
 #define PIN_RST 20
 ```
 
-If you want to test with the SNTP example using SPI DMA, uncomment USE_SPI_DMA.
+If you want to test with the TFTP client example using SPI DMA, uncomment USE_SPI_DMA.
 
 ```cpp
 /* Use SPI DMA */
@@ -60,7 +60,7 @@ If you want to test with the SNTP example using SPI DMA, uncomment USE_SPI_DMA.
 #define PIN_RST 25
 ```
 
-2. Setup network configuration such as IP in 'w5x00_sntp.c' which is the SNTP example in 'WIZnet-PICO-C/examples/sntp/' directory.
+2. Setup network configuration such as IP in 'w5x00_tftp_client.c' which is the TFTP client example in 'WIZnet-PICO-C/examples/tftp/' directory.
 
 Setup IP and other network settings to suit your network environment.
 
@@ -77,25 +77,22 @@ static wiz_NetInfo g_net_info =
 };
 ```
 
-3. Setup SNTP configuration in 'w5x00_sntp.c' in 'WIZnet-PICO-C/examples/sntp/' directory.
+3. Setup TFTP client configuration in 'w5x00_tftp_client.c' in 'WIZnet-PICO-C/examples/tftp/' directory.
 
-Setup time zone and SNTP server IP to get time.
+Set the IP address of the TFTP server to connect to and the name of the file to be read.
 
 ```cpp
-/* Timezone */
-#define TIMEZONE 40 // Korea
-
-/* SNTP */
-static uint8_t g_sntp_server_ip[4] = {216, 239, 35, 0}; // time.google.com
+#define TFTP_SERVER_IP "192.168.11.2"
+#define TFTP_SERVER_FILE_NAME "tftp_test_file.txt"
 ```
 
 
 
 ## Step 4: Build
 
-1. After completing the SNTP example configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
+1. After completing the TFTP client example configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
 
-2. When the build is completed, 'w5x00_sntp.uf2' is generated in 'WIZnet-PICO-C/build/examples/sntp/' directory.
+2. When the build is completed, 'w5x00_tftp_client.uf2' is generated in 'WIZnet-PICO-C/build/examples/sntp/' directory.
 
 
 
@@ -105,7 +102,7 @@ static uint8_t g_sntp_server_ip[4] = {216, 239, 35, 0}; // time.google.com
 
 ![][link-raspberry_pi_pico_usb_mass_storage]
 
-2. Drag and drop 'w5x00_sntp.uf2' onto the USB mass storage device 'RPI-RP2'.
+2. Drag and drop 'w5x00_tftp_client.uf2' onto the USB mass storage device 'RPI-RP2'.
 
 3. Connect to the serial COM port of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 with Tera Term.
 
@@ -113,9 +110,35 @@ static uint8_t g_sntp_server_ip[4] = {216, 239, 35, 0}; // time.google.com
 
 4. Reset your board.
 
-5. If the SNTP example works normally on Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2, you can see the network information and time get from the SNTP server.
+5. The TFTP server used in this example is located [here][link-solarwinds_FTFP_Server].
 
-![][link-see_network_information_of_raspberry_pi_pico_and_get_time_from_sntp_server]
+6. You need to go to the file tab in the top left corner of the server and configure the settings. Set the root directory in the Storage section to define the path where the example client will read the file from.
+
+![][link-configure_TFTP_Server]
+
+7. Then, create a text file with the same name as the TFTP_SERVER_FILE_NAME set in the code in the configured path.
+
+![][link-configure_TFTP_Server]
+
+8. If the TFTP client example works normally on Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2, You can view the network information, send a request to the TFTP server, and successfully read the file.
+
+![][link-tftp_client_read_sucess]
+
+9. If the file reading fails, the following screen will appear.
+
+![][link-tftp_client_read_fail]
+
+10. This is a screenshot capturing the client's IP using Wireshark.
+
+![][link-tftp_client_wireshark_result]
+
+
+
+
+
+
+
+
 
 
 
@@ -124,6 +147,12 @@ Link
 -->
 
 [link-tera_term]: https://osdn.net/projects/ttssh2/releases/
-[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/sntp/raspberry_pi_pico_usb_mass_storage.png
-[link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/sntp/connect_to_serial_com_port.png
-[link-see_network_information_of_raspberry_pi_pico_and_get_time_from_sntp_server]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/sntp/see_network_information_of_raspberry_pi_pico_and_get_time_from_sntp_server.png
+[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/raspberry_pi_pico_usb_mass_storage.png
+[link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/connect_to_serial_com_port.png
+[link-solarwinds_FTFP_Server]: https://www.solarwinds.com/free-tools/free-tftp-server
+[link-configure_TFTP_Server]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/configure_TFTP_Server.png
+[link-create_test_file]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/create_test_file.png
+[link-tftp_client_read_sucess]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/tftp_client_read_sucess.png
+[link-tftp_client_read_fail]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/tftp_client_read_fail.png
+[link-tftp_client_wireshark_result]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/tftp_client_wireshark_result.png
+
