@@ -86,7 +86,11 @@ Set the IP address of the TFTP server to connect to and the name of the file to 
 #define TFTP_SERVER_FILE_NAME "tftp_test_file.txt"
 ```
 
+4. Set the port of the TFTP server to connect to in 'tftp.h' under the 'WIZnet-PICO-C/libraries/ioLibrary_Driver/Internet/TFTP' directory.
 
+```cpp
+#define TFTP_SERVER_PORT		69
+```
 
 ## Step 4: Build
 
@@ -110,7 +114,7 @@ Set the IP address of the TFTP server to connect to and the name of the file to 
 
 4. Reset your board.
 
-5. The TFTP server used in this example is located [here][link-solarwinds_FTFP_Server].
+5. The TFTP server used in this example is located [here][link-solarwinds_TFTP_Server].
 
 6. You need to go to the file tab in the top left corner of the server and configure the settings. Set the root directory in the Storage section to define the path where the example client will read the file from.
 
@@ -118,17 +122,21 @@ Set the IP address of the TFTP server to connect to and the name of the file to 
 
 7. Then, create a text file with the same name as the TFTP_SERVER_FILE_NAME set in the code in the configured path.
 
-![][link-configure_TFTP_Server]
+![][link-create_test_file]
 
 8. If the TFTP client example works normally on Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2, You can view the network information, send a request to the TFTP server, and successfully read the file.
 
 ![][link-tftp_client_read_sucess]
 
-9. If the file reading fails, the following screen will appear.
+9. This is the server's execution screen when the connection is successfully established.
+
+![][link-run_TFTP_Server]
+
+10. If the file reading fails, the following screen will appear.
 
 ![][link-tftp_client_read_fail]
 
-10. This is a screenshot capturing the client's IP using Wireshark.
+11. This is a screenshot capturing the client's IP using Wireshark.
 
 ![][link-tftp_client_wireshark_result]
 
@@ -147,12 +155,13 @@ Link
 -->
 
 [link-tera_term]: https://osdn.net/projects/ttssh2/releases/
-[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/raspberry_pi_pico_usb_mass_storage.png
-[link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/connect_to_serial_com_port.png
-[link-solarwinds_FTFP_Server]: https://www.solarwinds.com/free-tools/free-tftp-server
-[link-configure_TFTP_Server]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/configure_TFTP_Server.png
-[link-create_test_file]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/create_test_file.png
-[link-tftp_client_read_sucess]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/tftp_client_read_sucess.png
-[link-tftp_client_read_fail]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/tftp_client_read_fail.png
-[link-tftp_client_wireshark_result]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/ftfp/tftp_client_wireshark_result.png
+[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/raspberry_pi_pico_usb_mass_storage.png
+[link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/connect_to_serial_com_port.png
+[link-solarwinds_TFTP_Server]: https://www.solarwinds.com/free-tools/free-tftp-server
+[link-configure_TFTP_Server]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/configure_TFTP_Server.PNG
+[link-create_test_file]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/create_test_file.PNG
+[link-tftp_client_read_sucess]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/tftp_client_read_sucess.PNG
+[link-run_TFTP_Server]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/run_TFTP_Server.PNG
+[link-tftp_client_read_fail]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/tftp_client_read_fail.PNG
+[link-tftp_client_wireshark_result]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/tftp_client_wireshark_result.PNG
 
