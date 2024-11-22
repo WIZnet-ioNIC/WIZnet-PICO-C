@@ -60,7 +60,13 @@ If you want to test with the TFTP client example using SPI DMA, uncomment USE_SP
 #define PIN_RST 25
 ```
 
-2. Setup network configuration such as IP in 'w5x00_tftp_client.c' which is the TFTP client example in 'WIZnet-PICO-C/examples/tftp/' directory.
+2. To run this example, you need to apply the 0002_iolibrary_driver_tftp.patch file as follows:
+ ```cpp
+ // Patch
+ git apply ./patches/0002_iolibrary_driver_tftp.patch
+ ```
+
+3. Setup network configuration such as IP in 'w5x00_tftp_client.c' which is the TFTP client example in 'WIZnet-PICO-C/examples/tftp/' directory.
 
 Setup IP and other network settings to suit your network environment.
 
@@ -77,7 +83,7 @@ static wiz_NetInfo g_net_info =
 };
 ```
 
-3. Setup TFTP client configuration in 'w5x00_tftp_client.c' in 'WIZnet-PICO-C/examples/tftp/' directory.
+4. Setup TFTP client configuration in 'w5x00_tftp_client.c' in 'WIZnet-PICO-C/examples/tftp/' directory.
 
 Set the IP address of the TFTP server to connect to and the name of the file to be read.
 
@@ -86,7 +92,7 @@ Set the IP address of the TFTP server to connect to and the name of the file to 
 #define TFTP_SERVER_FILE_NAME "tftp_test_file.txt"
 ```
 
-4. Set the port of the TFTP server to connect to in 'tftp.h' under the 'WIZnet-PICO-C/libraries/ioLibrary_Driver/Internet/TFTP' directory.
+5. Set the port of the TFTP server to connect to in 'tftp.h' under the 'WIZnet-PICO-C/libraries/ioLibrary_Driver/Internet/TFTP' directory.
 
 ```cpp
 #define TFTP_SERVER_PORT		69
