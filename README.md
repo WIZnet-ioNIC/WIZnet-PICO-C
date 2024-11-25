@@ -2,11 +2,12 @@
 
 These sections will guide you through a series of steps from configuring development environment to running ethernet examples using the **WIZnet's ethernet products**.
 
-- [**Development environment configuration**](#development_environment_configuration)
-- [**Hardware requirements**](#hardware_requirements)
-- [**Ethernet example structure**](#ethernet_example_structure)
-- [**Ethernet example testing**](#ethernet_example_testing)
-- [**How to use port directory**](#how_to_use_port_directory)
+- [Getting Started with Ethernet Examples](#getting-started-with-ethernet-examples)
+  - [Development environment configuration](#development-environment-configuration)
+  - [Hardware requirements](#hardware-requirements)
+  - [Ethernet example structure](#ethernet-example-structure)
+  - [Ethernet example testing](#ethernet-example-testing)
+  - [How to use port directory](#how-to-use-port-directory)
 
 
 
@@ -53,6 +54,8 @@ Examples are available at '**WIZnet-PICO-C/examples/**' directory. As of now, fo
 	- [**Subscribe**][link-mqtt_subscribe]
 - [**SNTP**][link-sntp]
 - [**TCP Client over SSL**][link-tcp_client_over_ssl]
+- [**TFTP**][link-tftp]
+- [**NETBIOS**][link-netbios]
 
 Note that **ioLibrary_Driver**, **mbedtls**, **pico-sdk** are needed to run ethernet examples.
 
@@ -413,6 +416,8 @@ Link
 [link-mqtt_subscribe]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/mqtt/subscribe
 [link-sntp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/sntp
 [link-tcp_client_over_ssl]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/tcp_client_over_ssl
+[link-tftp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/tftp
+[link-netbios]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/netbios
 [link-iolibrary_driver]: https://github.com/Wiznet/ioLibrary_Driver
 [link-mbedtls]: https://github.com/ARMmbed/mbedtls
 [link-pico_sdk]: https://github.com/raspberrypi/pico-sdk
