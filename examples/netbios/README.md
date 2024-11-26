@@ -1,10 +1,10 @@
-# How to Test Loopback Example
+# How to Test Netbios Example
 
 
 
 ## Step 1: Prepare software
 
-The following serial terminal programs are required for Loopback example test, download and install from below links.
+The following serial terminal programs are required for Netbios example test, download and install from below links.
 
 - [**Tera Term**][link-tera_term]
 - [**Hercules**][link-hercules]
@@ -23,9 +23,9 @@ If you are using W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-P
 
 
 
-## Step 3: Setup Loopback Example
+## Step 3: Setup Netbios Example
 
-To test the Loopback example, minor settings shall be done in code.
+To test the Netbios example, minor settings shall be done in code.
 
 1. Setup SPI port and pin in 'w5x00_spi.h' in 'WIZnet-PICO-C/port/ioLibrary_Driver/' directory.
 
@@ -43,7 +43,7 @@ Setup the SPI interface you use.
 #define PIN_RST 20
 ```
 
-If you want to test with the Loopback example using SPI DMA, uncomment USE_SPI_DMA.
+If you want to test with the Netbios example using SPI DMA, uncomment USE_SPI_DMA.
 
 ```cpp
 /* Use SPI DMA */
@@ -61,7 +61,7 @@ If you want to test with the Loopback example using SPI DMA, uncomment USE_SPI_D
 #define PIN_RST 25
 ```
 
-2. Setup network configuration such as IP in 'w5x00_loopback.c' which is the Loopback example in 'WIZnet-PICO-C/examples/loopback/' directory.
+2. Setup network configuration such as IP in 'w5x00_netbios.c' which is the Loopback example in 'WIZnet-PICO-C/examples/netbios/' directory.
 
 Setup IP and other network settings to suit your network environment.
 
@@ -78,11 +78,11 @@ static wiz_NetInfo g_net_info =
 };
 ```
 
-3. Setup loopback configuration in 'w5x00_loopback.c' in 'WIZnet-PICO-C/examples/loopback/' directory.
+3. Setup netbios configuration in 'netbios.c' in 'WIZnet-PICO-C/examples/netbios/' directory.
 
 ```cpp
-/* Port */
-#define PORT_LOOPBACK 5000
+#define NETBIOS_BOARD_NAME     "W55RP20"             /*Define the NetBIOS name*/
+#define NETBIOS_PORT           137                  /*The default port for the NetBIOS name service*/
 ```
 
 
@@ -91,7 +91,7 @@ static wiz_NetInfo g_net_info =
 
 1. After completing the Loopback example configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
 
-2. When the build is completed, 'w5x00_loopback.uf2' is generated in 'WIZnet-PICO-C/build/examples/loopback/' directory.
+2. When the build is completed, 'w5x00_netbios.uf2' is generated in 'WIZnet-PICO-C/build/examples/netbios/' directory.
 
 
 
@@ -101,7 +101,7 @@ static wiz_NetInfo g_net_info =
 
 ![][link-raspberry_pi_pico_usb_mass_storage]
 
-2. Drag and drop 'w5x00_loopback.uf2' onto the USB mass storage device 'RPI-RP2'.
+2. Drag and drop 'w5x00_netbios.uf2' onto the USB mass storage device 'RPI-RP2'.
 
 3. Connect to the serial COM port of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 with Tera Term.
 
@@ -109,19 +109,26 @@ static wiz_NetInfo g_net_info =
 
 4. Reset your board.
 
-5. If the Loopback example works normally on Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2, you can see the network information of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 and the loopback server is open.
+5. If the Netbios example works normally on Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2, you can see the network information of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 and the udp is open.
 
-![][link-see_network_information_of_raspberry_pi_pico_and_open_loopback_server]
+![][link-see_network_information_of_raspberry_pi_pico_and_open_udp]
 
-6. Connect to the open loopback server using Hercules TCP client. When connecting to the loopback server, you need to enter is the IP that was configured in Step 3, the port is 5000 by default.
+6. Send search netbios command in PC.
 
-![][link-connect_to_loopback_server_using_hercules_tcp_client_1]
+```cpp
+# Linux
+nmblookup -U 192.168.11.2 W55RP20
+```
 
-![][link-connect_to_loopback_server_using_hercules_tcp_client_2]
+7. If search command's name and name on Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 is correct, you can see the receive name on terminal.
 
-7. Once connected if you send data to the loopback server, you should be able to receive back the sent message.
+![][link-send_netbios_command]
 
-![][link-receive_back_sent_message]
+![][link-receive_back_netbios_com_port]
+
+8. You can see NBNS packet in wireshark log.
+
+![][link-wireshark_log]
 
 
 
@@ -133,7 +140,9 @@ Link
 [link-hercules]: https://www.hw-group.com/software/hercules-setup-utility
 [link-raspberry_pi_pico_usb_mass_storage]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/loopback/raspberry_pi_pico_usb_mass_storage.png
 [link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/loopback/connect_to_serial_com_port.png
-[link-see_network_information_of_raspberry_pi_pico_and_open_loopback_server]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/loopback/see_network_information_of_raspberry_pi_pico_and_open_loopback_server.png
-[link-connect_to_loopback_server_using_hercules_tcp_client_1]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/loopback/connect_to_loopback_server_using_hercules_tcp_client_1.png
-[link-connect_to_loopback_server_using_hercules_tcp_client_2]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/loopback/connect_to_loopback_server_using_hercules_tcp_client_2.png
-[link-receive_back_sent_message]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/loopback/receive_back_sent_message.png
+
+[link-see_network_information_of_raspberry_pi_pico_and_open_udp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/netbios/connect_to_serial_com_port.png
+
+[link-send_netbios_command]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/netbios/send_netbios_command.png
+[link-receive_back_netbios_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/netbios/receive_back_netbios_com_port.png
+[link-wireshark_log]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/netbios/wireshark_log.png
