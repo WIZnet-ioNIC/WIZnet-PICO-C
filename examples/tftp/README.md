@@ -4,10 +4,10 @@
 
 ## Step 1: Prepare software
 
-The following serial terminal program is required for TFTP client example test, download and install from below link.
+The following serial terminal program and TFTP server program are required for the TFTP client example test. Download and install them from the links below.
 
 - [**Tera Term**][link-tera_term]
-
+- [**TFTP Server**][link-solarwinds_TFTP_Server]
 
 
 ## Step 2: Prepare hardware
@@ -120,7 +120,7 @@ Set the IP address of the TFTP server to connect to and the name of the file to 
 
 4. Reset your board.
 
-5. The TFTP server used in this example is located [here][link-solarwinds_TFTP_Server].
+5. Open the TFTP server.
 
 6. You need to go to the file tab in the top left corner of the server and configure the settings. Set the root directory in the Storage section to define the path where the example client will read the file from.
 
@@ -161,9 +161,9 @@ Link
 -->
 
 [link-tera_term]: https://osdn.net/projects/ttssh2/releases/
+[link-solarwinds_TFTP_Server]: https://www.solarwinds.com/free-tools/free-tftp-server
 [link-raspberry_pi_pico_usb_mass_storage]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/raspberry_pi_pico_usb_mass_storage.png
 [link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/connect_to_serial_com_port.png
-[link-solarwinds_TFTP_Server]: https://www.solarwinds.com/free-tools/free-tftp-server
 [link-configure_TFTP_Server]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/configure_TFTP_Server.PNG
 [link-create_test_file]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/create_test_file.PNG
 [link-tftp_client_read_sucess]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tftp/tftp_client_read_sucess.PNG
