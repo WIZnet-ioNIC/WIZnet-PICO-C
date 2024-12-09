@@ -56,6 +56,8 @@ Examples are available at '**WIZnet-PICO-C/examples/**' directory. As of now, fo
 - [**TCP Client over SSL**][link-tcp_client_over_ssl]
 - [**TFTP**][link-tftp]
 - [**NETBIOS**][link-netbios]
+- [**UDP multicast**][link-UDP_multicast]
+	- [**UDP multicast receiver**][link-UDP_multicast_receiver]
 
 Note that **ioLibrary_Driver**, **mbedtls**, **pico-sdk** are needed to run ethernet examples.
 
@@ -418,6 +420,8 @@ Link
 [link-tcp_client_over_ssl]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/tcp_client_over_ssl
 [link-tftp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/tftp
 [link-netbios]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/netbios
+[link-UDP_multicast]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/udp_multicast
+[link-UDP_multicast_receiver]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/udp_multicast/udp_multicast_receiver
 [link-iolibrary_driver]: https://github.com/Wiznet/ioLibrary_Driver
 [link-mbedtls]: https://github.com/ARMmbed/mbedtls
 [link-pico_sdk]: https://github.com/raspberrypi/pico-sdk
