@@ -182,3 +182,15 @@ target_link_libraries(TFTP_FILES PRIVATE
         ETHERNET_FILES
         pico_stdlib
 )
+
+# multicast
+add_library(MULTI_FILES STATIC)
+
+target_sources(MULTI_FILES PUBLIC
+        ${WIZNET_DIR}/Application/multicast/multicast.c
+        )
+
+target_include_directories(MULTI_FILES PUBLIC
+        ${WIZNET_DIR}/Ethernet
+        ${WIZNET_DIR}/Application/multicast
+        )
