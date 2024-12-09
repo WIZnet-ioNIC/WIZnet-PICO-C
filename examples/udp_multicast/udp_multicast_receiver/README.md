@@ -128,9 +128,9 @@ static uint16_t multicast_port = 30000;             // multicast port
 Link
 -->
 
-[link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast/udp_multicast_receiver/connect_to_serial_com_port.png
-[link-test_using_the_Hercules]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast/udp_multicast_receiver/test_using_the_Hercules.png
-[link-connect_to_UDP_multicast_receiver]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast/udp_multicast_receiver/connect_to_UDP_multicast_receiver.png
-[link-multicast_receive_message]: https://github.com/WIZnet-PICO-C/static/images/udp_multicast/udp_multicast_receiver/multicast_receive_message.PNG
-[link-captured_using_Wireshark]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static//images/udp_multicast/udp_multicast_receiver/captured_using_Wireshark.png
+[link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/connect_to_UDP_multicast_receiver.PNG
+[link-test_using_the_Hercules]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/test_using_the_Hercules.PNG
+[link-connect_to_UDP_multicast_receiver]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/connect_to_UDP_multicast_receiver.PNG
+[link-multicast_receive_message]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/multicast_receive_message.PNG
+[link-captured_using_Wireshark]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/captured_using_Wireshark.PNG
 
