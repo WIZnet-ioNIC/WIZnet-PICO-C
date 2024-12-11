@@ -9,3 +9,5 @@ add_subdirectory(tftp)
 add_subdirectory(netbios)
 add_subdirectory(udp_multicast)
 add_subdirectory(network_install)
+add_subdirectory(upnp)
+
