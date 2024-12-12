@@ -1,4 +1,4 @@
-# How to Test UDP multicast Example
+# How to Test UDP multicast receiver Example
 
 
 
@@ -6,7 +6,7 @@
 
 ## Step 1: Prepare software
 
-The following serial terminal programs are required for Loopback example test, download and install from below links.
+The following serial terminal programs are required for UDP multicast receiver example test, download and install from below links.
 
 - [**Tera Term**][link-tera_term]
 - [**Hercules**][link-hercules]
@@ -25,9 +25,9 @@ If you are using W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-P
 
 
 
-## Step 3: Setup UDP multicast Example
+## Step 3: Setup UDP multicast receiver Example
 
-To test the UDP multicast example, minor settings shall be done in code.
+To test the UDP multicast receiver example, minor settings shall be done in code.
 
 1. Setup SPI port and pin in 'w5x00_spi.h' in 'WIZnet-PICO-C/port/ioLibrary_Driver/' directory.
 
@@ -45,7 +45,7 @@ Setup the SPI interface you use.
 #define PIN_RST 20
 ```
 
-If you want to test with the UDP multicast example using SPI DMA, uncomment USE_SPI_DMA.
+If you want to test with the UDP multicast receiver example using SPI DMA, uncomment USE_SPI_DMA.
 
 ```cpp
 /* Use SPI DMA */
@@ -64,7 +64,7 @@ If you want to test with the UDP multicast example using SPI DMA, uncomment USE_
 ```
 
 
-2. Setup network configuration such as IP in 'udp_multicast_receiver.c' which is the UDP multicast example in 'WIZnet-PICO-C/examples/udp_multicast/udp_multicast_receiver/' directory.
+2. Setup network configuration such as IP in 'w5x00_udp_multicast_receiver.c' which is the  receiver example in 'WIZnet-PICO-C/examples/udp_multicast/udp_multicast_receiver/' directory.
 
 Setup IP and other network settings to suit your network environment.
 
@@ -81,7 +81,7 @@ static wiz_NetInfo net_info =
 };
 ```
 
-3. Setup multicast configuration in 'udp_multicast_receiver.c' in 'WIZnet-PICO-C/examples/udp_multicast/udp_multicast_receiver/' directory.
+3. Setup multicast configuration in 'w5x00_udp_multicast_receiver.c' in 'WIZnet-PICO-C/examples/udp_multicast/udp_multicast_receiver/' directory.
 
 ```cpp
 static uint8_t multicast_ip[4] = {224, 0, 0, 5};    // multicast ip address
@@ -90,9 +90,9 @@ static uint16_t multicast_port = 30000;             // multicast port
 
 ## Step 4: Build
 
-1. After completing the UDP multicast example configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
+1. After completing the  receiver example configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
 
-2. When the build is completed, 'udp_multicast_receiver.uf2' is generated in 'WIZnet-PICO-C/examples/udp_multicast/udp_multicast_receiver/' directory.
+2. When the build is completed, 'w5x00_udp_multicast_receiver.uf2' is generated in 'WIZnet-PICO-C/examples/udp_multicast/udp_multicast_receiver/' directory.
 
 
 
@@ -100,7 +100,9 @@ static uint16_t multicast_port = 30000;             // multicast port
 
 1. While pressing the BOOTSEL button of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 power on the board, the USB mass storage 'RPI-RP2' is automatically mounted.
 
-2. Drag and drop 'udp_multicast_receiver.uf2' onto the USB mass storage device 'RPI-RP2'.
+![][link-raspberry_pi_pico_usb_mass_storage]
+
+2. Drag and drop 'w5x00_udp_multicast_receiver.uf2' onto the USB mass storage device 'RPI-RP2'.
 
 3. Connect to the serial COM port of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 with Tera Term.
 
@@ -108,11 +110,11 @@ static uint16_t multicast_port = 30000;             // multicast port
 
 4. Reset your board.
 
-5. Configure the UDP multicast test using the Hercules program. Open UDP with the previously configured multicast address and port, and send a message.
+5. Configure the UDP multicast receiver test using the Hercules program. Open UDP with the previously configured multicast address and port, and send a message.
 
 ![][link-test_using_the_Hercules]
 
-6. If the UDP multicast example works correctly on the Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2, or W5500-EVB-Pico2, you will be able to check the network information of the respective board and see the messages sent by the source with membership to the multicast address.
+6. If the UDP multicast receiver example works correctly on the Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2, or W5500-EVB-Pico2, you will be able to check the network information of the respective board and see the messages sent by the source with membership to the multicast address.
 
 ![][link-connect_to_UDP_multicast_receiver]
 
@@ -128,9 +130,12 @@ static uint16_t multicast_port = 30000;             // multicast port
 Link
 -->
 
-[link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast/udp_multicast_receiver/connect_to_serial_com_port.png
-[link-test_using_the_Hercules]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast/udp_multicast_receiver/test_using_the_Hercules.png
-[link-connect_to_UDP_multicast_receiver]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast/udp_multicast_receiver/connect_to_UDP_multicast_receiver.png
-[link-multicast_receive_message]: https://github.com/WIZnet-PICO-C/static/images/udp_multicast/udp_multicast_receiver/multicast_receive_message.PNG
-[link-captured_using_Wireshark]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static//images/udp_multicast/udp_multicast_receiver/captured_using_Wireshark.png
+[link-tera_term]: https://osdn.net/projects/ttssh2/releases/
+[link-hercules]: https://www.hw-group.com/software/hercules-setup-utility
+[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/raspberry_pi_pico_usb_mass_storage.png
+[link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/connect_to_serial_com_port.png
+[link-test_using_the_Hercules]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/test_using_the_Hercules.PNG
+[link-connect_to_UDP_multicast_receiver]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/connect_to_UDP_multicast_receiver.PNG
+[link-multicast_receive_message]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/multicast_receive_message.PNG
+[link-captured_using_Wireshark]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp_multicast_receiver/captured_using_Wireshark.PNG
 
