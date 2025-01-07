@@ -60,8 +60,17 @@ If you want to test with the ftp_client example using SPI DMA, uncomment USE_SPI
 #define PIN_CS 20
 #define PIN_RST 25
 ```
+2. To run this example, you need to apply the 0003_iolibrary_driver_ftp_client.patch file as follows:
 
-2. Setup network configuration such as IP in 'w5x00_ftp_client.c' which is the FTP Client example in 'WIZnet-PICO-C/examples/ftp/client/' directory.
+ ```cpp
+ cd libraries/ioLibrary_Driver
+ ```
+ ```cpp
+ // Patch
+ git apply ../../patches/0003_iolibrary_driver_ftp_client.patch
+ ```
+
+3. Setup network configuration such as IP in 'w5x00_ftp_client.c' which is the FTP Client example in 'WIZnet-PICO-C/examples/ftp/client/' directory.
 
 Setup IP and other network settings to suit your network environment.
 
@@ -78,7 +87,7 @@ static wiz_NetInfo g_net_info =
 };
 ```
 
-3. Setup FTP client configuration in 'ftpc.c' in 'WIZnet-PICO-C/libraries/ioLibrary_Driver/Internet/FTPClient' directory.
+4. Setup FTP client configuration in 'ftpc.c' in 'WIZnet-PICO-C/libraries/ioLibrary_Driver/Internet/FTPClient' directory.
 
 ```cpp
 uint8_t FTP_destip[4] = {192, 168, 11, 230};    // For FTP client examples; destination network info

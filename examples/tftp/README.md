@@ -61,9 +61,13 @@ If you want to test with the TFTP client example using SPI DMA, uncomment USE_SP
 ```
 
 2. To run this example, you need to apply the 0002_iolibrary_driver_tftp.patch file as follows:
+
+ ```cpp
+ cd libraries/ioLibrary_Driver
+ ```
  ```cpp
  // Patch
- git apply ./patches/0002_iolibrary_driver_tftp.patch
+ git apply ../../patches/0002_iolibrary_driver_tftp.patch
  ```
 
 3. Setup network configuration such as IP in 'w5x00_tftp_client.c' which is the TFTP client example in 'WIZnet-PICO-C/examples/tftp/' directory.
