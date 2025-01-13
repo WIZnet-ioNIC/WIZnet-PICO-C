@@ -41,7 +41,7 @@ unsigned long htonl(unsigned long hostlong);
 unsigned long ntohs(unsigned short netshort);
 unsigned long ntohl(unsigned long netlong);
 unsigned short checksum(unsigned char * src, unsigned int len);
-u_char CheckDestInLocal(u_long destip);
+unsigned char CheckDestInLocal(unsigned long destip);
 
 void data_process_count_handle(void);
 #endif

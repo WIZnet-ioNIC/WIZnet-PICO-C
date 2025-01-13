@@ -82,7 +82,7 @@ int main()
     do
     {
         link_status = wizphy_getphylink();
-        printf(link_status);
+        printf("%u", link_status);
         if (link_status == PHY_LINK_OFF)
         {
             count++;

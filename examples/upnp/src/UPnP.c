@@ -762,7 +762,7 @@ char* inet_ntoa_pad(unsigned long addr)
 unsigned long inet_addr(unsigned char* addr)
 {/**< dotted notation address string.  */
 	char i;
-	u_long inetaddr = 0;
+	unsigned long inetaddr = 0;
 	char taddr[30];
 	char * nexttok;
 	int num;
@@ -906,8 +906,8 @@ unsigned long ntohl(unsigned long netlong)
 */ 
 unsigned short checksum(unsigned char * src, unsigned int len)
 {
-	u_int sum, tsum, i, j;
-	u_long lsum;
+	unsigned int sum, tsum, i, j;
+	unsigned long lsum;
 
 	j = len >> 1;
 
@@ -930,14 +930,14 @@ unsigned short checksum(unsigned char * src, unsigned int len)
 
 	sum = lsum;
 	sum = ~(sum + (lsum >> 16));
-	return (u_short) sum;	
+	return (unsigned short) sum;	
 }
 
 // destip : BigEndian
-u_char CheckDestInLocal(u_long destip)
+unsigned char CheckDestInLocal(unsigned long destip)
 {
 	int i = 0;
-	u_char * pdestip = (u_char*)&destip;
+	unsigned char * pdestip = (unsigned char*)&destip;
     uint8_t mask[4];
     getSUBR(mask);
 	for(i =0; i < 4; i++)

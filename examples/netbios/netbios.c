@@ -199,8 +199,8 @@ unsigned long ntohl(unsigned long netlong)
 
 unsigned short checksum(unsigned char * src,unsigned int len)
 {
-  u_int sum, tsum, i, j;
-  u_long lsum;
+  unsigned int sum, tsum, i, j;
+  unsigned long lsum;
 
   j = len >> 1;
 
@@ -222,7 +222,7 @@ unsigned short checksum(unsigned char * src,unsigned int len)
 
   sum = lsum;
   sum = ~(sum + (lsum >> 16));
-  return (u_short) sum;  
+  return (unsigned short) sum;  
 }
 
 

@@ -11,6 +11,7 @@
 #include "pico/time.h"
 #include "loopback.h"
 #include "pico/stdlib.h"
+#include "w5x00_spi.h"
 //#include "bsp_spi.h"
 
 
@@ -330,7 +331,7 @@ void Main_Menu(uint8_t sn, uint8_t sn2, uint8_t sn3, uint8_t *buf, uint16_t tcps
         if (strcmp(choice, "3") == 0)
         {
             bTreat = (bool)SET;
-            print_network_information(&net_info);
+            print_network_information(net_info);
         }
 
         if (strcmp(choice, "4") == 0)
