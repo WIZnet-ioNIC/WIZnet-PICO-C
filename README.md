@@ -144,6 +144,21 @@ Please refer to 'README.md' in each example directory to find detail guide for t
 > git apply ./patches/0001_pico_sdk_clocks.patch
 > ```
 
+
+In order to use the Raspberry Pi Pico extension RUN button at the bottom of the VS Code project window when the project name is defined as a variable, which is the case for the WIZnet-PICO-C project, the Raspberry Pi Pico extension can integrate with the CMake Tools extension to work properly and enhance CMake parsing. You can enable CMake Tools integration during project generation or when importing the project under the **Advanced Options**. Additionally, to manually enable it, adjust the following settings in your `settings.json`:
+
+- `raspberry-pi-pico.cmakeAutoConfigure`: Set from `true` to `false`.
+- `raspberry-pi-pico.useCmakeTools`: Set from `false` to `true`.
+
+For optimal functionality, consider enabling:
+
+- `cmake.configureOnEdit`: true
+- `cmake.automaticReconfigure`: true
+- `cmake.configureOnOpen`: true
+
+    
+You must need to have installed the CMake Tools extension. If prompted, select the `Pico` kit in CMake Tools, and set your build and launch targets accordingly. If the project is already created and you use the manual set up approach, select the CMake Tools Extension on the left pane and use the Configure Tab to change the selected kit to `Pico`.  Afterwards the use of the Compile button at the bottom of VS Code will invoke CMake Tools for compilation and the RUN button will use the Raspberry Pi Pico extension for debugging, as CMake Tools debugging is not compatible with Pico.
+
 <a name="how_to_use_port_directory"></a>
 ## How to use port directory
 
