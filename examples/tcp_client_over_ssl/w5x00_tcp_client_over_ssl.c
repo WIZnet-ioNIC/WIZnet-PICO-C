@@ -84,6 +84,8 @@ static void set_clock_khz(void);
 /* SSL */
 static int wizchip_ssl_init(uint8_t *socket_fd);
 static int ssl_random_callback(void *p_rng, unsigned char *output, size_t output_len);
+static int tcp_send(void *ctx, const unsigned char *buf, size_t len);
+static int tcp_recv(void *ctx, unsigned char *buf, size_t len);
 static int recv_timeout(void *ctx, unsigned char *buf, size_t len, uint32_t timeout);
 
 /* Timer  */
@@ -152,7 +154,7 @@ int main()
         list++;
     }
 
-    retval = socket((uint8_t)(g_ssl.private_p_bio), Sn_MR_TCP, PORT_SSL, SF_TCP_NODELAY);
+    retval = socket((uint8_t)(uintptr_t)(g_ssl.private_p_bio), Sn_MR_TCP, PORT_SSL, SF_TCP_NODELAY);
 
     if (retval != SOCKET_SSL)
     {
@@ -166,7 +168,7 @@ int main()
 
     do
     {
-        retval = connect((uint8_t)(g_ssl.private_p_bio), g_ssl_target_ip, PORT_SSL);
+        retval = connect((uint8_t)(uintptr_t)(g_ssl.private_p_bio), g_ssl_target_ip, PORT_SSL);
 
         if ((retval == SOCK_OK) || (retval == SOCKERR_TIMEOUT))
         {
@@ -205,7 +207,7 @@ int main()
     /* Infinite loop */
     while (1)
     {
-        getsockopt((uint8_t)(g_ssl.private_p_bio), SO_RECVBUF, &len);
+        getsockopt((uint8_t)(uintptr_t)(g_ssl.private_p_bio), SO_RECVBUF, &len);
 
         if (len > 0)
         {
@@ -277,7 +279,7 @@ static int wizchip_ssl_init(uint8_t *socket_fd)
         return -1;
     }
 
-    mbedtls_ssl_set_bio(&g_ssl, socket_fd, send, recv, recv_timeout);
+        mbedtls_ssl_set_bio(&g_ssl, socket_fd, tcp_send, tcp_recv, recv_timeout);
 }
 
 static int ssl_random_callback(void *p_rng, unsigned char *output, size_t output_len)
@@ -299,6 +301,16 @@ static int ssl_random_callback(void *p_rng, unsigned char *output, size_t output
     return 0;
 }
 
+static int tcp_send(void *ctx, const unsigned char *buf, size_t len)
+{
+    return send((uint8_t)(uintptr_t)ctx, (uint8_t *)buf, (uint16_t)len);
+}
+
+static int tcp_recv(void *ctx, unsigned char *buf, size_t len)
+{
+    return recv((uint8_t)(uintptr_t)ctx, (uint8_t *)buf, (uint16_t)len);
+}
+
 static int recv_timeout(void *ctx, unsigned char *buf, size_t len, uint32_t timeout)
 {
     uint16_t recv_len = 0;
@@ -306,11 +318,11 @@ static int recv_timeout(void *ctx, unsigned char *buf, size_t len, uint32_t time
 
     do
     {
-        getsockopt((uint8_t)(ctx), SO_RECVBUF, &recv_len);
+        getsockopt((uint8_t)(uintptr_t)(ctx), SO_RECVBUF, &recv_len);
 
         if (recv_len > 0)
         {
-            return recv((uint8_t)ctx, (uint8_t *)buf, (uint16_t)len);
+            return recv((uint8_t)(uintptr_t)ctx, (uint8_t *)buf, (uint16_t)len);
         }
     } while ((millis() - start_ms) < timeout);
 
