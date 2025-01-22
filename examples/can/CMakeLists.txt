@@ -1,2 +1,3 @@
 add_subdirectory(can_loopback)
 add_subdirectory(can_utils)
+add_subdirectory(can_to_ethernet)
