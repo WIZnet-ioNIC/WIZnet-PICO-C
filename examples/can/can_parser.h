@@ -12,8 +12,6 @@
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
 
-#include "RP2040.h"
-
 int getInputString(char *buffP);
 char* custom_strtok(char* str, const char* delim);
 

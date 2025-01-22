@@ -23,7 +23,7 @@
 #include "pico/binary_info.h"
 #include "hardware/irq.h"
 #include "hardware/structs/pio.h"
-#include "RP2040.h"
+
 /**
  * ----------------------------------------------------------------------------------------------------
  * Macros
@@ -196,9 +196,9 @@ static int can_initialize()
     can2040_setup(&cbus, CAN_PIO_INDEX);
     can2040_callback_config(&cbus, can2040_cb);
 
-    irq_set_exclusive_handler(PIO0_IRQ_0_IRQn, PIOx_IRQHandler);
-    //irq_set_priority(PIO0_IRQ_0_IRQn, 1);
-    irq_set_enabled(PIO0_IRQ_0_IRQn, true);
+    irq_set_exclusive_handler(PIO0_IRQ_0, PIOx_IRQHandler);
+    //irq_set_priority(PIO0_IRQ_0, 1);
+    irq_set_enabled(PIO0_IRQ_0, true);
 
     critical_section_init(&can_cris_sec);
 
@@ -246,7 +246,7 @@ static int is_pio_in_use(uint32_t pio_num)
         pio_hw = pio0_hw;
     } else if (pio_num == 1) {
         pio_hw = pio1_hw;
-#if IS_RP2350
+#ifdef PICO_RP2350
     } else if (pio_num == 2) {
         pio_hw = pio2_hw;
 #endif
