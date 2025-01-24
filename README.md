@@ -41,6 +41,7 @@ The ethernet examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - et
 
 Examples are available at '**WIZnet-PICO-C/examples/**' directory. As of now, following examples are provided.
 
+- [**CAN**][link-can]
 - [**DHCP & DNS**][link-dhcp_dns]
 - [**FTP**][link-ftp]
 	- [**Client**][link-ftp_client]
@@ -52,10 +53,12 @@ Examples are available at '**WIZnet-PICO-C/examples/**' directory. As of now, fo
 	- [**Publish**][link-mqtt_publish]
 	- [**Publish & Subscribe**][link-mqtt_publish_subscribe]
 	- [**Subscribe**][link-mqtt_subscribe]
+- [**NETBIOS**][link-netbios]
+- [**Network insatall**][link-network_install]
 - [**SNTP**][link-sntp]
 - [**TCP Client over SSL**][link-tcp_client_over_ssl]
+- [**TCP server multi socket**][link-tcp_server_multi_socket]
 - [**TFTP**][link-tftp]
-- [**NETBIOS**][link-netbios]
 - [**UDP multicast**][link-UDP_multicast]
 	- [**UDP multicast receiver**][link-UDP_multicast_receiver]
 - [**uPnP**][link-upnp]
@@ -136,13 +139,28 @@ set(BOARD_NAME W5500_EVB_PICO)
 
 Please refer to 'README.md' in each example directory to find detail guide for testing ethernet examples.
 
-
+The following provides instructions for applying a patch file for example testing.
 > ※ If the board pauses when rebooting using W55RP20-EVB-Pico, patch it as follows.
 >
 > ```cpp
 > // Patch
 > git apply ./patches/0001_pico_sdk_clocks.patch
 > ```
+
+> ※ To test the TFTP example, please apply the following patch.
+> 
+> ```cpp
+> cd libraries/ioLibrary_Driver
+> git apply ../../patches/0002_iolibrary_driver_tftp.patch
+> ```
+
+> ※ To test the FTP client example, please apply the following patch.
+> 
+> ```cpp
+> cd libraries/ioLibrary_Driver
+> git apply ../../patches/0003_iolibrary_driver_ftp_client.patch
+> ```
+
 
 <a name="how_to_use_port_directory"></a>
 ## How to use port directory
@@ -406,6 +424,7 @@ Link
 [link-wiznet_ethernet_hat]: https://docs.wiznet.io/Product/Open-Source-Hardware/wiznet_ethernet_hat
 [link-w5100s-evb-pico]: https://docs.wiznet.io/Product/iEthernet/W5100S/w5100s-evb-pico
 [link-w5500-evb-pico]: https://docs.wiznet.io/Product/iEthernet/W5500/w5500-evb-pico
+[link-CAN]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/can
 [link-dhcp_dns]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/dhcp_dns
 [link-ftp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/ftp
 [link-ftp_client]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/ftp/client
@@ -417,10 +436,12 @@ Link
 [link-mqtt_publish]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/mqtt/publish
 [link-mqtt_publish_subscribe]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/mqtt/publish_subscribe
 [link-mqtt_subscribe]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/mqtt/subscribe
+[link-netbios]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/netbios
+[link-network_install]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/network_install
 [link-sntp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/sntp
 [link-tcp_client_over_ssl]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/tcp_client_over_ssl
+[link-tcp_server_multi_socket]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/tcp_server_multi_socket
 [link-tftp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/tftp
-[link-netbios]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/netbios
 [link-UDP_multicast]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/udp_multicast
 [link-UDP_multicast_receiver]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/udp_multicast/udp_multicast_receiver
 [link-upnp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/upnp
