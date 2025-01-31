@@ -123,7 +123,7 @@ int main()
     /* Get network information */
     print_network_information(g_net_info);
 
-    retval = wizchip_ssl_init(SOCKET_SSL);
+    retval = wizchip_ssl_init((void *)SOCKET_SSL);
 
     if (retval < 0)
     {
