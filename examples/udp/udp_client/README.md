@@ -133,4 +133,4 @@ Link
 [link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_client/connect_to_serial_com_port.png
 [link-see_network_information_of_raspberry_pi_pico_and_open_loopback_server]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_client/see_network_information_of_raspberry_pi_pico_and_open_loopback_server.png
 [link-udp_socket_server]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_client/udp_socket_server.png
-[link-receive_back_sent_message]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_client/receive_back_sent_message.png
+[link-receive_back_sent_message]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_client/udp_client_receive_back_sent_message.png

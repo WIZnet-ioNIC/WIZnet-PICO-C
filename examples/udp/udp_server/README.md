@@ -133,5 +133,5 @@ Link
 [link-raspberry_pi_pico_usb_mass_storage]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_server/raspberry_pi_pico_usb_mass_storage.png
 [link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_server/connect_to_serial_com_port.png
 [link-see_network_information_of_raspberry_pi_pico_and_open_loopback_server]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_server/see_network_information_of_raspberry_pi_pico_and_open_loopback_server.png
-[link-connect_to_loopback_server_using_hercules_tcp_client_1]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_server/connect_to_loopback_server_using_hercules_tcp_client.png
+[link-connect_to_loopback_server_using_hercules_tcp_client]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_server/connect_to_loopback_server_using_hercules_tcp_client.png
 [link-receive_back_sent_message]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/udp/udp_server/udp_server_receive_back_sent_message.png
