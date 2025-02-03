@@ -54,11 +54,13 @@ Examples are available at '**WIZnet-PICO-C/examples/**' directory. As of now, fo
 	- [**Publish & Subscribe**][link-mqtt_publish_subscribe]
 	- [**Subscribe**][link-mqtt_subscribe]
 - [**NETBIOS**][link-netbios]
-- [**Network insatall**][link-network_install]
+- [**Network install**][link-network_install]
+- [**PPPoE**][link-pppoe]
 - [**SNTP**][link-sntp]
 - [**TCP Client over SSL**][link-tcp_client_over_ssl]
 - [**TCP server multi socket**][link-tcp_server_multi_socket]
 - [**TFTP**][link-tftp]
+- [**UDP**][link-UDP]
 - [**UDP multicast**][link-UDP_multicast]
 	- [**UDP multicast receiver**][link-UDP_multicast_receiver]
 - [**uPnP**][link-upnp]
@@ -438,10 +440,12 @@ Link
 [link-mqtt_subscribe]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/mqtt/subscribe
 [link-netbios]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/netbios
 [link-network_install]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/network_install
+[link-pppoe]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/pppoe
 [link-sntp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/sntp
 [link-tcp_client_over_ssl]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/tcp_client_over_ssl
 [link-tcp_server_multi_socket]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/tcp_server_multi_socket
 [link-tftp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/tftp
+[link-UDP]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/udp
 [link-UDP_multicast]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/udp_multicast
 [link-UDP_multicast_receiver]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/udp_multicast/udp_multicast_receiver
 [link-upnp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/upnp
