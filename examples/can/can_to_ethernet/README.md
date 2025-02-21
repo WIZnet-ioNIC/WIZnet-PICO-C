@@ -67,7 +67,7 @@ If you want to test with the CAN TO ETHERNET example using SPI DMA, uncomment US
 #define PIN_RST 25
 ```
 
-2. Setup network configuration such as IP in 'w5x00_can_to_eth_tcps.c' which is the Loopback example in 'WIZnet-PICO-C/examples/can/can_to_ethernet/' directory.
+2. Setup network configuration such as IP in 'w5x00_can_to_eth_tcpc.c' which is the Loopback example in 'WIZnet-PICO-C/examples/can/can_to_ethernet/' directory.
 
 Setup IP and other network settings to suit your network environment.
 
@@ -84,7 +84,7 @@ static wiz_NetInfo g_net_info =
 };
 ```
 
-3. Setup ethernet configuration in 'w5x00_can_to_eth_tcps.c' in 'WIZnet-PICO-C/examples/can/can_to_ethernet/' directory.
+3. Setup ethernet configuration in 'w5x00_can_to_eth_tcpc.c' in 'WIZnet-PICO-C/examples/can/can_to_ethernet/' directory.
 
 ```cpp
 /* Socket */
@@ -94,7 +94,7 @@ static wiz_NetInfo g_net_info =
 #define PORT_TCP 5000
 ```
 
-4. Setup CAN Configuration and pin in 'w5x00_can_to_eth_tcps.c' in 'WIZnet-PICO-C/examples/can/can_to_eth_tcps/' directory.
+4. Setup CAN Configuration and pin in 'w5x00_can_to_eth_tcpc.c' in 'WIZnet-PICO-C/examples/can/can_to_ethernet/' directory.
 
 ```cpp
 /* Can */
@@ -110,7 +110,7 @@ static wiz_NetInfo g_net_info =
 
 1. After completing the CAN TO ETHERNET example configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
 
-2. When the build is completed, 'w5x00_can_to_eth_tcps.uf2' is generated in 'WIZnet-PICO-C/build/examples/can/can_to_eth_tcps/' directory.
+2. When the build is completed, 'w5x00_can_to_eth_tcpc.uf2' is generated in 'WIZnet-PICO-C/build/examples/can/can_to_ethernet/' directory.
 
 
 
@@ -120,7 +120,7 @@ static wiz_NetInfo g_net_info =
 
 ![][link-raspberry_pi_pico_usb_mass_storage]
 
-2. Drag and drop 'w5x00_can_to_eth_tcps.uf2' onto the USB mass storage device 'RPI-RP2'.
+2. Drag and drop 'w5x00_can_to_eth_tcpc.uf2' onto the USB mass storage device 'RPI-RP2'.
 
 3. Connect to the serial COM port of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 with Tera Term.
 
