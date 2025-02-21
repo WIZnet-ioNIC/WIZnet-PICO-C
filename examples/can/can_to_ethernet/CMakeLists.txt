@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_can_to_eth_tcps)
+set(TARGET_NAME w5x00_can_to_eth_tcpc)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c
