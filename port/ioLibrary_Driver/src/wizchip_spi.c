@@ -18,7 +18,7 @@
 #include "board_list.h"
 
 
-#include "wizchip_pio.h"
+#include "wizchip_qspi_pio.h"
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
 #include "pico/critical_section.h"
