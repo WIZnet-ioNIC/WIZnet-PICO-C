@@ -3,11 +3,15 @@ cmake_minimum_required(VERSION 3.12)
  
 # Set board
 #set(BOARD_NAME WIZnet_Ethernet_HAT)
-#set(BOARD_NAME W5100S_EVB_PICO)
-set(BOARD_NAME W5500_EVB_PICO)
-#set(BOARD_NAME W55RP20_EVB_PICO)
+# set(BOARD_NAME W5100S_EVB_PICO)
+# set(BOARD_NAME W5500_EVB_PICO)
+# set(BOARD_NAME W55RP20_EVB_PICO)
+# set(BOARD_NAME W6100_EVB_PICO)
+# set(BOARD_NAME W6300_EVB_PICO)
 #set(BOARD_NAME W5100S_EVB_PICO2)
-#set(BOARD_NAME W5500_EVB_PICO2)
+# set(BOARD_NAME W5500_EVB_PICO2)
+# set(BOARD_NAME W6100_EVB_PICO2)
+set(BOARD_NAME W6300_EVB_PICO2)
 
 if(${BOARD_NAME} STREQUAL WIZnet_Ethernet_HAT)
     #set(PICO_PLATFORM rp2350) #If you are using WIZnet_ethernet_HAT with Pico2, uncomment it.
@@ -30,6 +34,16 @@ elseif(${BOARD_NAME} STREQUAL W55RP20_EVB_PICO)
     add_definitions(-D_WIZCHIP_=W5500)
     add_definitions(-DDEVICE_BOARD_NAME=W55RP20_EVB_PICO)
 
+elseif(${BOARD_NAME} STREQUAL W6100_EVB_PICO)
+    set(WIZNET_CHIP W6100)
+    add_definitions(-D_WIZCHIP_=W6100)
+    add_definitions(-DDEVICE_BOARD_NAME=W6100_EVB_PICO)
+
+elseif(${BOARD_NAME} STREQUAL W6300_EVB_PICO)
+    set(WIZNET_CHIP W6300)
+    add_definitions(-D_WIZCHIP_=W6300)
+    add_definitions(-DDEVICE_BOARD_NAME=W6300_EVB_PICO)
+
 elseif(${BOARD_NAME} STREQUAL W5100S_EVB_PICO2)
     set(PICO_PLATFORM rp2350)
     set(WIZNET_CHIP W5100S)
@@ -41,11 +55,42 @@ elseif(${BOARD_NAME} STREQUAL W5500_EVB_PICO2)
     set(WIZNET_CHIP W5500)
     add_definitions(-D_WIZCHIP_=W5500)
     add_definitions(-DDEVICE_BOARD_NAME=W5500_EVB_PICO2)
+
+elseif(${BOARD_NAME} STREQUAL W6100_EVB_PICO2)
+    set(PICO_PLATFORM rp2350)
+    set(WIZNET_CHIP W6100)
+    add_definitions(-D_WIZCHIP_=W6100)
+    add_definitions(-DDEVICE_BOARD_NAME=W6100_EVB_PICO2)
+
+elseif(${BOARD_NAME} STREQUAL W6300_EVB_PICO2)
+    set(PICO_PLATFORM rp2350)
+    set(WIZNET_CHIP W6300)
+    add_definitions(-D_WIZCHIP_=W6300)
+    add_definitions(-DDEVICE_BOARD_NAME=W6300_EVB_PICO2)
+
 else() 
     message(FATAL_ERROR "BOARD_NAME is wrong = ${BOARD_NAME}")
 endif()
 
 message(STATUS "WIZNET_CHIP = ${WIZNET_CHIP}")
+
+
+# this code is working, when Change  PICO_BOARD and PICO_PLATFORM 
+message(STATUS "PICO_BOARD = ${PICO_BOARD}") # static variable in pico_sdk_import.cmake
+message(STATUS "PICO_PLATFORM = ${PICO_PLATFORM}")
+
+if(PICO_BOARD MATCHES "pico2")
+    set(temp "rp2350")
+elseif(PICO_BOARD MATCHES "pico")
+    set(temp "rp2040")
+endif()
+
+
+if(NOT "${PICO_PLATFORM}" STREQUAL "${temp}")
+    message(STATUS "PICO_PLATFORM ≠ PICO_BOARD → unsetting PICO_BOARD")
+    unset(PICO_BOARD CACHE)
+    unset(PICO_PLATFORM CACHE)
+endif()
 
 if(NOT DEFINED PICO_SDK_PATH)
     set(PICO_SDK_PATH ${CMAKE_SOURCE_DIR}/libraries/pico-sdk)
