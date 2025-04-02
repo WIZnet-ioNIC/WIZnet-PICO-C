@@ -7,10 +7,10 @@ target_sources(IOLIBRARY_FILES PUBLIC
         )
 
 if(${BOARD_NAME} STREQUAL W55RP20_EVB_PICO OR ${WIZNET_CHIP} STREQUAL W6300)
-pico_generate_pio_header(IOLIBRARY_FILES ${PORT_DIR}/ioLibrary_Driver/src/wizchip_pio.pio)
+pico_generate_pio_header(IOLIBRARY_FILES ${PORT_DIR}/ioLibrary_Driver/src/wizchip_qspi_pio.pio)
 
 target_sources(IOLIBRARY_FILES PUBLIC 
-        ${PORT_DIR}/ioLibrary_Driver/src/wizchip_pio.c
+        ${PORT_DIR}/ioLibrary_Driver/src/wizchip_qspi_pio.c
 )
 
 target_include_directories(IOLIBRARY_FILES PUBLIC
