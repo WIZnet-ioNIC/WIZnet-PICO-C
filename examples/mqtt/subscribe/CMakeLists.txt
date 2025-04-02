@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_mqtt_subscribe)
+set(TARGET_NAME wizchip_mqtt_subscribe)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

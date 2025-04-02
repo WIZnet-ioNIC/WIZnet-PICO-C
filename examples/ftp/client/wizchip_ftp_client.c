@@ -16,10 +16,7 @@
 #include "wizchip_conf.h"
 #include "wizchip_spi.h"
 
-#include "sntp.h"
-
-#include "timer.h"
-#include "time.h"
+#include "ftpc.h"
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -31,15 +28,6 @@
 
 /* Buffer */
 #define ETHERNET_BUF_MAX_SIZE (1024 * 2)
-
-/* Socket */
-#define SOCKET_SNTP 0
-
-/* Timeout */
-#define RECV_TIMEOUT (1000 * 10) // 10 seconds
-
-/* Timezone */
-#define TIMEZONE 40 // Korea
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -54,17 +42,36 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        .dhcp = NETINFO_STATIC                       // DHCP enable/disable
+        #if _WIZCHIP_ > W5500
+        .lla = {0xfe, 0x80, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x02, 0x08, 0xdc, 0xff,
+                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
+        .gua = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
+        .sn6 = {0xff, 0xff, 0xff, 0xff,
+                0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
+        .gw6 = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
+        .dns6 = {0x20, 0x01, 0x48, 0x60,
+                0x48, 0x60, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x88, 0x88},             // DNS6 server
+        .ipmode = NETINFO_STATIC_ALL
+#else
+        .dhcp = NETINFO_STATIC        
+#endif
 };
-
-/* SNTP */
-static uint8_t g_sntp_buf[ETHERNET_BUF_MAX_SIZE] = {
+/* FTP */
+static uint8_t g_ftp_buf[ETHERNET_BUF_MAX_SIZE] = {
     0,
 };
-static uint8_t g_sntp_server_ip[4] = {216, 239, 35, 0}; // time.google.com
-
-/* Timer */
-static volatile uint32_t g_msec_cnt = 0;
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -73,10 +80,6 @@ static volatile uint32_t g_msec_cnt = 0;
  */
 /* Clock */
 static void set_clock_khz(void);
-
-/* Timer  */
-static void repeating_timer_callback(void);
-static time_t millis(void);
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -87,8 +90,6 @@ int main()
 {
     /* Initialize */
     uint8_t retval = 0;
-    uint32_t start_ms = 0;
-    datetime time;
 
     set_clock_khz();
 
@@ -101,42 +102,24 @@ int main()
     wizchip_initialize();
     wizchip_check();
 
-    wizchip_1ms_timer_initialize(repeating_timer_callback);
-
     network_initialize(g_net_info);
 
-    SNTP_init(SOCKET_SNTP, g_sntp_server_ip, TIMEZONE, g_sntp_buf);
+    ftpc_init(g_net_info.ip);
 
     /* Get network information */
     print_network_information(g_net_info);
 
-    start_ms = millis();
-
-    /* Get time */
-    do
-    {
-        retval = SNTP_run(&time);
-
-        if (retval == 1)
-        {
-            break;
-        }
-    } while ((millis() - start_ms) < RECV_TIMEOUT);
-
-    if (retval != 1)
-    {
-        printf(" SNTP failed : %d\n", retval);
-
-        while (1)
-            ;
-    }
-
-    printf(" %d-%d-%d, %d:%d:%d\n", time.yy, time.mo, time.dd, time.hh, time.mm, time.ss);
-
     /* Infinite loop */
     while (1)
     {
-        ; // nothing to do
+        /* Run FTP client */
+        if ((retval = ftpc_run(g_ftp_buf)) < 0)
+        {
+            printf(" FTP client error : %d\n", retval);
+
+            while (1)
+                ;
+        }
     }
 }
 
@@ -159,15 +142,4 @@ static void set_clock_khz(void)
         PLL_SYS_KHZ * 1000,                               // Input frequency
         PLL_SYS_KHZ * 1000                                // Output (must be same as no divider)
     );
-}
-
-/* Timer */
-static void repeating_timer_callback(void)
-{
-    g_msec_cnt++;
-}
-
-static time_t millis(void)
-{
-    return g_msec_cnt;
 }

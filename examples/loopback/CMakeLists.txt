@@ -1,16 +1,19 @@
-set(TARGET_NAME w5x00_loopback)
+set(TARGET_NAME wizchip_loopback)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c
         )
 
-target_link_libraries(${TARGET_NAME} PRIVATE
+target_link_libraries(${TARGET_NAME}
         pico_stdlib
         hardware_spi
         hardware_dma
+        hardware_pio
         ETHERNET_FILES
         IOLIBRARY_FILES
-        LOOPBACK_FILES 
+        PORT_COMMON_FILES
+        LOOPBACK_FILES
+        TIMER_FILES        
         )
 
 pico_enable_stdio_usb(${TARGET_NAME} 1)

@@ -57,7 +57,6 @@
 //#define CAN_DEBUG
 //#define _CAN_TO_ETH_DEBUG_
 
-
 /**
  * ----------------------------------------------------------------------------------------------------
  * Variables
@@ -71,7 +70,31 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        .dhcp = NETINFO_STATIC                       // DHCP enable/disable
+        #if _WIZCHIP_ > W5500
+        .lla = {0xfe, 0x80, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x02, 0x08, 0xdc, 0xff,
+                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
+        .gua = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
+        .sn6 = {0xff, 0xff, 0xff, 0xff,
+                0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
+        .gw6 = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
+        .dns6 = {0x20, 0x01, 0x48, 0x60,
+                0x48, 0x60, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x88, 0x88},             // DNS6 server
+        .ipmode = NETINFO_STATIC_ALL
+#else
+        .dhcp = NETINFO_STATIC        
+#endif
 };
 
 static uint8_t g_tx_buf[BUF_MAX_SIZE] = {
@@ -80,9 +103,6 @@ static uint8_t g_tx_buf[BUF_MAX_SIZE] = {
 static uint8_t g_rx_buf[BUF_MAX_SIZE] = {
     0,
 };
-
-static uint8_t destip[4] = {192, 168, 11, 3};
-static uint16_t destport = 5000;
 
 static struct can2040 cbus;
 
@@ -113,7 +133,7 @@ static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *
 static void PIOx_IRQHandler(void);
 static int is_pio_in_use(uint32_t pio_num) ;
 
-int32_t can_to_eth_process(uint8_t sn, uint8_t* destip, uint16_t destport);
+int32_t can_to_eth_process(uint8_t sn, uint16_t port);
 
 
 /**
@@ -152,7 +172,8 @@ int main()
 
     while(1)
     {
-        if ((retval = can_to_eth_process(SOCKET_TCP, destip, destport)) < 0)
+        if ((retval = can_to_eth_process(SOCKET_TCP, PORT_TCP)) < 0)
+
         {
             printf(" CAN to Eth loopback error : %d\n", retval);
 
@@ -352,33 +373,38 @@ int send_can_msg(char *msg_buf)
     return 0;
 }
 
-int32_t can_to_eth_process(uint8_t sn, uint8_t* destip, uint16_t destport)
+int32_t can_to_eth_process(uint8_t sn, uint16_t port)
 {
    int32_t ret;
    uint16_t size = 0, sentsize=0;
    uint32_t tx_buf_idx = 0;
    struct can2040_msg recv_msg;
 
-   static uint16_t any_port = 	50000;
+#ifdef _CAN_TO_ETH_DEBUG_
+   uint8_t destip[4];
+   uint16_t destport;
+#endif
 
    switch(getSn_SR(sn))
    {
         case SOCK_ESTABLISHED :
-            if(getSn_IR(sn) & Sn_IR_CON)	// Socket n interrupt register mask; TCP CON interrupt = connection with peer is successful
+            if(getSn_IR(sn) & Sn_IR_CON)
             {
 #ifdef _CAN_TO_ETH_DEBUG_
-                printf("%d:Connected to - %d.%d.%d.%d : %d\r\n",sn, destip[0], destip[1], destip[2], destip[3], destport);
+                getSn_DIPR(sn, destip);
+                destport = getSn_DPORT(sn);
+
+                printf("%d:Connected - %d.%d.%d.%d : %d\r\n",sn, destip[0], destip[1], destip[2], destip[3], destport);
 #endif
-                setSn_IR(sn, Sn_IR_CON);  // this interrupt should be write the bit cleared to '1'
+                setSn_IR(sn,Sn_IR_CON);
             }
-
-            if((size = getSn_RX_RSR(sn)) > 0) // Sn_RX_RSR: Socket n Received Size Register, Receiving data length
+            if((size = getSn_RX_RSR(sn)) > 0) // Don't need to check SOCKERR_BUSY because it doesn't not occur.
             {
-                if(size > BUF_MAX_SIZE) size = BUF_MAX_SIZE; // DATA_BUF_SIZE means user defined buffer size (array)
-                ret = recv(sn, g_rx_buf, size); // Data Receive process (H/W Rx socket buffer -> User's buffer)
+                if(size > BUF_MAX_SIZE) size = BUF_MAX_SIZE;
+                ret = recv(sn, g_rx_buf, size);
 
-                if(ret <= 0) return ret; // If the received data length <= 0, receive failed and process end
-                
+                if(ret <= 0) return ret;      // check SOCKERR_BUSY & SOCKERR_XXX. For showing the occurrence of SOCKERR_BUSY.
+
                 ret = send_can_msg(g_rx_buf);
 
                 if(!ret)
@@ -395,17 +421,16 @@ int32_t can_to_eth_process(uint8_t sn, uint8_t* destip, uint16_t destport)
                 {
                     close(sn);
                     return ret;
-                }	
+                }
             }
 
             do {
-                
+
                 ret = pop_rbuf(&recv_msg);
 
                 if(ret < 0)
                     break;
-
-#if 1
+#ifdef _CAN_TO_ETH_DEBUG_
                 printf("\t0X%x\t%lu\t", recv_msg.id, recv_msg.dlc);
 
                 for(uint32_t idx = 0; idx < recv_msg.dlc; idx++)
@@ -430,40 +455,35 @@ int32_t can_to_eth_process(uint8_t sn, uint8_t* destip, uint16_t destport)
                     return ret;
                 }
             } while(1);
-            
-            break;
 
+            break;
         case SOCK_CLOSE_WAIT :
-#ifdef _CAN_TO_ETH_DEBUG_
+    #ifdef _CAN_TO_ETH_DEBUG_
             //printf("%d:CloseWait\r\n",sn);
-#endif
-            if((ret=disconnect(sn)) != SOCK_OK) return ret;
-#ifdef _CAN_TO_ETH_DEBUG_
+    #endif
+            if((ret = disconnect(sn)) != SOCK_OK) return ret;
+    #ifdef _CAN_TO_ETH_DEBUG_
             printf("%d:Socket Closed\r\n", sn);
-#endif
+    #endif
             break;
-
         case SOCK_INIT :
-#ifdef _CAN_TO_ETH_DEBUG_
-            printf("%d:Try to connect to the %d.%d.%d.%d : %d\r\n", sn, destip[0], destip[1], destip[2], destip[3], destport);
-#endif
-            if( (ret = connect(sn, destip, destport)) != SOCK_OK) return ret;	//	Try to TCP connect to the TCP server (destination)
+    #ifdef _CAN_TO_ETH_DEBUG_
+            printf("%d:Listen, TCP server loopback, port [%d]\r\n", sn, port);
+    #endif
+            if( (ret = listen(sn)) != SOCK_OK) return ret;
             can_rx_rbuf.push_idx = 0;
             can_rx_rbuf.pop_idx = 0;
             memset(can_rx_rbuf.msg_buf, 0x0, BUF_MAX_SIZE * sizeof(struct can2040_msg));
             can_rx_rbuf.rx_flag = true;
             break;
-
         case SOCK_CLOSED:
-            close(sn);
-            if((ret=socket(sn, Sn_MR_TCP, any_port++, 0x00)) != sn){
-            if(any_port == 0xffff) any_port = 50000;
-            return ret; // TCP socket open with 'any_port' port number
-            } 
-#ifdef _CAN_TO_ETH_DEBUG_
-            //printf("%d:TCP client loopback start\r\n",sn);
+    #ifdef _CAN_TO_ETH_DEBUG_
+            //printf("%d:TCP server loopback start\r\n",sn);
+    #endif
+            if((ret = socket(sn, Sn_MR_TCP, port, 0x00)) != sn) return ret;
+    #ifdef _CAN_TO_ETH_DEBUG_
             //printf("%d:Socket opened\r\n",sn);
-#endif
+    #endif
             break;
         default:
             break;

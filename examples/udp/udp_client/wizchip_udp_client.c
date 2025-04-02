@@ -16,6 +16,7 @@
 #include "wizchip_conf.h"
 #include "wizchip_spi.h"
 
+#include "loopback.h"
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -25,6 +26,16 @@
 /* Clock */
 #define PLL_SYS_KHZ (133 * 1000)
 
+/* Buffer */
+#define ETHERNET_BUF_MAX_SIZE (1024 * 2)
+
+/* Socket */
+#define SOCKET_LOOPBACK 0
+
+
+
+/* Port */
+#define PORT_LOOPBACK 5000
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -39,9 +50,39 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        .dhcp = NETINFO_STATIC                       // DHCP enable/disable
+        #if _WIZCHIP_ > W5500
+        .lla = {0xfe, 0x80, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x02, 0x08, 0xdc, 0xff,
+                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
+        .gua = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
+        .sn6 = {0xff, 0xff, 0xff, 0xff,
+                0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
+        .gw6 = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
+        .dns6 = {0x20, 0x01, 0x48, 0x60,
+                0x48, 0x60, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x88, 0x88},             // DNS6 server
+        .ipmode = NETINFO_STATIC_ALL
+#else
+        .dhcp = NETINFO_STATIC        
+#endif
 };
 
+/* Loopback */
+static uint8_t g_loopback_buf[ETHERNET_BUF_MAX_SIZE] = {
+    0,
+};
+
+static uint8_t dest_ip[4] = {192, 168, 11, 69};
 /**
  * ----------------------------------------------------------------------------------------------------
  * Functions
@@ -58,9 +99,7 @@ static void set_clock_khz(void);
 int main()
 {
     /* Initialize */
-    uint8_t link_status;
-    wiz_PhyConf phyconf;
-    uint16_t count = 0;
+    int retval = 0;
 
     set_clock_khz();
 
@@ -79,39 +118,16 @@ int main()
     print_network_information(g_net_info);
 
     /* Infinite loop */
-    do
-    {
-        link_status = wizphy_getphylink();
-        printf("%u", link_status);
-        if (link_status == PHY_LINK_OFF)
-        {
-            count++;
-            if (count > 10)
-            {
-                printf("Link failed of Internal PHY.\r\n");
-                break;
-            }
-        }
-        sleep_ms(500);
-
-    } while (link_status == PHY_LINK_OFF);
-
-    if (link_status == PHY_LINK_ON)
-    {
-        wizphy_getphyconf(&phyconf);
-        printf("Link OK of Internal PHY.\r\n");
-        printf("the %d Mbtis speed of Internal PHY.\r\n", phyconf.speed == PHY_SPEED_10 ? 100 : 10);
-        printf("The %s Duplex Mode of the Internal PHY.\r\n", phyconf.duplex == PHY_DUPLEX_FULL ? "Full-Duplex" : "Half-Duplex");
-
-        printf("\r\nTry ping the ip:%d.%d.%d.%d.\r\n", g_net_info.ip[0], g_net_info.ip[1], g_net_info.ip[2], g_net_info.ip[3]);
-    }
-    else
-    {
-        printf("\r\nPlease check whether the network cable is loose or disconnected.\r\n");
-    }
     while (1)
     {
-        ;
+        /* UDP Client loopback test */
+        if ((retval = loopback_udpc(SOCKET_LOOPBACK, g_loopback_buf, dest_ip, PORT_LOOPBACK)) < 0)
+        {
+            printf(" Loopback error : %d\n", retval);
+
+            while (1)
+                ;
+        }
     }
 }
 

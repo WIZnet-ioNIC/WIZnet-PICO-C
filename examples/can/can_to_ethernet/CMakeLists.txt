@@ -1,5 +1,5 @@
-set(TARGET_TCPS_NAME w5x00_can_to_eth_tcps)
-set(TARGET_TCPC_NAME w5x00_can_to_eth_tcpc)
+set(TARGET_TCPS_NAME wizchip_can_to_eth_tcps)
+set(TARGET_TCPC_NAME wizchip_can_to_eth_tcpc)
 
 add_executable(${TARGET_TCPS_NAME}
         ${TARGET_TCPS_NAME}.c

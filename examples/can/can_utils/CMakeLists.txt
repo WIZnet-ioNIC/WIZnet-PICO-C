@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_can_utils)
+set(TARGET_NAME wizchip_can_utils)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_network_install)
+set(TARGET_NAME wizchip_network_install)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

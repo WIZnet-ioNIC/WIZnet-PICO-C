@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_can_loopback)
+set(TARGET_NAME wizchip_can_loopback)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

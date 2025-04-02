@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_tcp_server_multi_socket)
+set(TARGET_NAME wizchip_tcp_server_multi_socket)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

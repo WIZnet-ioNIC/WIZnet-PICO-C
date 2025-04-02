@@ -260,6 +260,7 @@ add_library(TFTP_FILES STATIC)
 
 target_sources(TFTP_FILES PUBLIC
         ${WIZNET_DIR}/Internet/TFTP/tftp.c
+        ${WIZNET_DIR}/Internet/TFTP/netutil.c
         )
 
 target_include_directories(TFTP_FILES PUBLIC

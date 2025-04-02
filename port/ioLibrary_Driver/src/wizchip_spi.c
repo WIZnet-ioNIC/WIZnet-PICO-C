@@ -341,8 +341,14 @@ void wizchip_check(void)
             ;
     }
 #elif (_WIZCHIP_ == W6300)
-        printf(" ACCESS read value = 0x%02x\n", getCIDR());
-        printf(" VERSION(%04x) = %04x \r\n", _VER_, getVER());
+    /* Read version register */
+    if (getCIDR() != 0x6300)
+    {
+        printf(" ACCESS ERR : VERSION != 0x6100, read value = 0x%02x\n", getCIDR());
+
+        while (1)
+            ;
+    }
 #endif
 }
 

@@ -14,9 +14,9 @@
 #include "hardware/clocks.h"
 
 #include "wizchip_conf.h"
-#include "wizchip_pio.h"
+#include "wizchip_qspi_pio.h"
 
-#include "wizchip_pio.pio.h"
+#include "wizchip_qspi_pio.pio.h"
 
 #ifndef PIO_SPI_PREFERRED_PIO
 #define PIO_SPI_PREFERRED_PIO 1

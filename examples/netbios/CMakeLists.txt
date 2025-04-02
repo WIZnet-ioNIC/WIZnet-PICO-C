@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_netbios)
+set(TARGET_NAME wizchip_netbios)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

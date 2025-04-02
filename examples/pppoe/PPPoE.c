@@ -86,7 +86,7 @@ void set_pppinfo(uint8_t *nas_mac, uint8_t *ppp_ip, uint16_t nas_sessionid)
 #endif
 }
 
-#elif (_WIZCHIP_ == W5500)
+#elif (_WIZCHIP_ >= W5500)
 void set_pppinfo(uint8_t *nas_mac, uint8_t *ppp_ip, uint16_t nas_sessionid)
 {
 #ifdef __DEF_PPP_DBG1__
@@ -95,7 +95,12 @@ void set_pppinfo(uint8_t *nas_mac, uint8_t *ppp_ip, uint16_t nas_sessionid)
 	printf("set_pppinfo() Start...\r\n");
 #endif
 	/* Set PPPoE bit in MR(Common Mode Register) : enable PPPoE */
+#if (_WIZCHIP_ == W6100 || _WIZCHIP_ == W6300)
+	setSn_MR(0, getSn_MR(0) | NETMR2_PPPoE);
+#else
 	setMR(getMR() | MR_PPPOE);
+
+#endif	
 	// Write PPPoE server's MAC address, Session ID and IP address.
 	// must be setted these value.
 
@@ -106,18 +111,32 @@ void set_pppinfo(uint8_t *nas_mac, uint8_t *ppp_ip, uint16_t nas_sessionid)
 #endif
 	setSHAR(nas_mac);
 	setSIPR(ppp_ip);
+
+#if (_WIZCHIP_ == W6100 || _WIZCHIP_ == W6300)
+	setPSIDR(nas_sessionid);
+#else
 	setPSID(nas_sessionid);
+#endif
+
 #ifdef __DEF_PPP_DBG1__
 	getSHAR(str);
 	printf("Read PHAR register : %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\r\n", str[0], str[1], str[2], str[3], str[4], str[5]);
 	getSIPR(str);
 	printf("Read SIP register : %. %d.%d.%d.%d\r\n", str[0], str[1], str[2], str[3]);
+#if (_WIZCHIP_ == W6100 || _WIZCHIP_ == W6300)
+	psid = getPSIDR();
+#else
 	psid = getPSID();
+#endif
 	printf("Read PSID register : %x\r\n", psid);
 #endif
 	// open socket in pppoe mode
 	// why not close macraw socket and open??
+#if (_WIZCHIP_ == W6100 || _WIZCHIP_ == W6300)
+	WIZCHIP_WRITE(_PTMR_, 200); // 5sec timeout
+#else
 	IINCHIP_WRITE(PTIMER, 200); // 5sec timeout
+#endif
 #ifdef __DEF_PPP_DBG1__
 	printf("set_pppinfo() End...\r\n");
 #endif

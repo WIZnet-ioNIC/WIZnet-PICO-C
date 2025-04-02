@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_dhcp_dns)
+set(TARGET_NAME wizchip_dhcp_dns)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

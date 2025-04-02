@@ -50,7 +50,8 @@
 #define MQTT_PUBLISH_TOPIC "publish_topic"
 #define MQTT_PUBLISH_PAYLOAD "Hello, World!"
 #define MQTT_PUBLISH_PERIOD (1000 * 10) // 10 seconds
-#define MQTT_KEEP_ALIVE 60              // 60 milliseconds
+#define MQTT_SUBSCRIBE_TOPIC "subscribe_topic"
+#define MQTT_KEEP_ALIVE 60 // 60 milliseconds
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -65,7 +66,31 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        .dhcp = NETINFO_STATIC                       // DHCP enable/disable
+        #if _WIZCHIP_ > W5500
+        .lla = {0xfe, 0x80, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x02, 0x08, 0xdc, 0xff,
+                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
+        .gua = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
+        .sn6 = {0xff, 0xff, 0xff, 0xff,
+                0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
+        .gw6 = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
+        .dns6 = {0x20, 0x01, 0x48, 0x60,
+                0x48, 0x60, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x88, 0x88},             // DNS6 server
+        .ipmode = NETINFO_STATIC_ALL
+#else
+        .dhcp = NETINFO_STATIC        
+#endif
 };
 
 /* MQTT */
@@ -91,6 +116,9 @@ static volatile uint32_t g_msec_cnt = 0;
  */
 /* Clock */
 static void set_clock_khz(void);
+
+/* MQTT */
+static void message_arrived(MessageData *msg_data);
 
 /* Timer  */
 static void repeating_timer_callback(void);
@@ -169,11 +197,32 @@ int main()
     g_mqtt_message.payload = MQTT_PUBLISH_PAYLOAD;
     g_mqtt_message.payloadlen = strlen(g_mqtt_message.payload);
 
+    /* Subscribe */
+    retval = MQTTSubscribe(&g_mqtt_client, MQTT_SUBSCRIBE_TOPIC, QOS0, message_arrived);
+
+    if (retval < 0)
+    {
+        printf(" Subscribe failed : %d\n", retval);
+
+        while (1)
+            ;
+    }
+
+    printf(" Subscribed\n");
+
     start_ms = millis();
 
     /* Infinite loop */
     while (1)
     {
+        if ((retval = MQTTYield(&g_mqtt_client, g_mqtt_packet_connect_data.keepAliveInterval)) < 0)
+        {
+            printf(" Yield error : %d\n", retval);
+
+            while (1)
+                ;
+        }
+
         end_ms = millis();
 
         if (end_ms > start_ms + MQTT_PUBLISH_PERIOD)
@@ -192,14 +241,6 @@ int main()
             printf(" Published\n");
 
             start_ms = millis();
-        }
-
-        if ((retval = MQTTYield(&g_mqtt_client, g_mqtt_packet_connect_data.keepAliveInterval)) < 0)
-        {
-            printf(" Yield error : %d\n", retval);
-
-            while (1)
-                ;
         }
     }
 }
@@ -223,6 +264,14 @@ static void set_clock_khz(void)
         PLL_SYS_KHZ * 1000,                               // Input frequency
         PLL_SYS_KHZ * 1000                                // Output (must be same as no divider)
     );
+}
+
+/* MQTT */
+static void message_arrived(MessageData *msg_data)
+{
+    MQTTMessage *message = msg_data->message;
+
+    printf("%.*s", (uint32_t)message->payloadlen, (uint8_t *)message->payload);
 }
 
 /* Timer */

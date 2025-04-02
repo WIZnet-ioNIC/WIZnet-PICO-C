@@ -16,8 +16,7 @@
 #include "wizchip_conf.h"
 #include "wizchip_spi.h"
 
-#include "httpServer.h"
-#include "web_page.h"
+#include "ftpd.h"
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -29,9 +28,6 @@
 
 /* Buffer */
 #define ETHERNET_BUF_MAX_SIZE (1024 * 2)
-
-/* Socket */
-#define HTTP_SOCKET_MAX_NUM 4
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -46,17 +42,37 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        .dhcp = NETINFO_STATIC                       // DHCP enable/disable
+        #if _WIZCHIP_ > W5500
+        .lla = {0xfe, 0x80, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x02, 0x08, 0xdc, 0xff,
+                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
+        .gua = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
+        .sn6 = {0xff, 0xff, 0xff, 0xff,
+                0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
+        .gw6 = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
+        .dns6 = {0x20, 0x01, 0x48, 0x60,
+                0x48, 0x60, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x88, 0x88},             // DNS6 server
+        .ipmode = NETINFO_STATIC_ALL
+#else
+        .dhcp = NETINFO_STATIC        
+#endif
 };
 
-/* HTTP */
-static uint8_t g_http_send_buf[ETHERNET_BUF_MAX_SIZE] = {
+/* FTP */
+static uint8_t g_ftp_buf[ETHERNET_BUF_MAX_SIZE] = {
     0,
 };
-static uint8_t g_http_recv_buf[ETHERNET_BUF_MAX_SIZE] = {
-    0,
-};
-static uint8_t g_http_socket_num_list[HTTP_SOCKET_MAX_NUM] = {0, 1, 2, 3};
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -74,7 +90,7 @@ static void set_clock_khz(void);
 int main()
 {
     /* Initialize */
-    uint8_t i = 0;
+    uint8_t retval = 0;
 
     set_clock_khz();
 
@@ -89,21 +105,21 @@ int main()
 
     network_initialize(g_net_info);
 
-    httpServer_init(g_http_send_buf, g_http_recv_buf, HTTP_SOCKET_MAX_NUM, g_http_socket_num_list);
+    ftpd_init(g_net_info.ip);
 
     /* Get network information */
     print_network_information(g_net_info);
 
-    /* Register web page */
-    reg_httpServer_webContent("index.html", index_page);
-
     /* Infinite loop */
     while (1)
     {
-        /* Run HTTP server */
-        for (i = 0; i < HTTP_SOCKET_MAX_NUM; i++)
+        /* Run FTP server */
+        if ((retval = ftpd_run(g_ftp_buf)) < 0)
         {
-            httpServer_run(i);
+            printf(" FTP server error : %d\n", retval);
+
+            while (1)
+                ;
         }
     }
 }

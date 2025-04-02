@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_http_server)
+set(TARGET_NAME wizchip_http_server)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

@@ -16,7 +16,7 @@
 #include "wizchip_conf.h"
 #include "wizchip_spi.h"
 
-#include "loopback.h"
+#include "PPPoE.h"
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -29,11 +29,8 @@
 /* Buffer */
 #define ETHERNET_BUF_MAX_SIZE (1024 * 2)
 
-/* Socket */
-#define SOCKET_LOOPBACK 0
-
-/* Port */
-#define PORT_LOOPBACK 5000
+/* PPPoE */
+#define DATA_BUF_SIZE 2048
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -48,13 +45,45 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        .dhcp = NETINFO_STATIC                       // DHCP enable/disable
+        #if _WIZCHIP_ > W5500
+        .lla = {0xfe, 0x80, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x02, 0x08, 0xdc, 0xff,
+                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
+        .gua = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
+        .sn6 = {0xff, 0xff, 0xff, 0xff,
+                0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
+        .gw6 = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
+        .dns6 = {0x20, 0x01, 0x48, 0x60,
+                0x48, 0x60, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x88, 0x88},             // DNS6 server
+        .ipmode = NETINFO_STATIC_ALL
+#else
+        .dhcp = NETINFO_STATIC        
+#endif
 };
 
-/* Loopback */
-static uint8_t g_ethernet_buf[ETHERNET_BUF_MAX_SIZE] = {
+/* PPPoE */
+uint8_t gDATABUF[DATA_BUF_SIZE];
+
+uint8_t pppoe_id[6] = "W5100S";
+uint8_t pppoe_id_len = 6;
+uint8_t pppoe_pw[6] = "WIZnet";
+uint8_t pppoe_pw_len = 6;
+uint8_t pppoe_ip[4] = {
     0,
 };
+
+uint16_t pppoe_retry_count = 0;
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -72,7 +101,8 @@ static void set_clock_khz(void);
 int main()
 {
     /* Initialize */
-    int retval = 0;
+    int32_t ret = 0;
+    uint8_t str[15];
 
     set_clock_khz();
 
@@ -87,20 +117,48 @@ int main()
 
     network_initialize(g_net_info);
 
-    /* Get network information */
-    print_network_information(g_net_info);
+    printf("wiznet chip PPPOE example.\r\n");
+
+    while (1)
+    {
+        ret = ppp_start(gDATABUF); // ppp start function
+
+        if (ret == PPP_SUCCESS || pppoe_retry_count > PPP_MAX_RETRY_COUNT)
+        {
+            break; // PPPoE Connected or connect failed by over retry count
+        }
+            
+    }
+    if (ret == PPP_SUCCESS) // 1 : success
+    {
+
+        printf("\r\n<<<< PPPoE Success >>>>\r\n");
+        printf("Assigned IP address : %d.%d.%d.%d\r\n", pppoe_ip[0], pppoe_ip[1], pppoe_ip[2], pppoe_ip[3]);
+
+        printf("\r\n==================================================\r\n");
+        printf("    AFTER PPPoE, Net Configuration Information        \r\n");
+        printf("==================================================\r\n");
+
+        getSHAR(str);
+        printf("MAC address  : %x:%x:%x:%x:%x:%x\r\n", str[0], str[1], str[2], str[3], str[4], str[5]);
+        getSUBR(str);
+        printf("SUBNET MASK  : %d.%d.%d.%d\r\n", str[0], str[1], str[2], str[3]);
+        getGAR(str);
+        printf("G/W IP ADDRESS : %d.%d.%d.%d\r\n", str[0], str[1], str[2], str[3]);
+        getSIPR(str);
+        printf("SOURCE IP ADDRESS : %d.%d.%d.%d\r\n\r\n", str[0], str[1], str[2], str[3]);
+    }
+    else // failed
+    {
+        printf("\r\n<<<< PPPoE Failed >>>>\r\n");
+
+        /* Get network information */
+        print_network_information(g_net_info);
+    }
 
     /* Infinite loop */
     while (1)
     {
-        /* TCP server loopback test */
-        if ((retval = loopback_udps(SOCKET_LOOPBACK, g_ethernet_buf, PORT_LOOPBACK)) < 0)
-        {
-            printf(" Loopback error : %d\n", retval);
-
-            while (1)
-                ;
-        }
     }
 }
 

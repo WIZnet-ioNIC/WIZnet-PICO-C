@@ -14,13 +14,39 @@
 #define SOCKET_ID 0                      // Socket number
 #define ETHERNET_BUF_MAX_SIZE (1024 * 2) // Send and receive cache size
 
-wiz_NetInfo net_info = {
-    .mac = {0x00, 0x08, 0xdc, 0x16, 0xed, 0x2e},    // Define MAC variables
-    .ip = {192, 168, 11, 15},                       // Define IP variables
-    .sn = {255, 255, 255, 0},                       // Define subnet variables
-    .gw = {192, 168, 11, 1},                        // Define gateway variables
-    .dns = {168, 126, 63, 1},                       // Define DNS  variables
-    .dhcp = NETINFO_STATIC};                        // Define the DNCP mode
+static wiz_NetInfo g_net_info =
+    {
+        .mac = {0x00, 0x08, 0xDC, 0x12, 0x34, 0x56}, // MAC address
+        .ip = {192, 168, 11, 2},                     // IP address
+        .sn = {255, 255, 255, 0},                    // Subnet Mask
+        .gw = {192, 168, 11, 1},                     // Gateway
+        .dns = {8, 8, 8, 8},                         // DNS server
+#if _WIZCHIP_ > W5500
+        .lla = {0xfe, 0x80, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x02, 0x08, 0xdc, 0xff,
+                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
+        .gua = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
+        .sn6 = {0xff, 0xff, 0xff, 0xff,
+                0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
+        .gw6 = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
+        .dns6 = {0x20, 0x01, 0x48, 0x60,
+                0x48, 0x60, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x88, 0x88},             // DNS6 server
+        .ipmode = NETINFO_STATIC_ALL
+#else
+        .dhcp = NETINFO_STATIC        
+#endif
+};
 
 static uint8_t ethernet_buf[ETHERNET_BUF_MAX_SIZE] = {
     0,
@@ -42,9 +68,9 @@ int main()
     wizchip_initialize(); // spi initialization
     wizchip_check();
 
-    network_initialize(net_info);
+    network_initialize(g_net_info);
 
-    print_network_information(net_info); // Read back the configuration information and print it
+    print_network_information(g_net_info); // Read back the configuration information and print it
 
     while (true)
     {

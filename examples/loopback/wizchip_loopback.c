@@ -84,10 +84,11 @@
 static wiz_NetInfo g_net_info =
     {
         .mac = {0x00, 0x08, 0xDC, 0x12, 0x34, 0x56}, // MAC address
-        .ip = {192, 168, 11, 22},                     // IP address
+        .ip = {192, 168, 11, 2},                     // IP address
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
+#if _WIZCHIP_ > W5500
         .lla = {0xfe, 0x80, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00,
                 0x02, 0x08, 0xdc, 0xff,
@@ -109,6 +110,9 @@ static wiz_NetInfo g_net_info =
                 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x88, 0x88},             // DNS6 server
         .ipmode = NETINFO_STATIC_ALL
+#else
+        .dhcp = NETINFO_STATIC        
+#endif
 };
 
 uint8_t tcp_client_destip[] = {
@@ -186,24 +190,25 @@ int main()
     printf("==========================================================\n");
 
     wizchip_spi_initialize();
-    printf("spi init!!\r\n");
     wizchip_cris_initialize();
-    printf("cris init!!\r\n");
-    
     wizchip_reset();
-    printf("chip RST!!\r\n");
     wizchip_initialize();
-    printf("chip init!!\r\n");
     wizchip_check();
 
     // wizchip_1ms_timer_initialize(repeating_timer_callback);
 
     network_initialize(g_net_info);
-    printf("network info init!!\r\n");
 
     /* Get network information */
     print_network_information(g_net_info);
-    set_loopback_mode_W6x00(AS_IPV4);
+
+    /*Choose IPv4 / IPv6*/
+#if _WIZCHIP_ > W5500
+    #ifdef IPV6
+        set_loopback_mode_W6x00(AS_IPV6);
+    #endif
+#endif
+
     /* Infinite loop */
     while (1)
     {
@@ -238,45 +243,47 @@ int main()
                     ;
             }
 #endif
-#ifdef TCP_SERVER6
-            /* TCP server loopback test */
-            if ((retval = loopback_tcps(SOCKET_TCP_SERVER6, g_tcp_server6_buf, PORT_TCP_SERVER6)) < 0)
-            {
-                printf(" loopback_tcps IPv6 error : %d\n", retval);
+#ifdef IPV6_AVAILABLE
+    #ifdef TCP_SERVER6
+                /* TCP server loopback test */
+                if ((retval = loopback_tcps(SOCKET_TCP_SERVER6, g_tcp_server6_buf, PORT_TCP_SERVER6)) < 0)
+                {
+                    printf(" loopback_tcps IPv6 error : %d\n", retval);
 
-                while (1)
-                    ;
-            }
-#endif
-#ifdef TCP_CLIENT6
-            /* TCP client loopback test */
-            if ((retval = loopback_tcpc(SOCKET_TCP_CLIENT6, g_tcp_client6_buf, tcp_client_destip6, tcp_client_destport6)) < 0)
-            {
-                printf(" loopback_tcpc IPv6 error : %d\n", retval);
+                    while (1)
+                        ;
+                }
+    #endif
+    #ifdef TCP_CLIENT6
+                /* TCP client loopback test */
+                if ((retval = loopback_tcpc(SOCKET_TCP_CLIENT6, g_tcp_client6_buf, tcp_client_destip6, tcp_client_destport6)) < 0)
+                {
+                    printf(" loopback_tcpc IPv6 error : %d\n", retval);
 
-                while (1)
-                    ;
-            }
-#endif
-#ifdef UDP6
-            /* UDP loopback test */
-            if ((retval = loopback_udps(SOCKET_UDP6, g_udp6_buf, PORT_UDP6)) < 0)
-            {
-                printf(" loopback_udps IPv6 error : %d\n", retval);
+                    while (1)
+                        ;
+                }
+    #endif
+    #ifdef UDP6
+                /* UDP loopback test */
+                if ((retval = loopback_udps(SOCKET_UDP6, g_udp6_buf, PORT_UDP6)) < 0)
+                {
+                    printf(" loopback_udps IPv6 error : %d\n", retval);
 
-                while (1)
-                    ;
-            }
-#endif
-#ifdef TCP_SERVER_DUAL
-            /* TCP server dual loopback test */
-            if ((retval = loopback_tcps(SOCKET_TCP_SERVER_DUAL, g_tcp_server_dual_buf, PORT_TCP_SERVER_DUAL, AS_IPDUAL)) < 0)
-            {
-                printf(" loopback_tcps IPv6 error : %d\n", retval);
+                    while (1)
+                        ;
+                }
+    #endif
+    #ifdef TCP_SERVER_DUAL
+                /* TCP server dual loopback test */
+                if ((retval = loopback_tcps(SOCKET_TCP_SERVER_DUAL, g_tcp_server_dual_buf, PORT_TCP_SERVER_DUAL, AS_IPDUAL)) < 0)
+                {
+                    printf(" loopback_tcps IPv6 error : %d\n", retval);
 
-                while (1)
-                    ;
-            }
+                    while (1)
+                        ;
+                }
+    #endif
 #endif
     }
 }
