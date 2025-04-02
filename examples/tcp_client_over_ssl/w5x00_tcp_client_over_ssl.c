@@ -17,7 +17,7 @@
 
 #include "wizchip_conf.h"
 #include "socket.h"
-#include "w5x00_spi.h"
+#include "wizchip_spi.h"
 
 #include "timer.h"
 #include "time.h"

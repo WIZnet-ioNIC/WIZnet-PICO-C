@@ -17,8 +17,8 @@
 
 #include "can_parser.h"
 #include "wizchip_conf.h"
-#include "w5x00_spi.h"
-#include "w5x00_gpio_irq.h"
+#include "wizchip_spi.h"
+#include "wizchip_gpio_irq.h"
 
 #include "socket.h"
 #include "can.h" 

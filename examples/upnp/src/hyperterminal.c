@@ -11,7 +11,7 @@
 #include "pico/time.h"
 #include "loopback.h"
 #include "pico/stdlib.h"
-#include "w5x00_spi.h"
+#include "wizchip_spi.h"
 //#include "bsp_spi.h"
 
 
