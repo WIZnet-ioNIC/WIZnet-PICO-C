@@ -75,23 +75,6 @@ endif()
 message(STATUS "WIZNET_CHIP = ${WIZNET_CHIP}")
 
 
-# this code is working, when Change  PICO_BOARD and PICO_PLATFORM 
-message(STATUS "PICO_BOARD = ${PICO_BOARD}") # static variable in pico_sdk_import.cmake
-message(STATUS "PICO_PLATFORM = ${PICO_PLATFORM}")
-
-if(PICO_BOARD MATCHES "pico2")
-    set(temp "rp2350")
-elseif(PICO_BOARD MATCHES "pico")
-    set(temp "rp2040")
-endif()
-
-
-if(NOT "${PICO_PLATFORM}" STREQUAL "${temp}")
-    message(STATUS "PICO_PLATFORM ≠ PICO_BOARD → unsetting PICO_BOARD")
-    unset(PICO_BOARD CACHE)
-    unset(PICO_PLATFORM CACHE)
-endif()
-
 if(NOT DEFINED PICO_SDK_PATH)
     set(PICO_SDK_PATH ${CMAKE_SOURCE_DIR}/libraries/pico-sdk)
     message(STATUS "PICO_SDK_PATH = ${PICO_SDK_PATH}")
