@@ -28,14 +28,66 @@ To test the Loopback example, minor settings shall be done in code.
 
 Setup the SPI interface you use.
 
+### For **W55RP20-EVB-PICO**:
+If you are using the **W55RP20-EVB-PICO**, enable `USE_PIO` and configure as follows:
+
 ```cpp
+#if (DEVICE_BOARD_NAME == W55RP20_EVB_PICO)
+
+#define USE_PIO
+
+#define PIN_SCK   21
+#define PIN_MOSI  23
+#define PIN_MISO  22
+#define PIN_CS    20
+#define PIN_RST   25
+#define PIN_IRQ   24
+
+```
+
+---
+
+### For **W6300-EVB-PICO** or **W6300-EVB-PICO2**:
+If you are using the **W6300-EVB-PICO** or **W6300-EVB-PICO2**, use the following pinout and SPI clock divider configuration:
+
+```cpp
+#elif (DEVICE_BOARD_NAME == W6300_EVB_PICO2)
+
+// SPI SCLK SPEED = 66.5MHz / (PIO_CLOCK_DIV_MAJOR + (PIO_CLOCK_DIV_MINOR / 256))
+#define PIO_CLOCK_DIV_MAJOR     1
+#define PIO_CLOCK_DIV_MINOR     130
+
+#define USE_PIO
+
+#define PIO_IRQ_PIN             15
+#define PIO_SPI_SCK_PIN         17
+#define PIO_SPI_DATA_IO0_PIN    18
+#define PIO_SPI_DATA_IO1_PIN    19
+#define PIO_SPI_DATA_IO2_PIN    20
+#define PIO_SPI_DATA_IO3_PIN    21
+#define PIN_CS                  16
+#define PIN_RST                 22
+
+
+```
+
+---
+
+### For other generic SPI boards
+If you are not using any of the above boards, you can fall back to a default SPI configuration:
+
+```cpp
+#else
+
 #define SPI_PORT spi0
 
-#define SPI_SCK_PIN 18
+#define SPI_SCK_PIN  18
 #define SPI_MOSI_PIN 19
 #define SPI_MISO_PIN 16
-#define SPI_CS_PIN 17
-#define RST_PIN 20
+#define SPI_CS_PIN   17
+#define RST_PIN      20
+
+#endif
 ```
 
 If you want to test with the Loopback example using SPI DMA, uncomment USE_SPI_DMA.
@@ -44,7 +96,8 @@ If you want to test with the Loopback example using SPI DMA, uncomment USE_SPI_D
 //#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
 ```
 
-2. Setup network configuration such as IP in 'wizchip_loopback.c' which is the Loopback example in 'WIZnet-ioNIC-C/examples/loopback/' directory.
+
+2. Setup network configuration such as IP in 'wizchip_loopback.c' which is the Loopback example in 'WIZnet-PICO-C/examples/loopback/' directory.
 
 Setup IP and other network settings to suit your network environment.
 
@@ -84,7 +137,7 @@ static wiz_NetInfo g_net_info =
 };
 ```
 
-3. Setup loopback configuration in 'w5x00_loopback.c' in 'WIZnet-ioNIC-C/examples/loopback/' directory.
+3. Setup loopback configuration in 'wizchip_loopback.c' in 'WIZnet-PICO-C/examples/loopback/' directory.
 
 ```cpp
 #define PORT_LOOPBACK 5000
@@ -96,7 +149,7 @@ static wiz_NetInfo g_net_info =
 
 1. After completing the Loopback example configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
 
-2. When the build is completed, 'w5x00_loopback.uf2' is generated in 'RP2040-HAT-C/build/examples/loopback/' directory.
+2. When the build is completed, 'wizchip_loopback.uf2' is generated in 'WIZnet-PICO-C/build/examples/loopback/' directory.
 
 
 
