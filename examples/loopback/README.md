@@ -90,11 +90,12 @@ If you are not using any of the above boards, you can fall back to a default SPI
 #endif
 ```
 
-If you want to test with the Loopback example using SPI DMA, uncomment USE_SPI_DMA.
+Make sure you are **not defining `USE_PIO`** in your setup when using DMA:
 
 ```cpp
-//#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
+// #define USE_PIO
 ```
+
 
 
 2. Setup network configuration such as IP in 'wizchip_loopback.c' which is the Loopback example in 'WIZnet-PICO-C/examples/loopback/' directory.
