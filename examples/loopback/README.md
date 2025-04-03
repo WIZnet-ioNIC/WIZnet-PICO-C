@@ -13,21 +13,18 @@ The following serial terminal programs are required for Loopback example test, d
 
 ## Step 2: Prepare hardware
 
-If you are using W5100S-EVB-Pico or W5500-EVB-Pico, you can skip '1. Combine...'
+1. If you are using W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W6100-EVB-Pico, W6300-EVB-Pico, W5100S-EVB-Pico2, W5500-EVB-Pico2, W6100-EVB-Pico2 or W6300-EVB-Pico2, you can skip '1. Combine...'
 
-1. Combine WIZnet Ethernet HAT with Raspberry Pi Pico.
+2. Combine WIZnet Ethernet HAT with Raspberry Pi Pico.
 
-2. Connect ethernet cable to WIZnet Ethernet HAT, W5100S-EVB-Pico or W5500-EVB-Pico ethernet port.
-
-3. Connect Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico to desktop or laptop using 5 pin micro USB cable.
-
+3. Connect ethernet cable to WIZnet Ethernet HAT, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W6100-EVB-Pico, W6300-EVB-Pico, W5100S-EVB-Pico2, W5500-EVB-Pico2, W6100-EVB-Pico2 or W6300-EVB-Pico2 ethernet port.
 
 
 ## Step 3: Setup Loopback Example
 
 To test the Loopback example, minor settings shall be done in code.
 
-1. Setup SPI port and pin in 'wizchip_spi.h' in 'RP2040-HAT-C/port/wizchip/' directory.
+1. Setup SPI port and pin in 'wizchip_spi.h' in 'WIZnet-ioNIC-C/port/ioLibrary_Driver' directory.
 
 Setup the SPI interface you use.
 
@@ -47,7 +44,7 @@ If you want to test with the Loopback example using SPI DMA, uncomment USE_SPI_D
 //#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
 ```
 
-2. Setup network configuration such as IP in 'w5x00_loopback.c' which is the Loopback example in 'RP2040-HAT-C/examples/loopback/' directory.
+2. Setup network configuration such as IP in 'wizchip_loopback.c' which is the Loopback example in 'WIZnet-ioNIC-C/examples/loopback/' directory.
 
 Setup IP and other network settings to suit your network environment.
 
@@ -59,7 +56,7 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        #if _WIZCHIP_ > W5500
+#if _WIZCHIP_ > W5500
         .lla = {0xfe, 0x80, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00,
                 0x02, 0x08, 0xdc, 0xff,
@@ -87,7 +84,7 @@ static wiz_NetInfo g_net_info =
 };
 ```
 
-3. Setup loopback configuration in 'w5x00_loopback.c' in 'RP2040-HAT-C/examples/loopback/' directory.
+3. Setup loopback configuration in 'w5x00_loopback.c' in 'WIZnet-ioNIC-C/examples/loopback/' directory.
 
 ```cpp
 #define PORT_LOOPBACK 5000
@@ -105,19 +102,19 @@ static wiz_NetInfo g_net_info =
 
 ## Step 5: Upload and Run
 
-1. While pressing the BOOTSEL button of Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico power on the board, the USB mass storage 'RPI-RP2' is automatically mounted.
+1. While pressing the BOOTSEL button of the Pico power on the board, the USB mass storage 'RPI-RP2' or 'RP2350' is automatically mounted.
 
 ![][link-raspberry_pi_pico_usb_mass_storage]
 
-2. Drag and drop 'w5x00_loopback.uf2' onto the USB mass storage device 'RPI-RP2'.
+2. Drag and drop 'wizchip_loopback.uf2' onto the USB mass storage device 'RPI-RP2' or 'RP2350'.
 
-3. Connect to the serial COM port of Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico with Tera Term.
+3. Connect to the serial COM port of the pico with Tera Term.
 
 ![][link-connect_to_serial_com_port]
 
 4. Reset your board.
 
-5. If the Loopback example works normally on Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico, you can see the network information of Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico and the loopback server is open.
+5. If the Loopback example works normally on the pico, you can see the network information of the pico and the loopback server is open.
 
 ![][link-see_network_information_of_raspberry_pi_pico_and_open_loopback_server]
 
