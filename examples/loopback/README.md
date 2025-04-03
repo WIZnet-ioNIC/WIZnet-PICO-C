@@ -17,7 +17,7 @@ The following serial terminal programs are required for Loopback example test, d
 
 2. Combine WIZnet Ethernet HAT with Raspberry Pi Pico.
 
-3. Connect ethernet cable to WIZnet Ethernet HAT, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W6100-EVB-Pico, W6300-EVB-Pico, W5100S-EVB-Pico2, W5500-EVB-Pico2, W6100-EVB-Pico2 or W6300-EVB-Pico2 ethernet port.
+3. Connect ethernet cable to WIZnet Ethernet HAT, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W6100-EVB-Pico, W6300-EVB-Pico, W5100S-EVB-Pico2, W5500-EVB-Pico2, W6100-EVB-Pico2 or W6300-EVB-Pico2 ethernet port. 
 
 
 ## Step 3: Setup Loopback Example
