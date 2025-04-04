@@ -24,7 +24,7 @@ The following serial terminal programs are required for Loopback example test, d
 
 To test the Loopback example, minor settings shall be done in code.
 
-1. Setup SPI port and pin in 'wizchip_spi.h' in 'WIZnet-ioNIC-C/port/ioLibrary_Driver' directory.
+1. Setup SPI port and pin in 'wizchip_spi.h' in 'WIZnet-PICO-C/port/ioLibrary_Driver' directory.
 
 Setup the SPI interface you use.
 
