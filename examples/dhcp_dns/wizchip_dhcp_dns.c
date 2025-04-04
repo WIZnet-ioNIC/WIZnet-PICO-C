@@ -53,7 +53,8 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        #if _WIZCHIP_ > W5500
+        .dhcp = NETINFO_DHCP,                       //TODO: will be modified after 'dhcp' and 'ipmode' merge.
+#if _WIZCHIP_ > W5500
         .lla = {0xfe, 0x80, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00,
                 0x02, 0x08, 0xdc, 0xff,
@@ -74,7 +75,7 @@ static wiz_NetInfo g_net_info =
                 0x48, 0x60, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x88, 0x88},             // DNS6 server
-        .ipmode = NETINFO_STATIC_ALL
+        .ipmode = NETINFO_STATIC_ALL                // this 'ipmode' is never used in this project.  
 #else
         .dhcp = NETINFO_STATIC        
 #endif
@@ -135,6 +136,8 @@ int main()
     wizchip_initialize();
     wizchip_check();
 
+    wizchip_delay_ms(2000);
+   
     wizchip_1ms_timer_initialize(repeating_timer_callback);
 
     if (g_net_info.dhcp == NETINFO_DHCP) // DHCP
