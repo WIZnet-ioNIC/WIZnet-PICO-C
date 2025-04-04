@@ -180,6 +180,12 @@ We moved the MCU dependent code to the port directory. The tree of port is shown
 ```
 WIZnet-PICO-C
 ┣ port
+    ┣ board
+    ┃   ┣ can
+    ┃   ┃   ┣ can.h
+    ┃   ┃   ┣ can.c
+    ┃   ┃   ┗ can.pio
+    ┃   ┃ 
     ┣ ioLibrary_Driver
     ┃   ┣ inc
     ┃   ┃   ┣ wizchip_gpio_irq.h
