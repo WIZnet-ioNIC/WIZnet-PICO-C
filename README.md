@@ -14,7 +14,7 @@ These sections will guide you through a series of steps from configuring develop
 <a name="development_environment_configuration"></a>
 ## Development environment configuration
 
-To test the ethernet examples, the development environment must be configured to use Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2.
+To test the ethernet examples, the development environment must be configured to use Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W6100-EVB-Pico, W6300-EVB-Pico, W5100S-EVB-Pico2, W5500-EVB-Pico2, W6100-EVB-Pico2 or W6300-EVB-Pico2.
 
 These examples were tested after configuring the development environment on **Windows**. Please refer to '**Chapter 3: Installing the Raspberry Pi Pico VS Code Extension**' in the document below and configure accordingly.
 
@@ -27,14 +27,18 @@ These examples were tested after configuring the development environment on **Wi
 <a name="hardware_requirements"></a>
 ## Hardware requirements
 
-The ethernet examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - ethernet I/O module built on WIZnet's [**W5100S**][link-w5100s] ethernet chip, **W5100S-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5100S**][link-w5100s] ethernet chip,  **W5500-EVB-Pico** and **W55RP20-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5500**][link-w5500] ethernet chip, **W5100S-EVB-Pico2** - ethernet I/O module built on [**RP2350**][link-rp2350] and WIZnet's [**W5100S**][link-w5100s] ethernet chip or **W5100S-EVB-Pico2** - ethernet I/O module built on [**RP2350**][link-rp2350] and WIZnet's [**W5100S**][link-w5100s] ethernet chip.
+The ethernet examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - ethernet I/O module built on WIZnet's [**W5100S**][link-w5100s] ethernet chip, **W5100S-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5100S**][link-w5100s] ethernet chip,  **W5500-EVB-Pico** and **W55RP20-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5500**][link-w5500] ethernet chip, **W6100-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W6100**][link-w6100] ethernet chip, **W6300-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W6300**][link-w6300] ethernet chip, **W5100S-EVB-Pico2** - ethernet I/O module built on [**RP2350**][link-rp2350] and WIZnet's [**W5100S**][link-w5100s] ethernet chip, **W5500-EVB-Pico2** - ethernet I/O module built on [**RP2350**][link-rp2350] and WIZnet's [**W5500S**][link-w5500] ethernet chip, **W6100-EVB-Pico2** - ethernet I/O module built on [**RP2350**][link-rp2350] and WIZnet's [**W6100**][link-w6100] ethernet chip or **W6300-EVB-Pico2** - ethernet I/O module built on [**RP2350**][link-rp2350] and WIZnet's [**W6300**][link-w6300] ethernet chip.
 
 - [**Raspberry Pi Pico**][link-raspberry_pi_pico] & [**WIZnet Ethernet HAT**][link-wiznet_ethernet_hat]
 - [**W5100S-EVB-Pico**][link-w5100s-evb-pico]
 - [**W5500-EVB-Pico**][link-w5500-evb-pico]
+- [**W6100-EVB-Pico**][link-w6100-evb-pico]
+- **W6300-EVB-Pico**
 - [**W55RP20-EVB-Pico**][link-w55rp20-evb-pico]
 - [**W5100S-EVB-Pico2**][link-w5100s-evb-pico2]
 - [**W5500-EVB-Pico2**][link-w5500-evb-pico2]
+- [**W6100-EVB-Pico2**][link-w6100-evb-pico2]
+- [**W6300-EVB-Pico2**][link-w6300-evb-pico2]
 
 <a name="ethernet_example_structure"></a>
 ## Ethernet example structure
@@ -120,8 +124,12 @@ Setup the board in '**CMakeLists.txt**' in '**WIZnet-PICO-C/**' directory accord
 - W5100S-EVB-Pico
 - W5500-EVB-Pico
 - W55RP20-EVB-Pico
+- W6100-EVB-Pico
+- W6300-EVB-Pico
 - W5100S-EVB-Pico2
 - W5500-EVB-Pico2
+- W6100-EVB-Pico2
+- W6300-EVB-Pico2
 
 For example, when using WIZnet Ethernet HAT :
 
@@ -174,15 +182,14 @@ WIZnet-PICO-C
 ┣ port
     ┣ ioLibrary_Driver
     ┃   ┣ inc
-    ┃   ┃   ┣ w5x00_gpio_irq.h
-    ┃   ┃   ┣ w5x00_spi.h
-    ┃   ┃   ┣ wiznet_spi.h
-    ┃   ┃   ┗ wiznet_spi_pio.h
+    ┃   ┃   ┣ wizchip_gpio_irq.h
+    ┃   ┃   ┣ wizchip_spi.h
+    ┃   ┃   ┗ wizchip_qspi_pio.h
     ┃   ┗ src
-    ┃   ┃   ┣ w5x00_gpio_irq.c
-    ┃   ┃   ┣ w5x00_spi.c
-    ┃   ┃   ┣ w5x00_spi_pio.c
-    ┃   ┃   ┗ w5x00_spi_pio.pio
+    ┃   ┃   ┣ wizchip_gpio_irq.c
+    ┃   ┃   ┣ wizchip_spi.c
+    ┃   ┃   ┣ wizchip_qspi_pio.c
+    ┃   ┃   ┗ wizchip_spi_pio.pio
     ┣ mbedtls
     ┃   ┗ inc
     ┃   ┃   ┗ ssl_config.h
@@ -193,9 +200,29 @@ WIZnet-PICO-C
     ┗ port_common.h
 ```
 
+### Board-specific configuration notes
+
+- All board-specific **SPI pin settings** can be configured in `wizchip_spi.h`.
+
+- The following files are intended for use with **W55RP20-EVB-PICO**, **W6300-EVB-PICO**, and **W6300-EVB-PICO2**:
+  - `wizchip_qspi_pio.c`
+  - `wizchip_qspi_pio.h`
+  - `wizchip_qspi_pio.pio`
+
+- **W55RP20-EVB-PICO** uses **SPI implemented with PIO**.
+
+- **W6300-EVB-PICO** and **W6300-EVB-PICO2** use **QSPI (Single/Dual/Quad) via PIO**.
+
+- Therefore, all **PIO-related configurations** should be made inside:
+  - `wizchip_qspi_pio.c`
+  - `wizchip_qspi_pio.h`
+  - `wizchip_qspi_pio.pio`
+
+<br/>
+
 - **ioLibrary_Driver**
 
-If you want to change things related to **SPI**, such as the SPI port number and SPI read/write function, or GPIO port number and function related to **interrupt** or use a different MCU without using the RP2040, you need to change the code in the '**WIZnet-PICO-C/port/ioLibrary_Driver/**' directory. Here is information about functions.
+If you want to change things related to **SPI**, such as the SPI port number and SPI read/write function, or GPIO port number and function related to **interrupt** or use a different MCU without using the RP2040, you need to change the code in the '**WIZnet-PICO-C/port/ioLibrary_Driver/**' directory. Here is information about functions
 
 ```cpp
 /* W5x00 */
@@ -421,11 +448,14 @@ Link
 [link-rp2350]: https://www.raspberrypi.com/products/rp2350/
 [link-w5100s]: https://docs.wiznet.io/Product/iEthernet/W5100S/overview
 [link-w5500]: https://docs.wiznet.io/Product/iEthernet/W5500/overview
+[link-w6100]: https://docs.wiznet.io/Product/iEthernet/W6100/overview
+[link-w6300]: https://docs.wiznet.io/Product/iEthernet/W6300/overview
 [link-w55rp20-evb-pico]: https://docs.wiznet.io/Product/ioNIC/W55RP20/w55rp20-evb-pico#overview
 [link-raspberry_pi_pico]: https://www.raspberrypi.org/products/raspberry-pi-pico/getting_started/raspberry_pi_pico_main.png
 [link-wiznet_ethernet_hat]: https://docs.wiznet.io/Product/Open-Source-Hardware/wiznet_ethernet_hat
 [link-w5100s-evb-pico]: https://docs.wiznet.io/Product/iEthernet/W5100S/w5100s-evb-pico
 [link-w5500-evb-pico]: https://docs.wiznet.io/Product/iEthernet/W5500/w5500-evb-pico
+[link-w6100-evb-pico]: https://docs.wiznet.io/Product/iEthernet/W6100/w6100-evb-pico
 [link-CAN]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/can
 [link-dhcp_dns]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/dhcp_dns
 [link-ftp]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/main/examples/ftp
@@ -458,3 +488,5 @@ Link
 [link-wiznet_pico_c_1_0_0_version]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/tree/1.0.0
 [link-w5100s-evb-pico2]: https://docs.wiznet.io/Product/iEthernet/W5100S/w5100s-evb-pico2
 [link-w5500-evb-pico2]: https://docs.wiznet.io/Product/iEthernet/W5500/w5500-evb-pico2
+[link-w6100-evb-pico2]: https://docs.wiznet.io/Product/iEthernet/W6100/w6100-evb-pico2
+[link-w6300-evb-pico2]: https://docs.wiznet.io/Product/iEthernet/W6300/w6300-evb-pico2
