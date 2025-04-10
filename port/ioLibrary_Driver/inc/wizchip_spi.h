@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef _W5X00_SPI_H_
-#define _W5X00_SPI_H_
+#ifndef _WIZCHIP_SPI_H_
+#define _WIZCHIP_SPI_H_
 
 #include "board_list.h"
 
@@ -18,7 +18,6 @@
 #if (DEVICE_BOARD_NAME == W55RP20_EVB_PICO)
 
 #define USE_PIO
-
 #define PIN_SCK 21
 #define PIN_MOSI 23
 #define PIN_MISO 22
@@ -27,14 +26,8 @@
 #define PIN_IRQ 24
 
 #elif (DEVICE_BOARD_NAME == W6300_EVB_PICO2)
-/*
-SPI SCLK SPEED = 66.5MHz / (PIO_CLOCK_DIV_MAJOR + (PIO_CLOCK_DIV_MINOR / 256)) 
-*/
-#define PIO_CLOCK_DIV_MAJOR 1
-#define PIO_CLOCK_DIV_MINOR 130
 
 #define USE_PIO
-
 #define PIO_IRQ_PIN             15
 #define PIO_SPI_SCK_PIN         17
 #define PIO_SPI_DATA_IO0_PIN    18
@@ -57,14 +50,32 @@ SPI SCLK SPEED = 66.5MHz / (PIO_CLOCK_DIV_MAJOR + (PIO_CLOCK_DIV_MINOR / 256))
 /* Use SPI DMA */
 //#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
 #endif
+
+#ifdef _PIO_SCLK    //USING PIO SPI or QSPI
+    #if _PIO_SCLK > 44
+        #define PIO_SCLK 44
+    #endif
+#define SYS_CLK 66.5
+#define TEMP (SYS_CLK / _PIO_SCLK)
+#define PIO_CLOCK_DIV_MAJOR ((uint8_t)(TEMP))  
+#define PIO_CLOCK_DIV_MINOR (uint8_t)(256 * (TEMP - PIO_CLOCK_DIV_MAJOR))
+
+#else               // NOT USING PIO
+#ifndef _SPI_SCLK
+    #define _SPI_SCLK 45
+#elif _SPI_SCLK > 45
+    #define _SPI_SCLK 45
+#endif
+#endif
+
 /**
  * ----------------------------------------------------------------------------------------------------
  * Functions
  * ----------------------------------------------------------------------------------------------------
  */
-/* W5x00 */
+/* wizchip */
 /*! \brief Set CS pin
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set chip select pin of spi0 to low(Active low).
  *
@@ -73,7 +84,7 @@ SPI SCLK SPEED = 66.5MHz / (PIO_CLOCK_DIV_MAJOR + (PIO_CLOCK_DIV_MINOR / 256))
 static inline void wizchip_select(void);
 
 /*! \brief Set CS pin
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set chip select pin of spi0 to high(Inactive high).
  *
@@ -82,7 +93,7 @@ static inline void wizchip_select(void);
 static inline void wizchip_deselect(void);
 
 /*! \brief Read from an SPI device, blocking
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set spi_read_blocking function.
  *  Read byte from SPI to rx_data buffer.
@@ -93,7 +104,7 @@ static inline void wizchip_deselect(void);
 static uint8_t wizchip_read(void);
 
 /*! \brief Write to an SPI device, blocking
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set spi_write_blocking function.
  *  Write byte from tx_data buffer to SPI device.
@@ -111,7 +122,7 @@ static void wizchip_write_buf(uint8_t* tx_data, datasize_t len);
 
 #ifdef USE_SPI_DMA
 /*! \brief Configure all DMA parameters and optionally start transfer
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Configure all DMA parameters and read from DMA
  *
@@ -121,7 +132,7 @@ static void wizchip_write_buf(uint8_t* tx_data, datasize_t len);
 static void wizchip_read_burst(uint8_t *pBuf, uint16_t len);
 
 /*! \brief Configure all DMA parameters and optionally start transfer
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Configure all DMA parameters and write to DMA
  *
@@ -132,7 +143,7 @@ static void wizchip_write_burst(uint8_t *pBuf, uint16_t len);
 #endif
 
 /*! \brief Enter a critical section
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set ciritical section enter blocking function.
  *  If the spin lock associated with this critical section is in use, then this
@@ -143,7 +154,7 @@ static void wizchip_write_burst(uint8_t *pBuf, uint16_t len);
 static void wizchip_critical_section_lock(void);
 
 /*! \brief Release a critical section
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set ciritical section exit function.
  *  Release a critical section.
@@ -153,7 +164,7 @@ static void wizchip_critical_section_lock(void);
 static void wizchip_critical_section_unlock(void);
 
 /*! \brief Initialize SPI instances and Set DMA channel
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set GPIO to spi0.
  *  Puts the SPI into a known state, and enable it.
@@ -164,7 +175,7 @@ static void wizchip_critical_section_unlock(void);
 void wizchip_spi_initialize(void);
 
 /*! \brief Initialize a critical section structure
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  The critical section is initialized ready for use.
  *  Registers callback function for critical section for WIZchip.
@@ -173,8 +184,8 @@ void wizchip_spi_initialize(void);
  */
 void wizchip_cris_initialize(void);
 
-/*! \brief W5x00 chip reset
- *  \ingroup w5x00_spi
+/*! \brief wizchip reset
+ *  \ingroup wizchip_spi
  *
  *  Set a reset pin and reset.
  *
@@ -183,18 +194,18 @@ void wizchip_cris_initialize(void);
 void wizchip_reset(void);
 
 /*! \brief Initialize WIZchip
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
- *  Set callback function to read/write byte using SPI.
+ *  Set callback function to read/write byte using SPI & QSPI.
  *  Set callback function for WIZchip select/deselect.
- *  Set memory size of W5x00 chip and monitor PHY link status.
+ *  Set memory size of wizchip and monitor PHY link status.
  *
  *  \param none
  */
 void wizchip_initialize(void);
 
 /*! \brief Check chip version
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Get version information.
  *
@@ -204,7 +215,7 @@ void wizchip_check(void);
 
 /* Network */
 /*! \brief Initialize network
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set network information.
  *
@@ -213,7 +224,7 @@ void wizchip_check(void);
 void network_initialize(wiz_NetInfo net_info);
 
 /*! \brief Print network information
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Print network information about MAC address, IP address, Subnet mask, Gateway, DHCP and DNS address.
  *
@@ -222,7 +233,7 @@ void network_initialize(wiz_NetInfo net_info);
 void print_network_information(wiz_NetInfo net_info);
 
 /*! \brief Print IPv6 Address
- *  \ingroup W6x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Print IPv6 Address.
  *
@@ -230,4 +241,4 @@ void print_network_information(wiz_NetInfo net_info);
  */
 void print_ipv6_addr(uint8_t* name, uint8_t* ip6addr);
 
-#endif /* _W5X00_SPI_H_ */
+#endif /* _WIZCHIP_SPI_H_ */

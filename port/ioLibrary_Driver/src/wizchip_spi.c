@@ -66,8 +66,8 @@ static dma_channel_config dma_channel_config_rx;
         .clock_pin = PIN_SCK,
         .irq_pin = PIN_IRQ,
         .reset_pin = PIN_RST,
-        .clock_div_major = 2,
-        .clock_div_minor = 0,
+        .clock_div_major = PIO_CLOCK_DIV_MAJOR,
+        .clock_div_minor = PIO_CLOCK_DIV_MINOR,
     };
     #endif
 #endif
@@ -205,7 +205,7 @@ void wizchip_spi_initialize(void)
     (*spi_handle)->set_active(spi_handle);
 #else
     // this example will use SPI0 at 5MHz
-    spi_init(SPI_PORT, 5000 * 1000);
+    spi_init(SPI_PORT, _SPI_SCLK * 1000 * 1000);
 
     gpio_set_function(PIN_SCK, GPIO_FUNC_SPI);
     gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
@@ -286,6 +286,7 @@ void wizchip_initialize(void)
     #elif (_WIZCHIP_ == W6100)
         uint8_t memsize[2][8] = {{2, 0, 0, 0, 0, 0, 0, 0}, {2, 0, 0, 0, 0, 0, 0, 0}};
     #elif (_WIZCHIP_ == W6300)
+
     uint8_t memsize[2][8] = {{4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}};
     #endif
 
