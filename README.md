@@ -23,13 +23,13 @@ These examples were tested after configuring the development environment on **Wi
 **Visual Studio Code** was used during development and testing of ethernet examples, the guide document in each directory was prepared also base on development with Visual Studio Code. Please refer to corresponding document.
 
 
-<a name="hardware_requirements"></a>
+<a name="WIZnet Raspberry Pi Pico Board List"></a>
 ## Hardware requirements
 
 | Feature / Board     | [WIZnet Ethernet HAT](link-wiznet_ethernet_hat) | [W5100S-EVB-Pico](link-w5100s-evb-pico) | [W5100S-EVB-Pico2](link-w5100s-evb-pico2) | [W5500-EVB-Pico](link-w5500-evb-pico) | [W5500-EVB-Pico2](link-w5500-evb-pico2) | [W6100-EVB-Pico](link-w6100-evb-pico) | [W6100-EVB-Pico2](link-w6100-evb-pico2) | W6300-EVB-Pico  | [W6300-EVB-Pico2](link-w6300-evb-pico2) | [W55RP20-EVB-Pico](link-w55rp20-evb-pico) |
 | ------------------- | ----------------------------------------------- | --------------------------------------- | ----------------------------------------- | ------------------------------------- | --------------------------------------- | ------------------------------------- | --------------------------------------- | --------------- | --------------------------------------- | ----------------------------------------- |
 | **Main MCU**        |                                                 | RP2040                                  | RP2350                                    | RP2040                                | RP2350                                  | RP2040                                | RP2350                                  | RP2040          | RP2350                                  | RP2040 + W5500 (SIP)                      |
-| **Ethernet Chip**   | [W5100S](link-w5100S)                                          | [W5100S](link-w5100S)                                  | [W5100S](link-w5100S)                                    | [W5500](link-w5500)                                 | [W5500](link-w5500)                                   | [W6100](link-w6100)                                 | [W6100](link-w6100)                                   | [W6300](link-w6300)           | [W6300](link-w6300)                                    | [W5500](link-w5500)                                   |
+| **Ethernet Chip**   | [W5100S](link-w5100s)                                          | [W5100S](link-w5100s)                                  | [W5100S](link-w5100s)                                    | [W5500](link-w5500)                                 | [W5500](link-w5500)                                   | [W6100](link-w6100)                                 | [W6100](link-w6100)                                   | [W6300](link-w6300)           | [W6300](link-w6300)                                    | [W5500](link-w5500)                                   |
 | **Flash**           | 2MB                                             | 2MB                                     | 2MB                                       | 2MB                                   | 2MB                                     | 2MB                                   | 2MB                                     | 2MB             | 2MB                                     | 2MB                                       |
 | **CPU Cores**       | -                                               | Dual Cortex-M0+                         | Dual Cortex-M33                           | Dual Cortex-M0+                       | Dual Cortex-M33                         | Dual Cortex-M0+                       | Dual Cortex-M33                         | Dual Cortex-M0+ | Dual Cortex-M33                         | Dual Cortex-M0+                           |
 | **SRAM**            | -                                               | 264KB                                   | 264KB                                     | 264KB                                 | 264KB                                   | 264KB                                 | 264KB                                   | 264KB           | 264KB                                   | 520KB                                     |
@@ -498,10 +498,10 @@ Link
 [link-w6100-evb-pico2]: https://docs.wiznet.io/Product/iEthernet/W6100/w6100-evb-pico2
 [link-w6300-evb-pico2]: https://docs.wiznet.io/Product/iEthernet/W6300/w6300-evb-pico2
 
-[link-W5100S]: https://docs.wiznet.io/Product/iEthernet/W5100S/overview
-[link-W5500]: https://docs.wiznet.io/Product/iEthernet/W5500/overview
-[link-W6100]: https://docs.wiznet.io/Product/iEthernet/W6100
-[link-W6300]: https://docs.wiznet.io/Product/iEthernet/W6300
+[link-w5100s]: https://docs.wiznet.io/Product/iEthernet/W5100S/overview
+[link-w5500]: https://docs.wiznet.io/Product/iEthernet/W5500/overview
+[link-w6100]: https://docs.wiznet.io/Product/iEthernet/W6100
+[link-w6300]: https://docs.wiznet.io/Product/iEthernet/W6300
 
 
 
