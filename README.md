@@ -26,19 +26,20 @@ These examples were tested after configuring the development environment on **Wi
 <a name="WIZnet Raspberry Pi Pico Board List"></a>
 ## Hardware requirements
 
-| Feature / Board     | [WIZnet Ethernet HAT](link-wiznet_ethernet_hat) | [W5100S-EVB-Pico](link-w5100s-evb-pico) | [W5100S-EVB-Pico2](link-w5100s-evb-pico2) | [W5500-EVB-Pico](link-w5500-evb-pico) | [W5500-EVB-Pico2](link-w5500-evb-pico2) | [W6100-EVB-Pico](link-w6100-evb-pico) | [W6100-EVB-Pico2](link-w6100-evb-pico2) | W6300-EVB-Pico  | [W6300-EVB-Pico2](link-w6300-evb-pico2) | [W55RP20-EVB-Pico](link-w55rp20-evb-pico) |
-| ------------------- | ----------------------------------------------- | --------------------------------------- | ----------------------------------------- | ------------------------------------- | --------------------------------------- | ------------------------------------- | --------------------------------------- | --------------- | --------------------------------------- | ----------------------------------------- |
-| **Main MCU**        |                                                 | RP2040                                  | RP2350                                    | RP2040                                | RP2350                                  | RP2040                                | RP2350                                  | RP2040          | RP2350                                  | RP2040 + W5500 (SIP)                      |
-| **Ethernet Chip**   | [W5100S](link-w5100s)                                          | [W5100S](link-w5100s)                                  | [W5100S](link-w5100s)                                    | [W5500](link-w5500)                                 | [W5500](link-w5500)                                   | [W6100](link-w6100)                                 | [W6100](link-w6100)                                   | [W6300](link-w6300)           | [W6300](link-w6300)                                    | [W5500](link-w5500)                                   |
-| **Flash**           | 2MB                                             | 2MB                                     | 2MB                                       | 2MB                                   | 2MB                                     | 2MB                                   | 2MB                                     | 2MB             | 2MB                                     | 2MB                                       |
-| **CPU Cores**       | -                                               | Dual Cortex-M0+                         | Dual Cortex-M33                           | Dual Cortex-M0+                       | Dual Cortex-M33                         | Dual Cortex-M0+                       | Dual Cortex-M33                         | Dual Cortex-M0+ | Dual Cortex-M33                         | Dual Cortex-M0+                           |
-| **SRAM**            | -                                               | 264KB                                   | 264KB                                     | 264KB                                 | 264KB                                   | 264KB                                 | 264KB                                   | 264KB           | 264KB                                   | 520KB                                     |
-| **Network Support** | IPv4 TCP/IP                                     | IPv4 TCP/IP                             | IPv4 TCP/IP                               | IPv4 TCP/IP                           | IPv4 TCP/IP                             | IPv4/IPv6 TCP/IP                      | IPv4/IPv6 TCP/IP                        | IPv4/IPv6       | IPv4/IPv6                               | IPv4/IPv6                                 |
-| **Socket #**        | 4                                               | 4                                       | 4                                         | 8                                     | 8                                       | 8                                     | 8                                       | 8               | 8                                       | 8                                         |
-| **TX/RX Buffer**    | 16KB                                            | 16KB                                    | 16KB                                      | 32KB                                  | 32KB                                    | 32KB                                  | 32KB                                    | 64KB            | 64KB                                    | 32KB                                      |
-| **Interface**       | SPI                                             | SPI                                     | SPI                                       | SPI                                   | SPI                                     | SPI                                   | SPI                                     | QSPI (PIO)      | QSPI (PIO)                              | SPI (PIO)                                 |
-| **USB & Power**     |                                                 | USB micro-B                             | USB Type-C                                | USB micro-B                           | USB Type-C                              | USB micro-B                           | USB Type-C                              | USB Type-C      | USB Type-C                              | USB Type-C                                |
+The Ethernet examples are compatible with the following Raspberry Pi-compatible WIZnet Ethernet I/O modules. These modules integrate [**WIZnet Ethernet chips**][link-wiznet_ethernet_chips] with either the [**RP2040**][link-rp2040] or [**RP2350**][link-rp2350] microcontrollers.
 
+| Board/Module Name              | MCU      | Ethernet Chip  | Interface     | Socket # | TX/RX Buffer  | Notes                                  |
+|--------------------------------|----------|----------------|---------------|----------|---------------|----------------------------------------|
+| **[Raspberry Pi Pico][link-raspberry_pi_pico] + [WIZnet Ethernet HAT][link-wiznet_ethernet_hat]** | RP2040 | W5100S | SPI | 4 | 16KB | External HAT module |
+| **[W5100S-EVB-Pico][link-w5100s-evb-pico]** | RP2040 | W5100S | SPI | 4 | 16KB |  |
+| **[W5500-EVB-Pico][link-w5500-evb-pico]** | RP2040 | W5500 | SPI | 8 | 32KB |  |
+| **[W55RP20-EVB-Pico][link-w55rp20-evb-pico]** | RP2040 | W5500 | SPI (PIO) | 8 | 32KB | SiP: RP2040 + W5500 |
+| **[W6100-EVB-Pico][link-w6100-evb-pico]** | RP2040 | W6100 | SPI | 8 | 32KB | Supports IPv4/IPv6 |
+| **W6300-EVB-Pico**                        | RP2040 | W6300 | QSPI (PIO) | 8 | 64KB | Supports IPv4/IPv6 |
+| **[W5100S-EVB-Pico2][link-w5100s-evb-pico2]** | RP2350 | W5100S | SPI | 4 | 16KB |  |
+| **[W5500-EVB-Pico2][link-w5500-evb-pico2]** | RP2350 | W5500 | SPI | 8 | 32KB |  |
+| **[W6100-EVB-Pico2][link-w6100-evb-pico2]** | RP2350 | W6100 | SPI | 8 | 32KB | Supports IPv4/IPv6 |
+| **[W6300-EVB-Pico2][link-w6300-evb-pico2]** | RP2350 | W6300 | QSPI (PIO) | 8 | 64KB | Supports IPv4/IPv6 |
 
 
 <a name="ethernet_example_structure"></a>
@@ -457,8 +458,9 @@ Link
 [link-w5500]: https://docs.wiznet.io/Product/iEthernet/W5500/overview
 [link-w6100]: https://docs.wiznet.io/Product/iEthernet/W6100/overview
 [link-w6300]: https://docs.wiznet.io/Product/iEthernet/W6300/overview
-[link-w55rp20-evb-pico]: https://docs.wiznet.io/Product/ioNIC/W55RP20/w55rp20-evb-pico#overview
-[link-raspberry_pi_pico]: https://www.raspberrypi.org/products/raspberry-pi-pico/getting_started/raspberry_pi_pico_main.png
+[link-wiznet_ethernet_chips]: https://docs.wiznet.io/Product/iEthernet#product-family
+[link-w55rp20-evb-pico]: https://docs.wiznet.io/Product/ioNIC/W55RP20/w55rp20-evb-pico
+[link-raspberry_pi_pico]: https://www.raspberrypi.com/products/raspberry-pi-pico/
 [link-wiznet_ethernet_hat]: https://docs.wiznet.io/Product/Open-Source-Hardware/wiznet_ethernet_hat
 [link-w5100s-evb-pico]: https://docs.wiznet.io/Product/iEthernet/W5100S/w5100s-evb-pico
 [link-w5500-evb-pico]: https://docs.wiznet.io/Product/iEthernet/W5500/w5500-evb-pico
