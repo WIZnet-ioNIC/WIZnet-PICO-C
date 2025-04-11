@@ -66,7 +66,7 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        #if _WIZCHIP_ > W5500
+#if _WIZCHIP_ > W5500
         .lla = {0xfe, 0x80, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00,
                 0x02, 0x08, 0xdc, 0xff,

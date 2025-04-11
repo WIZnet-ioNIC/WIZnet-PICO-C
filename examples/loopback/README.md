@@ -13,13 +13,13 @@ The following serial terminal programs are required for Loopback example test, d
 
 ## Step 2: Prepare hardware
 
-If you are using W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W6100-EVB-Pico, W6300-EVB-Pico, W5100S-EVB-Pico2, W5500-EVB-Pico2, W6100-EVB-Pico2 or W6300-EVB-Pico2, you can skip '1. Combine...'
+If you are using WIZnet's PICO board, you can skip '1. Combine...'
 
-1. Combine WIZnet Ethernet HAT with Raspberry Pi Pico.
+1. If you are using WIZnet Ethernet HAT, Combine it with Raspberry Pi Pico.
 
-2. Connect ethernet cable to WIZnet Ethernet HAT, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W6100-EVB-Pico, W6300-EVB-Pico, W5100S-EVB-Pico2, W5500-EVB-Pico2, W6100-EVB-Pico2 or W6300-EVB-Pico2 ethernet port.
+2. Connect ethernet cable to your PICO board ethernet port.
 
-3. Connect Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico to desktop or laptop using 5 pin micro USB cable. W55RP20-EVB-Pico, W6100-EVB-Pico, W6300-EVB-Pico, W5100S-EVB-Pico2, W5500-EVB-Pico2, W6100-EVB-Pico2 or W6300-EVB-Pico2 require a USB Type-C cable.
+3. Connect your PICO board to desktop or laptop using USB cable. 
 
 
 ## Step 3: Setup Loopback Example
@@ -54,11 +54,6 @@ If you are using the **W6300-EVB-PICO** or **W6300-EVB-PICO2**, use the followin
 
 ```cpp
 #elif (DEVICE_BOARD_NAME == W6300_EVB_PICO2)
-
-// SPI SCLK SPEED = 66.5MHz / (PIO_CLOCK_DIV_MAJOR + (PIO_CLOCK_DIV_MINOR / 256))
-#define PIO_CLOCK_DIV_MAJOR     1
-#define PIO_CLOCK_DIV_MINOR     130
-
 #define USE_PIO
 
 #define PIO_IRQ_PIN             15
