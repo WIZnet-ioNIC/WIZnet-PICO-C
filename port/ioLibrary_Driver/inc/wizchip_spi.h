@@ -25,7 +25,7 @@
 #define PIN_RST 25
 #define PIN_IRQ 24
 
-#elif (DEVICE_BOARD_NAME == W6300_EVB_PICO2)
+#elif (DEVICE_BOARD_NAME == W6300_EVB_PICO || DEVICE_BOARD_NAME == W6300_EVB_PICO2)
 
 #define USE_PIO
 #define PIO_IRQ_PIN             15
@@ -51,21 +51,21 @@
 //#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
 #endif
 
-#ifdef _PIO_SCLK    //USING PIO SPI or QSPI
-    #if _PIO_SCLK > 44
+#ifdef USE_PIO    //USING PIO SPI or QSPI
+    #if _WIZCHIP_SPI_SCLK_SPEED > 44
         #define PIO_SCLK 44
     #endif
 #define SYS_CLK 66.5
-#define TEMP (SYS_CLK / _PIO_SCLK)
+#define TEMP (SYS_CLK / _WIZCHIP_SPI_SCLK_SPEED)
 #define PIO_CLOCK_DIV_MAJOR ((uint8_t)(TEMP))  
 #define PIO_CLOCK_DIV_MINOR (uint8_t)(256 * (TEMP - PIO_CLOCK_DIV_MAJOR))
 
 #else               // NOT USING PIO
-#ifndef _SPI_SCLK
-    #define _SPI_SCLK 45
-#elif _SPI_SCLK > 45
-    #define _SPI_SCLK 45
-#endif
+    #ifndef _WIZCHIP_SPI_SCLK_SPEED
+        #define _WIZCHIP_SPI_SCLK_SPEED 45
+    #elif _WIZCHIP_SPI_SCLK_SPEED > 45
+        #define _SPI_SCLK 45
+    #endif
 #endif
 
 /**

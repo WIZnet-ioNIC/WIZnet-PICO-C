@@ -73,7 +73,7 @@ Examples are available at '**WIZnet-PICO-C/examples/**' directory. As of now, fo
 
 Note that **ioLibrary_Driver**, **mbedtls**, **pico-sdk** are needed to run ethernet examples.
 
-- **ioLibrary_Driver** library is applicable to WIZnet's W5x00 ethernet chip.
+- **ioLibrary_Driver** library is applicable to WIZnet's WIZchip ethernet chip.
 - **mbedtls** library supports additional algorithms and support related to SSL and TLS connections.
 - **pico-sdk** is made available by Pico to enable developers to build software applications for the Pico platform.
 
@@ -122,16 +122,17 @@ With Visual Studio Code, the library set as a submodule is automatically downloa
 
 Setup the board in '**CMakeLists.txt**' in '**WIZnet-PICO-C/**' directory according to the evaluation board to be used referring to the following.
 
-- WIZnet Ethernet HAT
-- W5100S-EVB-Pico
-- W5500-EVB-Pico
-- W55RP20-EVB-Pico
-- W6100-EVB-Pico
-- W6300-EVB-Pico
-- W5100S-EVB-Pico2
-- W5500-EVB-Pico2
-- W6100-EVB-Pico2
-- W6300-EVB-Pico2
+- **[WIZnet Ethernet HAT][link-wiznet_ethernet_hat]**
+- **[W5100S-EVB-Pico][link-w5100s-evb-pico]**
+- **[W5500-EVB-Pico][link-w5500-evb-pico]**
+- **[W55RP20-EVB-Pico][link-w55rp20-evb-pico]**
+- **[W6100-EVB-Pico][link-w6100-evb-pico]**
+- **W6300-EVB-Pico**
+- **[W5100S-EVB-Pico2][link-w5100s-evb-pico2]**
+- **[W5500-EVB-Pico2][link-w5500-evb-pico2]**
+- **[W6100-EVB-Pico2][link-w6100-evb-pico2]**
+- **[W6300-EVB-Pico2][link-w6300-evb-pico2]**
+
 
 For example, when using WIZnet Ethernet HAT :
 
@@ -146,6 +147,16 @@ When using W5500-EVB-Pico :
 # Set board
 set(BOARD_NAME W5500_EVB_PICO)
 ```
+
+You can easily configure **SPI clock speed of the WIZnet chip** in the CMakeLists.txt file. Enter your desired clock speed in the code below and build.
+
+```cpp
+# Set WIZchip Clock Speed
+add_definitions(-D_WIZCHIP_SPI_SCLK_SPEED=40) # SPEED MHz
+```
+
+**When using W6300**, **you can configure the QSPI mode** by modifying the board selection parameter.
+
 
 3. Test
 
@@ -233,9 +244,9 @@ WIZnet-PICO-C
 If you want to change things related to **SPI**, such as the SPI port number and SPI read/write function, or GPIO port number and function related to **interrupt** or use a different MCU without using the RP2040, you need to change the code in the '**WIZnet-PICO-C/port/ioLibrary_Driver/**' directory. Here is information about functions
 
 ```cpp
-/* W5x00 */
+
 /*! \brief Set CS pin
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set chip select pin of spi0 to low(Active low).
  *
@@ -244,7 +255,7 @@ If you want to change things related to **SPI**, such as the SPI port number and
 static inline void wizchip_select(void);
 
 /*! \brief Set CS pin
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set chip select pin of spi0 to high(Inactive high).
  *
@@ -253,7 +264,7 @@ static inline void wizchip_select(void);
 static inline void wizchip_deselect(void);
 
 /*! \brief Read from an SPI device, blocking
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set spi_read_blocking function.
  *  Read byte from SPI to rx_data buffer.
@@ -264,7 +275,7 @@ static inline void wizchip_deselect(void);
 static uint8_t wizchip_read(void);
 
 /*! \brief Write to an SPI device, blocking
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set spi_write_blocking function.
  *  Write byte from tx_data buffer to SPI device.
@@ -276,7 +287,7 @@ static void wizchip_write(uint8_t tx_data);
 
 #ifdef USE_SPI_DMA
 /*! \brief Configure all DMA parameters and optionally start transfer
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Configure all DMA parameters and read from DMA
  *
@@ -286,7 +297,7 @@ static void wizchip_write(uint8_t tx_data);
 static void wizchip_read_burst(uint8_t *pBuf, uint16_t len);
 
 /*! \brief Configure all DMA parameters and optionally start transfer
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Configure all DMA parameters and write to DMA
  *
@@ -297,7 +308,7 @@ static void wizchip_write_burst(uint8_t *pBuf, uint16_t len);
 #endif
 
 /*! \brief Enter a critical section
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set ciritical section enter blocking function.
  *  If the spin lock associated with this critical section is in use, then this
@@ -308,7 +319,7 @@ static void wizchip_write_burst(uint8_t *pBuf, uint16_t len);
 static void wizchip_critical_section_lock(void);
 
 /*! \brief Release a critical section
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set ciritical section exit function.
  *  Release a critical section.
@@ -318,7 +329,7 @@ static void wizchip_critical_section_lock(void);
 static void wizchip_critical_section_unlock(void);
 
 /*! \brief Initialize SPI instances and Set DMA channel
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set GPIO to spi0.
  *  Puts the SPI into a known state, and enable it.
@@ -329,7 +340,7 @@ static void wizchip_critical_section_unlock(void);
 void wizchip_spi_initialize(void);
 
 /*! \brief Initialize a critical section structure
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  The critical section is initialized ready for use.
  *  Registers callback function for critical section for WIZchip.
@@ -338,8 +349,8 @@ void wizchip_spi_initialize(void);
  */
 void wizchip_cris_initialize(void);
 
-/*! \brief W5x00 chip reset
- *  \ingroup w5x00_spi
+/*! \brief WIZchip chip reset
+ *  \ingroup wizchip_spi
  *
  *  Set a reset pin and reset.
  *
@@ -348,18 +359,18 @@ void wizchip_cris_initialize(void);
 void wizchip_reset(void);
 
 /*! \brief Initialize WIZchip
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set callback function to read/write byte using SPI.
  *  Set callback function for WIZchip select/deselect.
- *  Set memory size of W5x00 chip and monitor PHY link status.
+ *  Set memory size of WIZchip and monitor PHY link status.
  *
  *  \param none
  */
 void wizchip_initialize(void);
 
 /*! \brief Check chip version
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Get version information.
  *
@@ -369,7 +380,7 @@ void wizchip_check(void);
 
 /* Network */
 /*! \brief Initialize network
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Set network information.
  *
@@ -378,7 +389,7 @@ void wizchip_check(void);
 void network_initialize(wiz_NetInfo net_info);
 
 /*! \brief Print network information
- *  \ingroup w5x00_spi
+ *  \ingroup wizchip_spi
  *
  *  Print network information about MAC address, IP address, Subnet mask, Gateway, DHCP and DNS address.
  *
@@ -389,10 +400,10 @@ void print_network_information(wiz_NetInfo net_info);
 
 ```cpp
 /* GPIO */
-/*! \brief Initialize w5x00 gpio interrupt callback function
- *  \ingroup w5x00_gpio_irq
+/*! \brief Initialize wizchip gpio interrupt callback function
+ *  \ingroup wizchip_gpio_irq
  *
- *  Add a w5x00 interrupt callback.
+ *  Add a wizchip interrupt callback.
  *
  *  \param socket socket number
  *  \param callback the gpio interrupt callback function
@@ -400,7 +411,7 @@ void print_network_information(wiz_NetInfo net_info);
 void wizchip_gpio_interrupt_initialize(uint8_t socket, void (*callback)(void));
 
 /*! \brief Assign gpio interrupt callback function
- *  \ingroup w5x00_gpio_irq
+ *  \ingroup wizchip_gpio_irq
  *
  *  GPIO interrupt callback function.
  *
@@ -504,6 +515,5 @@ Link
 [link-w5500]: https://docs.wiznet.io/Product/iEthernet/W5500/overview
 [link-w6100]: https://docs.wiznet.io/Product/iEthernet/W6100
 [link-w6300]: https://docs.wiznet.io/Product/iEthernet/W6300
-
 
 

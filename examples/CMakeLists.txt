@@ -11,6 +11,5 @@
 # add_subdirectory(pppoe)
 # add_subdirectory(can)
 # add_subdirectory(tcp_server_multi_socket)
-
 add_subdirectory(loopback)
-# add_subdirectory(http)
+add_subdirectory(http)

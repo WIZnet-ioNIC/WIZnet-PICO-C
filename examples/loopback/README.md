@@ -53,7 +53,7 @@ If you are using the **W55RP20-EVB-PICO**, enable `USE_PIO` and configure as fol
 If you are using the **W6300-EVB-PICO** or **W6300-EVB-PICO2**, use the following pinout and SPI clock divider configuration:
 
 ```cpp
-#elif (DEVICE_BOARD_NAME == W6300_EVB_PICO2)
+#elif (DEVICE_BOARD_NAME == W6300_EVB_PICO || DEVICE_BOARD_NAME == W6300_EVB_PICO2)
 #define USE_PIO
 
 #define PIO_IRQ_PIN             15
