@@ -31,8 +31,6 @@
 #define PIO_PROGRAM_NAME wizchip_pio_spi_dual_write_read
 #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
 #define PIO_PROGRAM_NAME wizchip_pio_spi_quad_write_read
-#elif (_WIZCHIP_QSPI_MODE_ == QSPI_OCTAL_MODE)
-#define PIO_PROGRAM_NAME wizchip_pio_spi_octal_write_read
 #endif
 
 #if   (_WIZCHIP_ == W6300)
@@ -112,8 +110,6 @@ static uint16_t mk_cmd_buf(uint8_t *pdst, uint8_t opcode, uint16_t addr)
   pdst[6] = 0;
 
   return 6 + 1;
-#elif (_WIZCHIP_QSPI_MODE_ == QSPI_OCTAL_MODE)
-  /* @todo: Implement to use. */
 #endif
   return 0;
 }
@@ -152,7 +148,6 @@ static void pio_spi_gpio_setup(spi_pio_state_t *state) {
     gpio_put(state->spi_config->data_io1_pin, false);
     gpio_put(state->spi_config->data_io2_pin, false);
     gpio_put(state->spi_config->data_io3_pin, false);
-    #elif (_WIZCHIP_QSPI_MODE_ == QSPI_OCTAL_MODE)
     #endif
 
     // Setup CS
@@ -230,7 +225,6 @@ wiznet_spi_handle_t wiznet_spi_pio_open(const wiznet_spi_config_t *spi_config) {
                   (uint)1 << PADS_BANK0_GPIO0_SLEWFAST_LSB,
                   PADS_BANK0_GPIO0_SLEWFAST_BITS);
 
-//   printf("[SPI CLOCK SPEED : %.2lf MHz]\r\n", 66.5 / (PIO_CLOCK_DIV_MAJOR + ((double)PIO_CLOCK_DIV_MINOR / 256)));
 
 #if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
   printf("\r\n[QSPI SINGLE MODE]\r\n");
@@ -309,7 +303,6 @@ wiznet_spi_handle_t wiznet_spi_pio_open(const wiznet_spi_config_t *spi_config) {
   gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io1_pin, true);
   gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io2_pin, true);
   gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io3_pin, true);
-#elif (_WIZCHIP_QSPI_MODE_ == QSPI_OCTAL_MODE)
   /* @todo: Implement to use. */
 #endif
 
@@ -452,7 +445,6 @@ static void wiznet_spi_pio_frame_start(void) {
         gpio_set_function(active_state->spi_config->data_io1_pin, active_state->pio_func_sel);
         gpio_set_function(active_state->spi_config->data_io2_pin, active_state->pio_func_sel);
         gpio_set_function(active_state->spi_config->data_io3_pin, active_state->pio_func_sel);
-        #elif (_WIZCHIP_QSPI_MODE_ == QSPI_OCTAL_MODE)
         /* @todo: Implement to use. */
         #endif
         gpio_set_function(active_state->spi_config->clock_pin, active_state->pio_func_sel);
@@ -509,7 +501,6 @@ void wiznet_spi_pio_read_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *rx, ui
                                   (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin),
                                   (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin));
 
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_OCTAL_MODE)
       /* @todo: Implement to use. */
   #endif
 
@@ -594,20 +585,8 @@ void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, u
                                   (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin),
                                   (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin));
   
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_OCTAL_MODE)
-      /* @todo: Implement to use. */
   #endif
-  
-  #if 0
-    uint8_t i = 0;
-  
-    printf("cmd_buf[%u] : ", command_len);
-    for(i = 0;  i < command_len; i++)
-    {
-      printf("0x%x ", command_buf[i]);
-    }
-    printf("\n");
-  #endif
+
     pio_sm_restart(active_state->pio, active_state->pio_sm);
     pio_sm_clkdiv_restart(active_state->pio, active_state->pio_sm);
     pio_sm_put(active_state->pio, active_state->pio_sm, tx_length * loop_cnt - 1);
@@ -626,10 +605,6 @@ void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, u
   
     pio_sm_set_enabled(active_state->pio, active_state->pio_sm, true);
   
-  #if 0
-    dma_channel_configure(active_state->dma_out, &out_config, &active_state->pio->txf[active_state->pio_sm], command_buf, tx_length, true);
-    dma_channel_wait_for_finish_blocking(active_state->dma_out);
-  #endif
     dma_channel_configure(active_state->dma_out, &out_config, &active_state->pio->txf[active_state->pio_sm], command_buf, command_len, true);
     //dma_channel_wait_for_finish_blocking(active_state->dma_out);
     dma_channel_wait_for_finish_blocking(active_state->dma_out);
@@ -653,33 +628,12 @@ void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, u
     pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->spi_config->data_io0_pin, 2, false);
   #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
     pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->spi_config->data_io0_pin, 4, false);
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_OCTAL_MODE)
-      /* @todo: Implement to use. */
   #endif
   
     pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_mov(pio_pins, pio_null)); 
   
     pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
     wiznet_spi_pio_frame_end();
-  #endif
-  
-    #if 0    // origin
-    __compiler_memory_barrier();
-    
-    pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
-  
-  #if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
-    pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->pio_spi_config->data_io0_pin, 1, false);
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
-    pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->pio_spi_config->data_io0_pin, 2, false);
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
-    pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->pio_spi_config->data_io0_pin, 4, false);
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_OCTAL_MODE)
-      /* @todo: Implement to use. */
-  #endif
-  
-    pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_mov(pio_pins, pio_null)); 
-    wizchip_pio_spi_frame_end();
   #endif
   }
 #else

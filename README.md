@@ -161,12 +161,9 @@ For example, when using **QSPI SINGLE MODE**:
 
 ```cpp
 # Set QSPI MODE for W6300
-if(${WIZNET_CHIP} STREQUAL W6300)
-    # add_definitions(-D_WIZCHIP_QSPI_MODE_=QSPI_QUAD_MODE) # QSPI_QUAD_MODE
+    add_definitions(-D_WIZCHIP_QSPI_MODE_=QSPI_QUAD_MODE) # QSPI_QUAD_MODE
     # add_definitions(-D_WIZCHIP_QSPI_MODE_=QSPI_DUAL_MODE) # QSPI_DUAL_MODE 
-    add_definitions(-D_WIZCHIP_QSPI_MODE_=QSPI_SINGLE_MODE) # QSPI_SINGLE_MODE 
-endif()
-
+    # add_definitions(-D_WIZCHIP_QSPI_MODE_=QSPI_SINGLE_MODE) # QSPI_SINGLE_MODE 
 ```
 
 3. Test
