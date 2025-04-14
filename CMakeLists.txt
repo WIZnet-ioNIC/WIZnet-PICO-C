@@ -76,6 +76,8 @@ else()
 endif()
 
 message(STATUS "WIZNET_CHIP = ${WIZNET_CHIP}")
+
+# Set QSPI MODE for W6300
 if(${WIZNET_CHIP} STREQUAL W6300)
     # add_definitions(-D_WIZCHIP_QSPI_MODE_=QSPI_QUAD_MODE) # QSPI_QUAD_MODE
     # add_definitions(-D_WIZCHIP_QSPI_MODE_=QSPI_DUAL_MODE) # QSPI_DUAL_MODE 

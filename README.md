@@ -157,6 +157,17 @@ add_definitions(-D_WIZCHIP_SPI_SCLK_SPEED=40) # SPEED MHz
 
 **When using W6300**, **you can configure the QSPI mode** by modifying the board selection parameter.
 
+For example, when using **QSPI SINGLE MODE**:
+
+```cpp
+# Set QSPI MODE for W6300
+if(${WIZNET_CHIP} STREQUAL W6300)
+    # add_definitions(-D_WIZCHIP_QSPI_MODE_=QSPI_QUAD_MODE) # QSPI_QUAD_MODE
+    # add_definitions(-D_WIZCHIP_QSPI_MODE_=QSPI_DUAL_MODE) # QSPI_DUAL_MODE 
+    add_definitions(-D_WIZCHIP_QSPI_MODE_=QSPI_SINGLE_MODE) # QSPI_SINGLE_MODE 
+endif()
+
+```
 
 3. Test
 
