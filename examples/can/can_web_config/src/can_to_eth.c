@@ -6,7 +6,7 @@
 #include "pico/binary_info.h"
 
 #include "wizchip_conf.h"
-#include "w5x00_spi.h"
+#include "wizchip_spi.h"
 #include "socket.h"
 
 #include "can.h" 
