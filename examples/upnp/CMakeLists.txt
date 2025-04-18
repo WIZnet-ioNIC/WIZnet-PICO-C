@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_upnp)
+set(TARGET_NAME wizchip_upnp)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

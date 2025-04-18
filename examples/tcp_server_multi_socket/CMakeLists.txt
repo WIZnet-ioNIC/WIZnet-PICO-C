@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_tcp_server_multi_socket)
+set(TARGET_NAME wizchip_tcp_server_multi_socket)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c
@@ -10,6 +10,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE
         hardware_spi
         ETHERNET_FILES
         IOLIBRARY_FILES
+        LOOPBACK_FILES
         )
 
 pico_enable_stdio_usb(${TARGET_NAME} 1)

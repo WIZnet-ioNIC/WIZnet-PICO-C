@@ -10,18 +10,24 @@
  * ----------------------------------------------------------------------------------------------------
  */
 #include <stdio.h>
-#include <string.h>
 
 #include "port_common.h"
 
 #include "wizchip_conf.h"
-#include "w5x00_spi.h"
+#include "wizchip_spi.h"
+#include "wizchip_gpio_irq.h"
 
-#include "mqtt_interface.h"
-#include "MQTTClient.h"
+#include "pico/stdio.h"
+#include "pico/stdlib.h"
+#include "pico/binary_info.h"
+#include "hardware/irq.h"
+#include "hardware/structs/pio.h"
 
-#include "timer.h"
-#include "time.h"
+#include "web_page.h"
+
+#include "httpServer.h"
+#include "can_to_eth.h"
+#include "canHandler.h"
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -32,23 +38,11 @@
 #define PLL_SYS_KHZ (133 * 1000)
 
 /* Buffer */
-#define ETHERNET_BUF_MAX_SIZE (1024 * 2)
+#define HTTP_BUF_MAX_SIZE (1024 * 2)
 
 /* Socket */
-#define SOCKET_MQTT 0
+#define HTTP_SOCKET_MAX_NUM 4
 
-/* Port */
-#define PORT_MQTT 1883
-
-/* Timeout */
-#define DEFAULT_TIMEOUT 1000 // 1 second
-
-/* MQTT */
-#define MQTT_CLIENT_ID "rpi-pico"
-#define MQTT_USERNAME "wiznet"
-#define MQTT_PASSWORD "0123456789"
-#define MQTT_SUBSCRIBE_TOPIC "subscribe_topic"
-#define MQTT_KEEP_ALIVE 60 // 60 milliseconds
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -63,23 +57,54 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        .dhcp = NETINFO_STATIC                       // DHCP enable/disable
+        #if _WIZCHIP_ > W5500
+        .lla = {0xfe, 0x80, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x02, 0x08, 0xdc, 0xff,
+                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
+        .gua = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
+        .sn6 = {0xff, 0xff, 0xff, 0xff,
+                0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
+        .gw6 = {0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
+        .dns6 = {0x20, 0x01, 0x48, 0x60,
+                0x48, 0x60, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x88, 0x88},             // DNS6 server
+        .ipmode = NETINFO_STATIC_ALL
+#else
+        .dhcp = NETINFO_STATIC        
+#endif
 };
 
-/* MQTT */
-static uint8_t g_mqtt_send_buf[ETHERNET_BUF_MAX_SIZE] = {
+/* HTTP */
+static uint8_t g_http_send_buf[HTTP_BUF_MAX_SIZE] = {
     0,
 };
-static uint8_t g_mqtt_recv_buf[ETHERNET_BUF_MAX_SIZE] = {
+static uint8_t g_http_recv_buf[HTTP_BUF_MAX_SIZE] = {
     0,
 };
-static uint8_t g_mqtt_broker_ip[4] = {192, 168, 11, 3};
-static Network g_mqtt_network;
-static MQTTClient g_mqtt_client;
-static MQTTPacket_connectData g_mqtt_packet_connect_data = MQTTPacket_connectData_initializer;
 
-/* Timer  */
-static void repeating_timer_callback(void);
+uint8_t g_tx_buf[DATA_BUF_MAX_SIZE] = {
+    0,
+};
+uint8_t g_rx_buf[DATA_BUF_MAX_SIZE] = {
+    0,
+};
+
+static uint8_t g_http_socket_num_list[HTTP_SOCKET_MAX_NUM] = {4, 5, 6, 7};
+
+static uint8_t destip[4] = {192, 168, 11, 3};
+static uint16_t destport = 5000;
+
+uint8_t can_config_changed = 0;
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -89,9 +114,6 @@ static void repeating_timer_callback(void);
 /* Clock */
 static void set_clock_khz(void);
 
-/* MQTT */
-static void message_arrived(MessageData *msg_data);
-
 /**
  * ----------------------------------------------------------------------------------------------------
  * Main
@@ -100,7 +122,9 @@ static void message_arrived(MessageData *msg_data);
 int main()
 {
     /* Initialize */
-    int32_t retval = 0;
+    uint8_t i = 0;
+    int retval = 0;
+    CanConfig *p_can_config;
 
     set_clock_khz();
 
@@ -113,74 +137,59 @@ int main()
     wizchip_initialize();
     wizchip_check();
 
-    wizchip_1ms_timer_initialize(repeating_timer_callback);
-
     network_initialize(g_net_info);
 
     /* Get network information */
     print_network_information(g_net_info);
 
-    NewNetwork(&g_mqtt_network, SOCKET_MQTT);
+    
+    p_can_config = get_CanConfig_pointer();
+    get_default_can_config(p_can_config);
+    printCanConfig(p_can_config);
 
-    retval = ConnectNetwork(&g_mqtt_network, g_mqtt_broker_ip, PORT_MQTT);
-
-    if (retval != 1)
+    if(can_initialize(p_can_config) < 0)
     {
-        printf(" Network connect failed\n");
-
-        while (1)
-            ;
+        printf("CAN setup failed...\n");
+        while(1){}
     }
 
-    /* Initialize MQTT client */
-    MQTTClientInit(&g_mqtt_client, &g_mqtt_network, DEFAULT_TIMEOUT, g_mqtt_send_buf, ETHERNET_BUF_MAX_SIZE, g_mqtt_recv_buf, ETHERNET_BUF_MAX_SIZE);
+    httpServer_init(g_http_send_buf, g_http_recv_buf, HTTP_SOCKET_MAX_NUM, g_http_socket_num_list);
 
-    /* Connect to the MQTT broker */
-    g_mqtt_packet_connect_data.MQTTVersion = 3;
-    g_mqtt_packet_connect_data.cleansession = 1;
-    g_mqtt_packet_connect_data.willFlag = 0;
-    g_mqtt_packet_connect_data.keepAliveInterval = MQTT_KEEP_ALIVE;
-    g_mqtt_packet_connect_data.clientID.cstring = MQTT_CLIENT_ID;
-    g_mqtt_packet_connect_data.username.cstring = MQTT_USERNAME;
-    g_mqtt_packet_connect_data.password.cstring = MQTT_PASSWORD;
-
-    retval = MQTTConnect(&g_mqtt_client, &g_mqtt_packet_connect_data);
-
-    if (retval < 0)
-    {
-        printf(" MQTT connect failed : %d\n", retval);
-
-        while (1)
-            ;
-    }
-
-    printf(" MQTT connected\n");
-
-    /* Subscribe */
-    retval = MQTTSubscribe(&g_mqtt_client, MQTT_SUBSCRIBE_TOPIC, QOS0, message_arrived);
-
-    if (retval < 0)
-    {
-        printf(" Subscribe failed : %d\n", retval);
-
-        while (1)
-            ;
-    }
-
-    printf(" Subscribed\n");
+    /* Register web page */
+    reg_httpServer_webContent("index.html", _acindex);
 
     /* Infinite loop */
     while (1)
     {
-        if ((retval = MQTTYield(&g_mqtt_client, g_mqtt_packet_connect_data.keepAliveInterval)) < 0)
+        /* Run HTTP server */
+        for (i = 0; i < HTTP_SOCKET_MAX_NUM; i++)
         {
-            printf(" Yield error : %d\n", retval);
+            httpServer_run(i);
+        }
+
+        if(can_config_changed)
+        {
+            reset_eth();
+
+            CanConfig *can_config = get_CanConfig_pointer();
+            printCanConfig(can_config);
+	        can_restart(can_config);
+
+            can_config_changed = 0;
+        }
+
+        if ((retval = can_to_eth(p_can_config->eth_mode)) < 0)
+        {
+            printf(" CAN to Eth loopback error : %d\n", retval);
 
             while (1)
                 ;
         }
+
     }
+
 }
+
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -203,16 +212,3 @@ static void set_clock_khz(void)
     );
 }
 
-/* MQTT */
-static void message_arrived(MessageData *msg_data)
-{
-    MQTTMessage *message = msg_data->message;
-
-    printf("%.*s", (uint32_t)message->payloadlen, (uint8_t *)message->payload);
-}
-
-/* Timer */
-static void repeating_timer_callback(void)
-{
-    MilliTimer_Handler();
-}

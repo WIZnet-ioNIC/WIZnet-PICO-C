@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_udp_multicast_receiver)
+set(TARGET_NAME wizchip_udp_multicast_receiver)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

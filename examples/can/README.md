@@ -14,15 +14,13 @@ The following serial terminal programs are required for CAN example test, downlo
 
 ## Step 2: Prepare hardware
 
-If you are using W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2, you can skip '1. Combine...'
+If you are using WIZnet's PICO board, you can skip '1. Combine...'
 
-1. Combine WIZnet Ethernet HAT with Raspberry Pi Pico.
+1. If you are using WIZnet Ethernet HAT, Combine it with Raspberry Pi Pico.
 
-2. Connect ethernet cable to WIZnet Ethernet HAT, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 ethernet port.
+2. Connect ethernet cable to your PICO board ethernet port.
 
-3. Connect Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico to desktop or laptop using 5 pin micro USB cable. W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 require a USB Type-C cable.
-
-4. Connect as shown in the diagram below, to test the CAN example.
+3. Connect your PICO board to desktop or laptop using USB cable. 
 
 ![][link-hardware_wiring]
 
@@ -89,13 +87,13 @@ Setup CAN Configuration and pin in example in 'WIZnet-PICO-C/examples/can/' dire
 
 ## Step 6: Upload and Run
 
-1. While pressing the BOOTSEL button of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 power on the board, the USB mass storage 'RPI-RP2' is automatically mounted.
+1. While pressing the BOOTSEL button of the Pico power on the board, the USB mass storage 'RPI-RP2' or 'RP2350' is automatically mounted.
 
 ![][link-raspberry_pi_pico_usb_mass_storage]
 
-2. Drag and drop '{example_name}.uf2' onto the USB mass storage device 'RPI-RP2'.
+2. Drag and drop '{example_name}.uf2' onto the USB mass storage device 'RPI-RP2' or 'RP2350'.
 
-3. Connect to the serial COM port of Raspberry Pi Pico, W5100S-EVB-Pico, W5500-EVB-Pico, W55RP20-EVB-Pico, W5100S-EVB-Pico2 or W5500-EVB-Pico2 with Tera Term.
+3. Connect to the serial COM port of the pico with Tera Term.
 
 ![][link-connect_to_serial_com_port]
 

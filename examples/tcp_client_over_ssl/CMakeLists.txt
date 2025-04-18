@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_tcp_client_over_ssl)
+set(TARGET_NAME wizchip_tcp_client_over_ssl)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c

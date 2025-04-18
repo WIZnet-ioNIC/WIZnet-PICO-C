@@ -1,4 +1,4 @@
-set(TARGET_NAME w5x00_can_web_config)
+set(TARGET_NAME wizchip_can_web_config)
 
 add_executable(${TARGET_NAME}
         ${TARGET_NAME}.c
