@@ -95,7 +95,11 @@ static void set_clock_khz(void)
 int8_t sn = 0;
 int32_t loopback_tcps_multi_socket(uint8_t *buf, uint16_t port)
 {
+#if _WIZCHIP_ > W5500
     check_loopback_mode_W6x00();
+#endif
+
+
     int32_t ret;
     uint16_t size = 0, sentsize = 0;
     uint8_t destip[4];
