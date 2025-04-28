@@ -95,12 +95,12 @@ static void set_clock_khz(void)
 int8_t sn = 0;
 int32_t loopback_tcps_multi_socket(uint8_t *buf, uint16_t port)
 {
-    check_loopback_mode_W6x00();
     int32_t ret;
     uint16_t size = 0, sentsize = 0;
     uint8_t destip[4];
     uint16_t destport;
-    printf("socket %d : status %d\r\n",sn,getSn_SR(sn));
+    uint16_t multi_socket_port = port + sn ;
+    // printf("socket %d : status %d\r\n",sn,getSn_SR(sn));
     switch (getSn_SR(sn))
     {
     case SOCK_ESTABLISHED:
@@ -150,7 +150,7 @@ int32_t loopback_tcps_multi_socket(uint8_t *buf, uint16_t port)
         break;
     case SOCK_INIT:
 #ifdef _LOOPBACK_DEBUG_
-        printf("%d:Listen, TCP server loopback, port [%d]\r\n", sn, port);
+        printf("%d:Listen, TCP server loopback, port [%d]\r\n", sn, multi_socket_port);
 #endif
         if ((ret = listen(sn)) != SOCK_OK)
             return ret;
@@ -159,7 +159,7 @@ int32_t loopback_tcps_multi_socket(uint8_t *buf, uint16_t port)
 #ifdef _LOOPBACK_DEBUG_
         // printf("%d:TCP server loopback start\r\n",sn);
 #endif
-        if ((ret = socket(sn, Sn_MR_TCP, port, Sn_MR_ND)) != sn)
+        if ((ret = socket(sn, Sn_MR_TCP, multi_socket_port, Sn_MR_ND)) != sn)
             return ret;
 #ifdef _LOOPBACK_DEBUG_
             // printf("%d:Socket opened\r\n",sn);
@@ -168,25 +168,11 @@ int32_t loopback_tcps_multi_socket(uint8_t *buf, uint16_t port)
     default:
         break;
     }
-#if (_WIZCHIP_ == W5100S)
-    if (sn < 4)
-    {
-        sn++;
-    }
-    else
-    {
+
+    if (sn >= (_WIZCHIP_SOCK_NUM_  - 1))    
         sn = 0;
-    }
-#elif (_WIZCHIP_ >= W5500)
-    if (sn < 8)
-    {
-        sn++;
-    }
     else
-    {
-        sn = 0;
-    }
-#endif
+        sn ++;   
 
     return 1;
 }
