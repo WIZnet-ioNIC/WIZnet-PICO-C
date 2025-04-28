@@ -196,7 +196,7 @@ wiznet_spi_handle_t wiznet_spi_pio_open(const wiznet_spi_config_t *spi_config) {
     pio_index ^= 1;
     if (!pio_can_add_program(pios[pio_index], &PIO_PROGRAM_FUNC))
     {
-      return -1;
+      return NULL;
     }
   }
 
@@ -209,7 +209,7 @@ wiznet_spi_handle_t wiznet_spi_pio_open(const wiznet_spi_config_t *spi_config) {
   if (active_state->pio_sm < 0)
   {
         wiznet_spi_pio_close(&active_state->funcs);
-    return -1;
+    return NULL;
   }
 
   active_state->pio_offset = pio_add_program(active_state->pio, &PIO_PROGRAM_FUNC);
@@ -313,7 +313,7 @@ wiznet_spi_handle_t wiznet_spi_pio_open(const wiznet_spi_config_t *spi_config) {
   if (active_state->dma_out < 0 || active_state->dma_in < 0)
   {
     wiznet_spi_pio_close(&active_state->funcs);
-    return -1;
+    return NULL;
   }
   
   return &active_state->funcs;
