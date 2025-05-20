@@ -288,7 +288,7 @@ char *STRTOK(char *strToken, const char *strDelimit)
 void Main_Menu(uint8_t sn, uint8_t sn2, uint8_t sn3, uint8_t *buf, uint16_t tcps_port, uint16_t udps_port)
 {
     static char choice[3];
-    static char msg[256], ipaddr[12], protocol[4];
+    static char msg[256], ipaddr[16], protocol[4];
     static unsigned short ret, external_port, internal_port;
     static bool bTreat;
     static uint8_t Sip[4];
