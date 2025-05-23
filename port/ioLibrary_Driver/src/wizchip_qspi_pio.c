@@ -609,7 +609,7 @@ void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, u
     //dma_channel_wait_for_finish_blocking(active_state->dma_out);
     dma_channel_wait_for_finish_blocking(active_state->dma_out);
     dma_channel_configure(active_state->dma_out, &out_config, &active_state->pio->txf[active_state->pio_sm], tx, tx_length - command_len, true);
-    
+    dma_channel_wait_for_finish_blocking(active_state->dma_out);
   
     const uint32_t fdebug_tx_stall = 1u << (PIO_FDEBUG_TXSTALL_LSB + active_state->pio_sm);
     active_state->pio->fdebug = fdebug_tx_stall;
