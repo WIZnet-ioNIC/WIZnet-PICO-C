@@ -88,7 +88,7 @@ static wiz_NetInfo g_net_info =
 static uint8_t g_ssl_buf[ETHERNET_BUF_MAX_SIZE] = {
     0,
 };
-static uint8_t g_ssl_target_ip[4] = {192, 168, 11, 3};
+static uint8_t g_ssl_target_ip[4] = {192, 168, 11, 4};
 
 static mbedtls_ctr_drbg_context g_ctr_drbg;
 static mbedtls_ssl_config g_conf;
@@ -132,7 +132,7 @@ int main()
     set_clock_khz();
 
     stdio_init_all();
-
+    sleep_ms(3000);
     wizchip_spi_initialize();
     wizchip_cris_initialize();
 

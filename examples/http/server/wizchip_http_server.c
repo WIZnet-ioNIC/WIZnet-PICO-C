@@ -103,7 +103,7 @@ int main()
     set_clock_khz();
 
     stdio_init_all();
-
+    sleep_ms(3000);
     wizchip_spi_initialize();
     wizchip_cris_initialize();
 

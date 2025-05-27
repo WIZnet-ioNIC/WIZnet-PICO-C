@@ -62,6 +62,7 @@ int main()
 
     /*mcu init*/
     stdio_init_all(); // Initialize the main control peripheral.
+    sleep_ms(3000);
     wizchip_spi_initialize();
     wizchip_cris_initialize();
     wizchip_reset();

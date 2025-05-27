@@ -78,7 +78,7 @@ int main()
     set_clock_khz();
 
     stdio_init_all();
-
+    sleep_ms(3000);
     if(can_initialize() < 0)
     {
         printf("CAN setup failed...\n");

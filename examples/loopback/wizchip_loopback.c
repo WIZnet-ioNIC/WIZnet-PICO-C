@@ -183,7 +183,7 @@ int main()
 
     stdio_init_all();
 
-    sleep_ms(1000 * 3);
+    sleep_ms(3000);
 
     printf("==========================================================\n");
     printf("Compiled @ %s, %s\n", __DATE__, __TIME__);

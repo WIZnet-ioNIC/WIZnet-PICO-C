@@ -82,7 +82,7 @@ static uint8_t g_loopback_buf[ETHERNET_BUF_MAX_SIZE] = {
     0,
 };
 
-static uint8_t dest_ip[4] = {192, 168, 11, 69};
+static uint8_t dest_ip[4] = {192, 168, 11, 4};
 /**
  * ----------------------------------------------------------------------------------------------------
  * Functions
@@ -104,7 +104,7 @@ int main()
     set_clock_khz();
 
     stdio_init_all();
-
+    sleep_ms(3000);
     wizchip_spi_initialize();
     wizchip_cris_initialize();
 
