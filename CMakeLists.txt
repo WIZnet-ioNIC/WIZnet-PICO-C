@@ -89,10 +89,10 @@ else()
     message(FATAL_ERROR "BOARD_NAME is wrong = ${BOARD_NAME}")
 endif()
 
-if(DEFINED WIZCHIP_QSPI_MODE AND WIZCHIP_QSPI_MODE STREQUAL "QSPI_QUAD_MODE" AND WIZCHIP_SPI_SCLK_SPEED GREATER_EQUAL 25)
-    add_compile_options(-O0)
-    message(STATUS "Compiler optimization disabled (W6300 + QSPI_QUAD_MODE + ${WIZCHIP_SPI_SCLK_SPEED} MHz)")
-endif()
+# if(DEFINED WIZCHIP_QSPI_MODE AND WIZCHIP_QSPI_MODE STREQUAL "QSPI_QUAD_MODE" AND WIZCHIP_SPI_SCLK_SPEED GREATER_EQUAL 25)
+#     add_compile_options(-O0)
+#     message(STATUS "Compiler optimization disabled (W6300 + QSPI_QUAD_MODE + ${WIZCHIP_SPI_SCLK_SPEED} MHz)")
+# endif()
 
 message(STATUS "WIZNET_CHIP = ${WIZNET_CHIP}")
 
