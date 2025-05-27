@@ -132,7 +132,7 @@ static void pio_spi_gpio_setup(spi_pio_state_t *state) {
     gpio_init(state->spi_config->data_io1_pin);
     gpio_set_dir(state->spi_config->data_io0_pin, GPIO_OUT);
     gpio_set_dir(state->spi_config->data_io1_pin, GPIO_OUT);
-    gpio_put(active_statestate->spi_config->data_io0_pin, false);
+    gpio_put(state->spi_config->data_io0_pin, false);
     gpio_put(state->spi_config->data_io1_pin, false);
     #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
     // Setup DO and DI
@@ -180,145 +180,6 @@ static void pio_spi_gpio_setup(spi_pio_state_t *state) {
 
 wiznet_spi_handle_t wiznet_spi_pio_open(const wiznet_spi_config_t *spi_config) {
 
-#if   (_WIZCHIP_ == W6300)
-    uint8_t offset_ = 0;
-  active_state = &spi_pio_state[0];
-  active_state->spi_config = spi_config;
-  active_state->funcs = get_wiznet_spi_pio_impl();
-  pio_spi_gpio_setup(active_state);
-
-  pio_hw_t *pios[2] = {pio0, pio1};
-  uint pio_index = PIO_SPI_PREFERRED_PIO;
-
-  // Check we can add the program
-  if (!pio_can_add_program(pios[pio_index], &PIO_PROGRAM_FUNC))
-  {
-    pio_index ^= 1;
-    if (!pio_can_add_program(pios[pio_index], &PIO_PROGRAM_FUNC))
-    {
-      return NULL;
-    }
-  }
-
-  active_state->pio = pios[pio_index];
-  active_state->dma_in = -1;
-  active_state->dma_out = -1;
-
-  active_state->pio_func_sel = GPIO_FUNC_PIO0 + pio_index;
-  active_state->pio_sm = (int8_t)pio_claim_unused_sm(active_state->pio, false);
-  if (active_state->pio_sm < 0)
-  {
-        wiznet_spi_pio_close(&active_state->funcs);
-    return NULL;
-  }
-
-  active_state->pio_offset = pio_add_program(active_state->pio, &PIO_PROGRAM_FUNC);
-  pio_sm_config sm_config = PIO_PROGRAM_GET_DEFAULT_CONFIG_FUNC(active_state->pio_offset);
-
-  sm_config_set_clkdiv_int_frac(&sm_config, active_state->spi_config->clock_div_major, active_state->spi_config->clock_div_minor);
-  
- 
-  hw_write_masked(&pads_bank0_hw->io[active_state->spi_config->clock_pin],
-                  (uint)PADS_DRIVE_STRENGTH << PADS_BANK0_GPIO0_DRIVE_LSB,
-                  PADS_BANK0_GPIO0_DRIVE_BITS);
-  hw_write_masked(&pads_bank0_hw->io[active_state->spi_config->clock_pin],
-                  (uint)1 << PADS_BANK0_GPIO0_SLEWFAST_LSB,
-                  PADS_BANK0_GPIO0_SLEWFAST_BITS);
-
-
-#if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
-  printf("\r\n[QSPI SINGLE MODE]\r\n");
-  sm_config_set_out_pins(&sm_config, active_state->spi_config->data_io0_pin, 1);
-  sm_config_set_in_pins(&sm_config, active_state->spi_config->data_io1_pin);
-  sm_config_set_set_pins(&sm_config, active_state->spi_config->data_io0_pin, 2);
-  sm_config_set_sideset(&sm_config, 1, false, false);
-  sm_config_set_sideset_pins(&sm_config, active_state->spi_config->clock_pin);
-
-  sm_config_set_in_shift(&sm_config, false, true, 8);
-  sm_config_set_out_shift(&sm_config, false, true, 8);
-
-  hw_set_bits(&active_state->pio->input_sync_bypass,
-              (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin));
-  pio_sm_set_config(active_state->pio, active_state->pio_sm, &sm_config);
-  pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->spi_config->clock_pin, 1, true);
-
-  gpio_set_function(active_state->spi_config->data_io0_pin, active_state->pio_func_sel);
-
-  // Set data pin to pull down and schmitt
-  gpio_set_pulls(active_state->spi_config->data_io0_pin, false, true);
-  gpio_set_pulls(active_state->spi_config->data_io1_pin, false, true);
-  gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io0_pin, true);
-  gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io1_pin, true);
-#elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
-  printf("[QSPI DUAL MODE]\r\n\r\n");
-  sm_config_set_out_pins(&sm_config, active_state->spi_config->data_io0_pin, 2);
-  sm_config_set_in_pins(&sm_config, active_state->spi_config->data_io0_pin);
-  sm_config_set_set_pins(&sm_config, active_state->spi_config->data_io0_pin, 2);
-  sm_config_set_sideset(&sm_config, 1, false, false);
-  sm_config_set_sideset_pins(&sm_config, active_state->spi_config->clock_pin);
-
-  sm_config_set_in_shift(&sm_config, false, true, 8);
-  sm_config_set_out_shift(&sm_config, false, true, 8);
-
-  hw_set_bits(&active_state->pio->input_sync_bypass,
-              (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin));
-  pio_sm_set_config(active_state->pio, active_state->pio_sm, &sm_config);
-  pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->spi_config->clock_pin, 1, true);
-
-  gpio_set_function(active_state->spi_config->data_io0_pin, active_state->pio_func_sel);
-  gpio_set_function(active_state->spi_config->data_io1_pin, active_state->pio_func_sel);
-
-  // Set data pin to pull down and schmitt
-  gpio_set_pulls(active_state->spi_config->data_io0_pin, false, true);
-  gpio_set_pulls(active_state->spi_config->data_io1_pin, false, true);
-  gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io0_pin, true);
-  gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io1_pin, true);
-#elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
-  printf("\r\n[QSPI QUAD MODE]\r\n");
-  sm_config_set_out_pins(&sm_config, active_state->spi_config->data_io0_pin, 4);
-  sm_config_set_in_pins(&sm_config, active_state->spi_config->data_io0_pin);
-  sm_config_set_set_pins(&sm_config, active_state->spi_config->data_io0_pin, 4);
-  sm_config_set_sideset(&sm_config, 1, false, false);
-  sm_config_set_sideset_pins(&sm_config, active_state->spi_config->clock_pin);
-
-  sm_config_set_in_shift(&sm_config, false, true, 8);
-  sm_config_set_out_shift(&sm_config, false, true, 8);
-
-  hw_set_bits(&active_state->pio->input_sync_bypass,
-              (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin));
-  pio_sm_set_config(active_state->pio, active_state->pio_sm, &sm_config);
-  pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->spi_config->clock_pin, 1, true);
-
-  gpio_set_function(active_state->spi_config->data_io0_pin, active_state->pio_func_sel);
-  gpio_set_function(active_state->spi_config->data_io1_pin, active_state->pio_func_sel);
-  gpio_set_function(active_state->spi_config->data_io2_pin, active_state->pio_func_sel);
-  gpio_set_function(active_state->spi_config->data_io3_pin, active_state->pio_func_sel);
-
-  // Set data pin to pull down and schmitt
-  gpio_set_pulls(active_state->spi_config->data_io0_pin, false, true);
-  gpio_set_pulls(active_state->spi_config->data_io1_pin, false, true);
-  gpio_set_pulls(active_state->spi_config->data_io2_pin, false, true);
-  gpio_set_pulls(active_state->spi_config->data_io3_pin, false, true);
-  gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io0_pin, true);
-  gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io1_pin, true);
-  gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io2_pin, true);
-  gpio_set_input_hysteresis_enabled(active_state->spi_config->data_io3_pin, true);
-  /* @todo: Implement to use. */
-#endif
-
-  pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_set(pio_pins, 1));
-
-  active_state->dma_out = (int8_t)dma_claim_unused_channel(false); // todo: Should be able to use one dma channel?
-  active_state->dma_in = (int8_t)dma_claim_unused_channel(false);
-  if (active_state->dma_out < 0 || active_state->dma_in < 0)
-  {
-    wiznet_spi_pio_close(&active_state->funcs);
-    return NULL;
-  }
-  
-  return &active_state->funcs;
-  
-#else //W55RP20
 spi_pio_state_t *state;
     for(int i = 0; i < count_of(spi_pio_state); i++) {
         if (!spi_pio_state[i].funcs) {
@@ -356,7 +217,7 @@ spi_pio_state_t *state;
     }
 
     state->pio_offset = pio_add_program(state->pio, &PIO_PROGRAM_FUNC);    
-
+    printf("[SPI CLOCK SPEED : %.2lf MHz]\r\n\r\n", 66.5 / (state->spi_config->clock_div_major + ((double)state->spi_config->clock_div_minor / 256)));
     pio_sm_config sm_config = PIO_PROGRAM_GET_DEFAULT_CONFIG_FUNC(state->pio_offset);
 
     sm_config_set_clkdiv_int_frac(&sm_config, state->spi_config->clock_div_major, state->spi_config->clock_div_minor);
@@ -369,34 +230,118 @@ spi_pio_state_t *state;
                     PADS_BANK0_GPIO0_SLEWFAST_BITS
     );
 
-    sm_config_set_out_pins(&sm_config, state->spi_config->data_out_pin, 1);
-    sm_config_set_in_pins(&sm_config, state->spi_config->data_in_pin);
-    sm_config_set_set_pins(&sm_config, state->spi_config->data_out_pin, 1);
-    sm_config_set_sideset(&sm_config, 1, false, false);
-    sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
+#if   (_WIZCHIP_ == W6300)
+#if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
+  printf("\r\n[QSPI SINGLE MODE]\r\n");
+  sm_config_set_out_pins(&sm_config, state->spi_config->data_io0_pin, 1);
+  sm_config_set_in_pins(&sm_config, state->spi_config->data_io1_pin);
+  sm_config_set_set_pins(&sm_config, state->spi_config->data_io0_pin, 2);
+  sm_config_set_sideset(&sm_config, 1, false, false);
+  sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
 
-    sm_config_set_in_shift(&sm_config, false, true, 8);
-    sm_config_set_out_shift(&sm_config, false, true, 8);
-    hw_set_bits(&state->pio->input_sync_bypass, 1u << state->spi_config->data_in_pin);
-    pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
-    pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
-    gpio_set_function(state->spi_config->data_out_pin, state->pio_func_sel);
-    gpio_set_function(state->spi_config->clock_pin, state->pio_func_sel);
+  sm_config_set_in_shift(&sm_config, false, true, 8);
+  sm_config_set_out_shift(&sm_config, false, true, 8);
 
-    // Set data pin to pull down and schmitt
-    gpio_set_pulls(state->spi_config->data_in_pin, false, true);
-    gpio_set_input_hysteresis_enabled(state->spi_config->data_in_pin, true);
+  hw_set_bits(&state->pio->input_sync_bypass,
+              (1u << state->spi_config->data_io0_pin) | (1u << state->spi_config->data_io1_pin));
+  pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
+  pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
 
-    pio_sm_exec(state->pio, state->pio_sm, pio_encode_set(pio_pins, 1));
+  gpio_set_function(state->spi_config->data_io0_pin, state->pio_func_sel);
 
-    state->dma_out = (int8_t) dma_claim_unused_channel(false); // todo: Should be able to use one dma channel?
-    state->dma_in = (int8_t) dma_claim_unused_channel(false);
-    if (state->dma_out < 0 || state->dma_in < 0) {
-        wiznet_spi_pio_close(&state->funcs);
-        return NULL;
-    }
-    return &state->funcs;
-#endif    
+  // Set data pin to pull down and schmitt
+  gpio_set_pulls(state->spi_config->data_io0_pin, false, true);
+  gpio_set_pulls(state->spi_config->data_io1_pin, false, true);
+  gpio_set_input_hysteresis_enabled(state->spi_config->data_io0_pin, true);
+  gpio_set_input_hysteresis_enabled(state->spi_config->data_io1_pin, true);
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
+  printf("[QSPI DUAL MODE]\r\n\r\n");
+  sm_config_set_out_pins(&sm_config, state->spi_config->data_io0_pin, 2);
+  sm_config_set_in_pins(&sm_config, state->spi_config->data_io0_pin);
+  sm_config_set_set_pins(&sm_config, state->spi_config->data_io0_pin, 2);
+  sm_config_set_sideset(&sm_config, 1, false, false);
+  sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
+
+  sm_config_set_in_shift(&sm_config, false, true, 8);
+  sm_config_set_out_shift(&sm_config, false, true, 8);
+
+  hw_set_bits(&state->pio->input_sync_bypass,
+              (1u << state->spi_config->data_io0_pin) | (1u << state->spi_config->data_io1_pin));
+  pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
+  pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
+
+  gpio_set_function(state->spi_config->data_io0_pin, state->pio_func_sel);
+  gpio_set_function(state->spi_config->data_io1_pin, state->pio_func_sel);
+
+  // Set data pin to pull down and schmitt
+  gpio_set_pulls(state->spi_config->data_io0_pin, false, true);
+  gpio_set_pulls(state->spi_config->data_io1_pin, false, true);
+  gpio_set_input_hysteresis_enabled(state->spi_config->data_io0_pin, true);
+  gpio_set_input_hysteresis_enabled(state->spi_config->data_io1_pin, true);
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
+  printf("\r\n[QSPI QUAD MODE]\r\n");
+  sm_config_set_out_pins(&sm_config, state->spi_config->data_io0_pin, 4);
+  sm_config_set_in_pins(&sm_config, state->spi_config->data_io0_pin);
+  sm_config_set_set_pins(&sm_config, state->spi_config->data_io0_pin, 4);
+  sm_config_set_sideset(&sm_config, 1, false, false);
+  sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
+
+  sm_config_set_in_shift(&sm_config, false, true, 8);
+  sm_config_set_out_shift(&sm_config, false, true, 8);
+
+  hw_set_bits(&state->pio->input_sync_bypass,
+              (1u << state->spi_config->data_io0_pin) | (1u << state->spi_config->data_io1_pin) | (1u << state->spi_config->data_io2_pin) | (1u << state->spi_config->data_io3_pin));
+  pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
+  pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
+
+  gpio_set_function(state->spi_config->data_io0_pin, state->pio_func_sel);
+  gpio_set_function(state->spi_config->data_io1_pin, state->pio_func_sel);
+  gpio_set_function(state->spi_config->data_io2_pin, state->pio_func_sel);
+  gpio_set_function(state->spi_config->data_io3_pin, state->pio_func_sel);
+
+  // Set data pin to pull down and schmitt
+  gpio_set_pulls(state->spi_config->data_io0_pin, false, true);
+  gpio_set_pulls(state->spi_config->data_io1_pin, false, true);
+  gpio_set_pulls(state->spi_config->data_io2_pin, false, true);
+  gpio_set_pulls(state->spi_config->data_io3_pin, false, true);
+  gpio_set_input_hysteresis_enabled(state->spi_config->data_io0_pin, true);
+  gpio_set_input_hysteresis_enabled(state->spi_config->data_io1_pin, true);
+  gpio_set_input_hysteresis_enabled(state->spi_config->data_io2_pin, true);
+  gpio_set_input_hysteresis_enabled(state->spi_config->data_io3_pin, true);
+  /* @todo: Implement to use. */
+#endif
+#else //W55RP20
+sm_config_set_out_pins(&sm_config, state->spi_config->data_out_pin, 1);
+sm_config_set_in_pins(&sm_config, state->spi_config->data_in_pin);
+sm_config_set_set_pins(&sm_config, state->spi_config->data_out_pin, 1);
+sm_config_set_sideset(&sm_config, 1, false, false);
+sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
+
+sm_config_set_in_shift(&sm_config, false, true, 8);
+sm_config_set_out_shift(&sm_config, false, true, 8);
+hw_set_bits(&state->pio->input_sync_bypass, 1u << state->spi_config->data_in_pin);
+pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
+pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
+gpio_set_function(state->spi_config->data_out_pin, state->pio_func_sel);
+gpio_set_function(state->spi_config->clock_pin, state->pio_func_sel);
+
+// Set data pin to pull down and schmitt
+gpio_set_pulls(state->spi_config->data_in_pin, false, true);
+gpio_set_input_hysteresis_enabled(state->spi_config->data_in_pin, true);
+#endif
+
+  pio_sm_exec(state->pio, state->pio_sm, pio_encode_set(pio_pins, 1));
+
+  state->dma_out = (int8_t)dma_claim_unused_channel(false); // todo: Should be able to use one dma channel?
+  state->dma_in = (int8_t)dma_claim_unused_channel(false);
+  if (state->dma_out < 0 || state->dma_in < 0)
+  {
+    wiznet_spi_pio_close(&state->funcs);
+    return NULL;
+  }
+  
+  return &state->funcs;
+  
 }
 
 static void wiznet_spi_pio_close(wiznet_spi_handle_t handle) {
@@ -475,8 +420,6 @@ void wiznet_spi_pio_read_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *rx, ui
   uint8_t command_buf[8] = {0,};
   uint16_t command_len = mk_cmd_buf(command_buf, op_code, AddrSel);
   uint32_t loop_cnt = 0;
-  
-  wiznet_spi_pio_frame_start();
 
   pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
   pio_sm_set_wrap(active_state->pio, active_state->pio_sm, active_state->pio_offset, active_state->pio_offset + PIO_OFFSET_READ_BITS_END - 1);
@@ -518,8 +461,6 @@ void wiznet_spi_pio_read_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *rx, ui
   dma_channel_abort(active_state->dma_out);
   dma_channel_abort(active_state->dma_in);
 
-  wiznet_spi_pio_frame_start();
-
   dma_channel_config out_config = dma_channel_get_default_config(active_state->dma_out);
   channel_config_set_transfer_data_size(&out_config, DMA_SIZE_8);
   channel_config_set_bswap(&out_config, true);
@@ -546,22 +487,16 @@ void wiznet_spi_pio_read_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *rx, ui
 
   pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
   pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_mov(pio_pins, pio_null)); 
-  wiznet_spi_pio_frame_end();
   
   #endif
 }
 
 void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, uint16_t tx_length)  
 {
-    uint8_t command_buf[8] = {0,}; //[8] = {0,};
+    uint8_t command_buf[8] = {0,};
     uint16_t command_len = mk_cmd_buf(command_buf, op_code, AddrSel);
     uint32_t loop_cnt = 0;
     tx_length = tx_length + command_len;
-  
-    //command_buf[7] = 0xAB;
-    //command_buf[8] = 0x02;
-  
-    //tx_length = 9;
   
     pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
     pio_sm_set_wrap(active_state->pio, active_state->pio_sm, active_state->pio_offset, active_state->pio_offset + PIO_OFFSET_WRITE_BITS_END - 1);
@@ -595,8 +530,7 @@ void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, u
     pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_out(pio_y, 32));
     pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_jmp(active_state->pio_offset));
     dma_channel_abort(active_state->dma_out);
-  
-    wiznet_spi_pio_frame_start();
+
 
     dma_channel_config out_config = dma_channel_get_default_config(active_state->dma_out);
     channel_config_set_transfer_data_size(&out_config, DMA_SIZE_8);
@@ -606,14 +540,13 @@ void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, u
     pio_sm_set_enabled(active_state->pio, active_state->pio_sm, true);
   
     dma_channel_configure(active_state->dma_out, &out_config, &active_state->pio->txf[active_state->pio_sm], command_buf, command_len, true);
-    //dma_channel_wait_for_finish_blocking(active_state->dma_out);
     dma_channel_wait_for_finish_blocking(active_state->dma_out);
     dma_channel_configure(active_state->dma_out, &out_config, &active_state->pio->txf[active_state->pio_sm], tx, tx_length - command_len, true);
     dma_channel_wait_for_finish_blocking(active_state->dma_out);
   
     const uint32_t fdebug_tx_stall = 1u << (PIO_FDEBUG_TXSTALL_LSB + active_state->pio_sm);
     active_state->pio->fdebug = fdebug_tx_stall;
-    //pio_sm_set_enabled(active_state->pio, active_state->pio_sm, true);
+    // pio_sm_set_enabled(active_state->pio, active_state->pio_sm, true);
     while (!(active_state->pio->fdebug & fdebug_tx_stall))
     {
       tight_loop_contents(); // todo timeout
@@ -631,9 +564,7 @@ void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, u
   #endif
   
     pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_mov(pio_pins, pio_null)); 
-  
     pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
-    wiznet_spi_pio_frame_end();
   #endif
   }
 #else
