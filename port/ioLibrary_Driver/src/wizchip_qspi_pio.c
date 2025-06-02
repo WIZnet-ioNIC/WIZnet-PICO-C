@@ -161,9 +161,12 @@ static void pio_spi_gpio_setup(spi_pio_state_t *state) {
     gpio_set_pulls(state->spi_config->irq_pin, false, false);
 #else //W55RP20
     // Setup MOSI, MISO and IRQ
+    // Setup MOSI, MISO
     gpio_init(state->spi_config->data_out_pin);
     gpio_set_dir(state->spi_config->data_out_pin, GPIO_OUT);
     gpio_put(state->spi_config->data_out_pin, false);
+    gpio_init(state->spi_config->data_in_pin);
+    gpio_set_dir(state->spi_config->data_in_pin, GPIO_IN);
 
     // Setup CS
     gpio_init(state->spi_config->cs_pin);
