@@ -284,7 +284,7 @@ void wizchip_initialize(void)
     #elif (_WIZCHIP_ == W5500)
         uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
     #elif (_WIZCHIP_ == W6100)
-        uint8_t memsize[2][8] = {{2, 0, 0, 0, 0, 0, 0, 0}, {2, 0, 0, 0, 0, 0, 0, 0}};
+        uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
     #elif (_WIZCHIP_ == W6300)
 
     uint8_t memsize[2][8] = {{4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}};
