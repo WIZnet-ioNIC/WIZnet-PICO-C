@@ -53,7 +53,6 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        .dhcp = NETINFO_DHCP,                       //TODO: will be modified after 'dhcp' and 'ipmode' merge.
 #if _WIZCHIP_ > W5500
         .lla = {0xfe, 0x80, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00,
@@ -75,9 +74,10 @@ static wiz_NetInfo g_net_info =
                 0x48, 0x60, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x88, 0x88},             // DNS6 server
+        .dhcp = NETINFO_DHCP        ,
         .ipmode = NETINFO_STATIC_ALL                // this 'ipmode' is never used in this project.  
 #else
-        .dhcp = NETINFO_STATIC        
+        .dhcp = NETINFO_DHCP        
 #endif
 };
 static uint8_t g_ethernet_buf[ETHERNET_BUF_MAX_SIZE] = {
