@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "wizchip_spi.h"
+
 #ifndef _WIZCHIP_GPIO_IRQ_H_
 #define _WIZCHIP_GPIO_IRQ_H_
 
@@ -12,14 +14,6 @@
  * Macros
  * ----------------------------------------------------------------------------------------------------
  */
-/* GPIO */
-#if (_WIZCHIP_ <= W5500)
-#define PIN_INT 21
-#elif (_WIZCHIP_ == W6100)
-#define PIN_INT 22
-#elif (_WIZCHIP_ == W6300)
-#define PIN_INT 15
-#endif
 
 /**
  * ----------------------------------------------------------------------------------------------------

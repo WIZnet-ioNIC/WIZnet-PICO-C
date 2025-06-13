@@ -24,6 +24,10 @@
 #include "pico/critical_section.h"
 #include "hardware/dma.h"
 
+#include <FreeRTOS.h>
+#include <task.h>
+#include <semphr.h>
+
 /**
  * ----------------------------------------------------------------------------------------------------
  * Macros
@@ -56,7 +60,7 @@ static dma_channel_config dma_channel_config_rx;
         .data_io3_pin = PIO_SPI_DATA_IO3_PIN,
         .cs_pin = PIN_CS,
         .reset_pin = PIN_RST,
-        .irq_pin = PIO_IRQ_PIN,
+        .irq_pin = PIN_INT,
     };
     #else
     wiznet_spi_config_t g_spi_config = {
@@ -64,7 +68,7 @@ static dma_channel_config dma_channel_config_rx;
         .data_out_pin = PIN_MOSI,
         .cs_pin = PIN_CS,
         .clock_pin = PIN_SCK,
-        .irq_pin = PIN_IRQ,
+        .irq_pin = PIN_INT,
         .reset_pin = PIN_RST,
         .clock_div_major = PIO_CLOCK_DIV_MAJOR,
         .clock_div_minor = PIO_CLOCK_DIV_MINOR,
@@ -286,7 +290,6 @@ void wizchip_initialize(void)
     #elif (_WIZCHIP_ == W6100)
         uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
     #elif (_WIZCHIP_ == W6300)
-
     uint8_t memsize[2][8] = {{4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}};
     #endif
 

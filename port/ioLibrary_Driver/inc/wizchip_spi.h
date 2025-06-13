@@ -18,23 +18,23 @@
 #if (DEVICE_BOARD_NAME == W55RP20_EVB_PICO)
 
 #define USE_PIO
+#define PIN_CS 20
 #define PIN_SCK 21
 #define PIN_MOSI 23
 #define PIN_MISO 22
-#define PIN_CS 20
+#define PIN_INT 24
 #define PIN_RST 25
-#define PIN_IRQ 24
 
 #elif (DEVICE_BOARD_NAME == W6300_EVB_PICO || DEVICE_BOARD_NAME == W6300_EVB_PICO2)
 
 #define USE_PIO
-#define PIO_IRQ_PIN             15
+#define PIN_INT                 15
+#define PIN_CS                  16
 #define PIO_SPI_SCK_PIN         17
 #define PIO_SPI_DATA_IO0_PIN    18
 #define PIO_SPI_DATA_IO1_PIN    19
 #define PIO_SPI_DATA_IO2_PIN    20
 #define PIO_SPI_DATA_IO3_PIN    21
-#define PIN_CS                  16
 #define PIN_RST                 22
 
 #else
@@ -46,6 +46,7 @@
 #define PIN_MISO 16
 #define PIN_CS 17
 #define PIN_RST 20
+#define PIN_INT 21
 
 /* Use SPI DMA */
 //#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
