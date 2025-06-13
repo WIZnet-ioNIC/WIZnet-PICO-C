@@ -24,10 +24,6 @@
 #include "pico/critical_section.h"
 #include "hardware/dma.h"
 
-#include <FreeRTOS.h>
-#include <task.h>
-#include <semphr.h>
-
 /**
  * ----------------------------------------------------------------------------------------------------
  * Macros
