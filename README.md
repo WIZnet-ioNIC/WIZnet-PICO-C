@@ -127,7 +127,7 @@ Setup the board in '**CMakeLists.txt**' in '**WIZnet-PICO-C/**' directory accord
 - **[W5500-EVB-Pico][link-w5500-evb-pico]**
 - **[W55RP20-EVB-Pico][link-w55rp20-evb-pico]**
 - **[W6100-EVB-Pico][link-w6100-evb-pico]**
-- **W6300-EVB-Pico**
+- **[W6300-EVB-Pico][link-w6300-evb-pico]**
 - **[W5100S-EVB-Pico2][link-w5100s-evb-pico2]**
 - **[W5500-EVB-Pico2][link-w5500-evb-pico2]**
 - **[W6100-EVB-Pico2][link-w6100-evb-pico2]**
