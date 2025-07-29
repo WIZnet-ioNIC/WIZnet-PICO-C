@@ -314,6 +314,8 @@ void wizchip_initialize(void)
 
             return;
         }
+        printf(" PHY link status : %s\n", (temp == PHY_LINK_ON) ? "PHY_LINK_ON" : "PHY_LINK_OFF");
+        sleep_ms(1000);
     } while (temp == PHY_LINK_OFF);
 }
 
@@ -337,6 +339,7 @@ void wizchip_check(void)
         while (1)
             ;
     }
+    printf(" W5500 version : 0x%02x\n", getVERSIONR());
 #elif (_WIZCHIP_ == W6100)
     /* Read version register */
     if (getCIDR() != 0x6100)

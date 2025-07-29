@@ -39,14 +39,15 @@
 
 #else
 /* SPI */
-#define SPI_PORT spi0
-
-#define PIN_SCK 18
-#define PIN_MOSI 19
-#define PIN_MISO 16
-#define PIN_CS 17
-#define PIN_RST 20
-#define PIN_INT 21
+// #define SPI_PORT spi0
+// matches water module
+#define USE_PIO
+#define PIN_SCK 26
+#define PIN_MOSI 27
+#define PIN_MISO 28
+#define PIN_CS 25
+#define PIN_RST 19
+#define PIN_INT 18
 
 /* Use SPI DMA */
 //#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
@@ -56,7 +57,7 @@
     #if _WIZCHIP_SPI_SCLK_SPEED > 44
         #define PIO_SCLK 44
     #endif
-#define SYS_CLK 66.5
+#define SYS_CLK 48
 #define TEMP (SYS_CLK / _WIZCHIP_SPI_SCLK_SPEED)
 #define PIO_CLOCK_DIV_MAJOR ((uint8_t)(TEMP))  
 #define PIO_CLOCK_DIV_MINOR (uint8_t)(256 * (TEMP - PIO_CLOCK_DIV_MAJOR))
