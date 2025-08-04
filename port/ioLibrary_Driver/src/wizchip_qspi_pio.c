@@ -25,13 +25,13 @@
 #define PADS_DRIVE_STRENGTH PADS_BANK0_GPIO0_DRIVE_VALUE_12MA
 #define IRQ_SAMPLE_DELAY_NS 100
 
-#if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
-#define PIO_PROGRAM_NAME wizchip_pio_spi_single_write_read
-#elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
-#define PIO_PROGRAM_NAME wizchip_pio_spi_dual_write_read
-#elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
-#define PIO_PROGRAM_NAME wizchip_pio_spi_quad_write_read
-#endif
+// #if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
+// #define PIO_PROGRAM_NAME wizchip_pio_spi_single_write_read
+// #elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
+// #define PIO_PROGRAM_NAME wizchip_pio_spi_dual_write_read
+// #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
+// #define PIO_PROGRAM_NAME wizchip_pio_spi_quad_write_read
+// #endif
 
 #if   (_WIZCHIP_ == W6300)
     #define PIO_PROGRAM_FUNC __CONCAT(PIO_PROGRAM_NAME, _program)
@@ -173,7 +173,7 @@ static void pio_spi_gpio_setup(spi_pio_state_t *state) {
     // Setup IRQ
     gpio_init(state->spi_config->irq_pin);
     gpio_set_dir(state->spi_config->irq_pin, GPIO_IN);
-    gpio_set_pulls(state->spi_config->irq_pin, false, false);
+    gpio_set_pulls(state->spi_config->irq_pin, true, false);
 #endif
 
 }
@@ -217,7 +217,7 @@ spi_pio_state_t *state;
     }
 
     state->pio_offset = pio_add_program(state->pio, &PIO_PROGRAM_FUNC);    
-    printf("[SPI CLOCK SPEED : %.2lf MHz]\r\n\r\n", 66.5 / (state->spi_config->clock_div_major + ((double)state->spi_config->clock_div_minor / 256)));
+    printf("[SPI CLOCK SPEED : %.2lf MHz]\r\n\r\n", 48 / (state->spi_config->clock_div_major + ((double)state->spi_config->clock_div_minor / 256)));
     pio_sm_config sm_config = PIO_PROGRAM_GET_DEFAULT_CONFIG_FUNC(state->pio_offset);
 
     sm_config_set_clkdiv_int_frac(&sm_config, state->spi_config->clock_div_major, state->spi_config->clock_div_minor);
@@ -323,11 +323,13 @@ hw_set_bits(&state->pio->input_sync_bypass, 1u << state->spi_config->data_in_pin
 pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
 pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
 gpio_set_function(state->spi_config->data_out_pin, state->pio_func_sel);
+gpio_set_function(state->spi_config->data_in_pin, state->pio_func_sel);
 gpio_set_function(state->spi_config->clock_pin, state->pio_func_sel);
 
 // Set data pin to pull down and schmitt
+gpio_set_dir(state->spi_config->data_in_pin, GPIO_IN); // <--- ADDED THIS
 gpio_set_pulls(state->spi_config->data_in_pin, false, true);
-gpio_set_input_hysteresis_enabled(state->spi_config->data_in_pin, true);
+// gpio_set_input_hysteresis_enabled(state->spi_config->data_in_pin, true); // <--- REMOVED THIS
 #endif
 
   pio_sm_exec(state->pio, state->pio_sm, pio_encode_set(pio_pins, 1));

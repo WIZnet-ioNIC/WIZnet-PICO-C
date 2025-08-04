@@ -39,7 +39,8 @@
 
 #else
 /* SPI */
-// #define SPI_PORT spi0
+
+
 // matches water module
 #define USE_PIO
 #define PIN_SCK 26
@@ -48,6 +49,17 @@
 #define PIN_CS 25
 #define PIN_RST 19
 #define PIN_INT 18
+
+// for dev kit
+// #define USE_PIO
+// #define SPI_PORT spi0
+// #define PIN_SCK 18
+// #define PIN_MOSI 19
+// #define PIN_MISO 16
+// #define PIN_CS 17
+// #define PIN_RST 20
+// #define PIN_INT 21
+
 
 /* Use SPI DMA */
 //#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
