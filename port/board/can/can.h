@@ -13,14 +13,14 @@ struct can2040_msg {
 };
 
 enum {
-    CAN2040_ID_RTR = 1<<30,
-    CAN2040_ID_EFF = 1<<31,
+    CAN2040_ID_RTR = 1 << 30,
+    CAN2040_ID_EFF = 1 << 31,
 };
 
 enum {
-    CAN2040_NOTIFY_RX = 1<<20,
-    CAN2040_NOTIFY_TX = 1<<21,
-    CAN2040_NOTIFY_ERROR = 1<<23,
+    CAN2040_NOTIFY_RX = 1 << 20,
+    CAN2040_NOTIFY_TX = 1 << 21,
+    CAN2040_NOTIFY_ERROR = 1 << 23,
 };
 struct can2040;
 typedef void (*can2040_rx_cb)(struct can2040 *cd, uint32_t notify
@@ -44,7 +44,7 @@ int can2040_transmit(struct can2040 *cd, struct can2040_msg *msg);
 
 
 /****************************************************************
- * Internal definitions
+    Internal definitions
  ****************************************************************/
 
 struct can2040_bitunstuffer {
