@@ -1,14 +1,14 @@
 /**
- * Copyright (c) 2021 WIZnet Co.,Ltd
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+    Copyright (c) 2021 WIZnet Co.,Ltd
+
+    SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Includes
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Includes
+    ----------------------------------------------------------------------------------------------------
+*/
 #include <stdio.h>
 
 #include "port_common.h"
@@ -24,13 +24,10 @@
 
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Macros
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-#define PLL_SYS_KHZ (133 * 1000)
-
+    ----------------------------------------------------------------------------------------------------
+    Macros
+    ----------------------------------------------------------------------------------------------------
+*/
 /* Buffer */
 #define ETHERNET_BUF_MAX_SIZE (1024 * 2)
 
@@ -51,42 +48,51 @@
 
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Variables
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Variables
+    ----------------------------------------------------------------------------------------------------
+*/
 /* Network */
-static wiz_NetInfo g_net_info =
-    {
-        .mac = {0x00, 0x08, 0xDC, 0x12, 0x34, 0x56}, // MAC address
-        .ip = {192, 168, 11, 2},                     // IP address
-        .sn = {255, 255, 255, 0},                    // Subnet Mask
-        .gw = {192, 168, 11, 1},                     // Gateway
-        .dns = {8, 8, 8, 8},                         // DNS server
-        #if _WIZCHIP_ > W5500
-        .lla = {0xfe, 0x80, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x02, 0x08, 0xdc, 0xff,
-                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
-        .gua = {0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
-        .sn6 = {0xff, 0xff, 0xff, 0xff,
-                0xff, 0xff, 0xff, 0xff,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
-        .gw6 = {0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
-        .dns6 = {0x20, 0x01, 0x48, 0x60,
-                0x48, 0x60, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x88, 0x88},             // DNS6 server
-        .ipmode = NETINFO_STATIC_ALL
+static wiz_NetInfo g_net_info = {
+    .mac = {0x00, 0x08, 0xDC, 0x12, 0x34, 0x56}, // MAC address
+    .ip = {192, 168, 11, 2},                     // IP address
+    .sn = {255, 255, 255, 0},                    // Subnet Mask
+    .gw = {192, 168, 11, 1},                     // Gateway
+    .dns = {8, 8, 8, 8},                         // DNS server
+#if _WIZCHIP_ > W5500
+    .lla = {
+        0xfe, 0x80, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x02, 0x08, 0xdc, 0xff,
+        0xfe, 0x57, 0x57, 0x25
+    },             // Link Local Address
+    .gua = {
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    },             // Global Unicast Address
+    .sn6 = {
+        0xff, 0xff, 0xff, 0xff,
+        0xff, 0xff, 0xff, 0xff,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    },             // IPv6 Prefix
+    .gw6 = {
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    },             // Gateway IPv6 Address
+    .dns6 = {
+        0x20, 0x01, 0x48, 0x60,
+        0x48, 0x60, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x88, 0x88
+    },             // DNS6 server
+    .ipmode = NETINFO_STATIC_ALL
 #else
-        .dhcp = NETINFO_STATIC        
+    .dhcp = NETINFO_STATIC
 #endif
 };
 /* TFTP */
@@ -96,34 +102,25 @@ uint8_t tftp_client_socket_buffer[TFTP_CLIENT_SOCKET_BUFFER_SIZE] = {0};
 static volatile uint32_t g_msec_cnt = 0;
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-static void set_clock_khz(void);
-
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
 /* Timer  */
 static void repeating_timer_callback(void);
 static time_t millis(void);
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Main
- * ----------------------------------------------------------------------------------------------------
- */
-int main()
-{
+    ----------------------------------------------------------------------------------------------------
+    Main
+    ----------------------------------------------------------------------------------------------------
+*/
+int main() {
     /* Initialize */
-    uint8_t retval = 0;
-    uint32_t start_ms = 0;
-
     int tftp_state;
     uint8_t tftp_read_flag = 0;
-    uint32_t tftp_server_ip = inet_addr(TFTP_SERVER_IP);
+    uint32_t tftp_server_ip = inet_addr((uint8_t *)TFTP_SERVER_IP);
     uint8_t tftp_read_file_name[] = TFTP_SERVER_FILE_NAME;
-
-    set_clock_khz();
 
     stdio_init_all();
     sleep_ms(3000);
@@ -146,30 +143,21 @@ int main()
     TFTP_init(TFTP_SOCKET_ID, tftp_client_socket_buffer);
 
     /* Infinite loop */
-    while (1)
-    {
-        if (tftp_read_flag == 0)
-        {
+    while (1) {
+        if (tftp_read_flag == 0) {
             printf("tftp server ip: %s, file name: %s\r\n", TFTP_SERVER_IP, TFTP_SERVER_FILE_NAME);
             printf("send request\r\n");
-            TFTP_read_request(tftp_server_ip, TFTP_SERVER_FILE_NAME);
+            TFTP_read_request(tftp_server_ip, (uint8_t *)TFTP_SERVER_FILE_NAME);
             tftp_read_flag = 1;
-        }
-        else
-        {
+        } else {
             tftp_state = TFTP_run();
-            if (tftp_state == TFTP_SUCCESS)
-            {
+            if (tftp_state == TFTP_SUCCESS) {
                 printf("tftp read success, file name: %s\r\n", tftp_read_file_name);
-                while (1)
-                {
+                while (1) {
                 }
-            }
-            else if (tftp_state == TFTP_FAIL)
-            {
+            } else if (tftp_state == TFTP_FAIL) {
                 printf("tftp read fail, file name: %s\r\n", tftp_read_file_name);
-                while (1)
-                {
+                while (1) {
                 }
             }
         }
@@ -177,29 +165,12 @@ int main()
 }
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-static void set_clock_khz(void)
-{
-    // set a system clock frequency in khz
-    set_sys_clock_khz(PLL_SYS_KHZ, true);
-
-    // configure the specified clock
-    clock_configure(
-        clk_peri,
-        0,                                                // No glitchless mux
-        CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS, // System PLL on AUX mux
-        PLL_SYS_KHZ * 1000,                               // Input frequency
-        PLL_SYS_KHZ * 1000                                // Output (must be same as no divider)
-    );
-}
-
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
 /* Timer */
-static void repeating_timer_callback(void)
-{
+static void repeating_timer_callback(void) {
     g_msec_cnt++;
     tftp_timeout_handler();
 }

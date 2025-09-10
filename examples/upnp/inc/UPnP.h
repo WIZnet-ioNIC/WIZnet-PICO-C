@@ -22,19 +22,19 @@ signed short parseDeletePort(const char* xml);		/**< This function parses the re
 signed short parseAddPort(const char* xml);		/**< This function parses the received add port message from IGD(Internet Gateway Device). */
 
 
-unsigned short ATOI(char* str,unsigned short base	);
-unsigned long ATOI32(char* str,unsigned short base	);
-void itoa2(unsigned short n,unsigned char* str, unsigned char len);
-int ValidATOI(char* str, int base,int* ret);
-void replacetochar(char * str,	char oldchar,char newchar	);
-char C2D(unsigned char c	);
+unsigned short ATOI(char* str, unsigned short base);
+unsigned long ATOI32(char* str, unsigned short base);
+void itoa2(unsigned short n, unsigned char* str, unsigned char len);
+int ValidATOI(char* str, int base, int* ret);
+void replacetochar(char * str,	char oldchar, char newchar);
+char C2D(unsigned char c);
 unsigned short swaps(unsigned short i);
 unsigned long swapl(unsigned long l);
 void mid(char* src, char* s1, char* s2, char* sub);
-void inet_addr_(unsigned char* addr,unsigned char *ip);
+void inet_addr_(unsigned char* addr, unsigned char *ip);
 char* inet_ntoa(unsigned long addr);
 unsigned long inet_addr(unsigned char* addr);
-char VerifyIPAddress_orig(char* src	);
+char VerifyIPAddress_orig(char* src);
 char VerifyIPAddress(char* src, unsigned char * ip);
 unsigned short htons(unsigned short hostshort);
 unsigned long htonl(unsigned long hostlong);

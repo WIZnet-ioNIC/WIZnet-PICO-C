@@ -1,14 +1,14 @@
 /**
- * Copyright (c) 2021 WIZnet Co.,Ltd
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+    Copyright (c) 2021 WIZnet Co.,Ltd
+
+    SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Includes
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Includes
+    ----------------------------------------------------------------------------------------------------
+*/
 #include <stdio.h>
 
 #include "port_common.h"
@@ -21,15 +21,12 @@
 #include "UPnP.h"
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Macros
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-#define PLL_SYS_KHZ (133 * 1000)
-
+    ----------------------------------------------------------------------------------------------------
+    Macros
+    ----------------------------------------------------------------------------------------------------
+*/
 /* Buffer */
-#define ETHERNET_BUF_MAX_SIZE (1024 * 4)   
+#define ETHERNET_BUF_MAX_SIZE (1024 * 4)
 
 /* Socket */
 #define SOCKET_UPNP 0
@@ -54,42 +51,51 @@ static uint8_t rx_size[_WIZCHIP_SOCK_NUM_] = {4, 4, 2, 1, 1, 1, 1, 2};
 #endif
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Variables
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Variables
+    ----------------------------------------------------------------------------------------------------
+*/
 /* Network */
-static wiz_NetInfo g_net_info =
-    {
-        .mac = {0x00, 0x08, 0xDC, 0x12, 0x34, 0x56}, // MAC address
-        .ip = {192, 168, 11, 2},                     // IP address
-        .sn = {255, 255, 255, 0},                    // Subnet Mask
-        .gw = {192, 168, 11, 1},                     // Gateway
-        .dns = {8, 8, 8, 8},                         // DNS server
+static wiz_NetInfo g_net_info = {
+    .mac = {0x00, 0x08, 0xDC, 0x12, 0x34, 0x56}, // MAC address
+    .ip = {192, 168, 11, 2},                     // IP address
+    .sn = {255, 255, 255, 0},                    // Subnet Mask
+    .gw = {192, 168, 11, 1},                     // Gateway
+    .dns = {8, 8, 8, 8},                         // DNS server
 #if _WIZCHIP_ > W5500
-        .lla = {0xfe, 0x80, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x02, 0x08, 0xdc, 0xff,
-                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
-        .gua = {0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
-        .sn6 = {0xff, 0xff, 0xff, 0xff,
-                0xff, 0xff, 0xff, 0xff,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
-        .gw6 = {0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
-        .dns6 = {0x20, 0x01, 0x48, 0x60,
-                0x48, 0x60, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x88, 0x88},             // DNS6 server
-        .ipmode = NETINFO_STATIC_ALL
+    .lla = {
+        0xfe, 0x80, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x02, 0x08, 0xdc, 0xff,
+        0xfe, 0x57, 0x57, 0x25
+    },             // Link Local Address
+    .gua = {
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    },             // Global Unicast Address
+    .sn6 = {
+        0xff, 0xff, 0xff, 0xff,
+        0xff, 0xff, 0xff, 0xff,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    },             // IPv6 Prefix
+    .gw6 = {
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    },             // Gateway IPv6 Address
+    .dns6 = {
+        0x20, 0x01, 0x48, 0x60,
+        0x48, 0x60, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x88, 0x88
+    },             // DNS6 server
+    .ipmode = NETINFO_STATIC_ALL
 #else
-        .dhcp = NETINFO_STATIC        
+    .dhcp = NETINFO_STATIC
 #endif
 };
 
@@ -99,32 +105,24 @@ static uint8_t g_upnp_buf[ETHERNET_BUF_MAX_SIZE] = {
 };
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-static void set_clock_khz(void);
-
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
 /* USER LEDS */
 static void UserLED_Init(void);
 static void setUserLEDStatus(uint8_t val);
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Main
- * ----------------------------------------------------------------------------------------------------
- */
-int main()
-{
+    ----------------------------------------------------------------------------------------------------
+    Main
+    ----------------------------------------------------------------------------------------------------
+*/
+int main() {
     /* Initialize */
-    int retval = 0;
-
-    set_clock_khz();
-
     stdio_init_all();
 
-    while(!stdio_usb_connected());
+    while (!stdio_usb_connected());
 
     printf("wiznet chip upnp example.\r\n");
 
@@ -144,69 +142,44 @@ int main()
     /* Get network information */
     print_network_information(g_net_info);
 
-    do
-    {
+    do {
         printf("Send SSDP.. \r\n");
     } while (SSDPProcess(SOCKET_UPNP) != 0); // SSDP Search discovery
 
-    if (GetDescriptionProcess(SOCKET_UPNP) == 0) // GET IGD description
-    {
+    if (GetDescriptionProcess(SOCKET_UPNP) == 0) { // GET IGD description
         printf("GetDescription Success!!\r\n");
-    }
-    else
-    {
+    } else {
         printf("GetDescription Fail!!\r\n");
     }
 
-    if (SetEventing(SOCKET_UPNP) == 0) // Subscribes IGD event messageS
-    {
+    if (SetEventing(SOCKET_UPNP) == 0) { // Subscribes IGD event messageS
         printf("SetEventing Success!!\r\n");
-    }
-    else
-    {
+    } else {
         printf("SetEventing Fail!!\r\n");
     }
 
     Main_Menu(SOCKET_UPNP, SOCKET_UPNP + 1, SOCKET_UPNP + 2, g_upnp_buf, PORT_TCP, PORT_UDP); // Main menu
 
     /* Infinite loop */
-    while (1)
-    {
+    while (1) {
     }
 }
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-static void set_clock_khz(void)
-{
-    // set a system clock frequency in khz
-    set_sys_clock_khz(PLL_SYS_KHZ, true);
-
-    // configure the specified clock
-    clock_configure(
-        clk_peri,
-        0,                                                // No glitchless mux
-        CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS, // System PLL on AUX mux
-        PLL_SYS_KHZ * 1000,                               // Input frequency
-        PLL_SYS_KHZ * 1000                                // Output (must be same as no divider)
-    );
-}
-
-void UserLED_Init()
-{
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
+void UserLED_Init() {
     gpio_init(USER_LED_PIN);              // Initialize LED
     gpio_set_dir(USER_LED_PIN, GPIO_OUT); // Output mode
     UserLED_Control_Init(setUserLEDStatus);
 }
 
-void setUserLEDStatus(uint8_t val)
-{
-    if (val == 0)
+void setUserLEDStatus(uint8_t val) {
+    if (val == 0) {
         gpio_put(USER_LED_PIN, 0);
-    else
+    } else {
         gpio_put(USER_LED_PIN, 1);
+    }
 }

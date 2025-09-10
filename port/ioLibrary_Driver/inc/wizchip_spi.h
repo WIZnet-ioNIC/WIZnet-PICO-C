@@ -46,6 +46,7 @@
 #else
 /* SPI */
 #define SPI_PORT spi0
+#define SPI_CLK  10
 
 #define PIN_SCK 18
 #define PIN_MOSI 19

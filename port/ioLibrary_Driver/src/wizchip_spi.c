@@ -199,7 +199,7 @@ void wizchip_spi_initialize(void) {
     (*spi_handle)->set_active(spi_handle);
 #else
     // this example will use SPI0 at 5MHz
-    spi_init(SPI_PORT, _WIZCHIP_SPI_SCLK_SPEED * 1000 * 1000);
+    spi_init(SPI_PORT, SPI_CLK * 1000 * 1000);
 
     gpio_set_function(PIN_SCK, GPIO_FUNC_SPI);
     gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
