@@ -1,14 +1,14 @@
 /**
- * Copyright (c) 2021 WIZnet Co.,Ltd
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+    Copyright (c) 2021 WIZnet Co.,Ltd
+
+    SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Includes
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Includes
+    ----------------------------------------------------------------------------------------------------
+*/
 #include <stdio.h>
 
 #include "port_common.h"
@@ -22,12 +22,10 @@
 #include "timer.h"
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Macros
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-#define PLL_SYS_KHZ (133 * 1000)
+    ----------------------------------------------------------------------------------------------------
+    Macros
+    ----------------------------------------------------------------------------------------------------
+*/
 
 /* Buffer */
 #define ETHERNET_BUF_MAX_SIZE (1024 * 2)
@@ -41,43 +39,52 @@
 #define DNS_RETRY_COUNT 5
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Variables
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Variables
+    ----------------------------------------------------------------------------------------------------
+*/
 /* Network */
-static wiz_NetInfo g_net_info =
-    {
-        .mac = {0x00, 0x08, 0xDC, 0x12, 0x34, 0x56}, // MAC address
-        .ip = {192, 168, 11, 2},                     // IP address
-        .sn = {255, 255, 255, 0},                    // Subnet Mask
-        .gw = {192, 168, 11, 1},                     // Gateway
-        .dns = {8, 8, 8, 8},                         // DNS server
+static wiz_NetInfo g_net_info = {
+    .mac = {0x00, 0x08, 0xDC, 0x12, 0x34, 0x56}, // MAC address
+    .ip = {192, 168, 11, 2},                     // IP address
+    .sn = {255, 255, 255, 0},                    // Subnet Mask
+    .gw = {192, 168, 11, 1},                     // Gateway
+    .dns = {8, 8, 8, 8},                         // DNS server
 #if _WIZCHIP_ > W5500
-        .lla = {0xfe, 0x80, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x02, 0x08, 0xdc, 0xff,
-                0xfe, 0x57, 0x57, 0x25},             // Link Local Address
-        .gua = {0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00},             // Global Unicast Address
-        .sn6 = {0xff, 0xff, 0xff, 0xff,
-                0xff, 0xff, 0xff, 0xff,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00},             // IPv6 Prefix
-        .gw6 = {0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00},             // Gateway IPv6 Address
-        .dns6 = {0x20, 0x01, 0x48, 0x60,
-                0x48, 0x60, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x88, 0x88},             // DNS6 server
-        .dhcp = NETINFO_DHCP        ,
-        .ipmode = NETINFO_STATIC_ALL                // this 'ipmode' is never used in this project.  
+    .lla = {
+        0xfe, 0x80, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x02, 0x08, 0xdc, 0xff,
+        0xfe, 0x57, 0x57, 0x25
+    },             // Link Local Address
+    .gua = {
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    },             // Global Unicast Address
+    .sn6 = {
+        0xff, 0xff, 0xff, 0xff,
+        0xff, 0xff, 0xff, 0xff,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    },             // IPv6 Prefix
+    .gw6 = {
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    },             // Gateway IPv6 Address
+    .dns6 = {
+        0x20, 0x01, 0x48, 0x60,
+        0x48, 0x60, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x88, 0x88
+    },             // DNS6 server
+    .dhcp = NETINFO_DHCP,
+    .ipmode = NETINFO_STATIC_ALL                // this 'ipmode' is never used in this project.
 #else
-        .dhcp = NETINFO_DHCP        
+    .dhcp = NETINFO_DHCP
 #endif
 };
 static uint8_t g_ethernet_buf[ETHERNET_BUF_MAX_SIZE] = {
@@ -98,12 +105,10 @@ static uint8_t g_dns_get_ip_flag = 0;
 static volatile uint16_t g_msec_cnt = 0;
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-static void set_clock_khz(void);
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
 
 /* DHCP */
 static void wizchip_dhcp_init(void);
@@ -114,18 +119,15 @@ static void wizchip_dhcp_conflict(void);
 static void repeating_timer_callback(void);
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Main
- * ----------------------------------------------------------------------------------------------------
- */
-int main()
-{
+    ----------------------------------------------------------------------------------------------------
+    Main
+    ----------------------------------------------------------------------------------------------------
+*/
+int main() {
     /* Initialize */
     uint8_t retval = 0;
     uint8_t dhcp_retry = 0;
     uint8_t dns_retry = 0;
-
-    set_clock_khz();
 
     stdio_init_all();
     sleep_ms(3000);
@@ -137,15 +139,12 @@ int main()
     wizchip_check();
 
     wizchip_delay_ms(2000);
-   
+
     wizchip_1ms_timer_initialize(repeating_timer_callback);
 
-    if (g_net_info.dhcp == NETINFO_DHCP) // DHCP
-    {
+    if (g_net_info.dhcp == NETINFO_DHCP) { // DHCP
         wizchip_dhcp_init();
-    }
-    else // static
-    {
+    } else { // static
         network_initialize(g_net_info);
 
         /* Get network information */
@@ -155,35 +154,27 @@ int main()
     DNS_init(SOCKET_DNS, g_ethernet_buf);
 
     /* Infinite loop */
-    while (1)
-    {
+    while (1) {
         /* Assigned IP through DHCP */
-        if (g_net_info.dhcp == NETINFO_DHCP)
-        {
+        if (g_net_info.dhcp == NETINFO_DHCP) {
             retval = DHCP_run();
 
-            if (retval == DHCP_IP_LEASED)
-            {
-                if (g_dhcp_get_ip_flag == 0)
-                {
+            if (retval == DHCP_IP_LEASED) {
+                if (g_dhcp_get_ip_flag == 0) {
                     printf(" DHCP success\n");
 
                     g_dhcp_get_ip_flag = 1;
                 }
-            }
-            else if (retval == DHCP_FAILED)
-            {
+            } else if (retval == DHCP_FAILED) {
                 g_dhcp_get_ip_flag = 0;
                 dhcp_retry++;
 
-                if (dhcp_retry <= DHCP_RETRY_COUNT)
-                {
+                if (dhcp_retry <= DHCP_RETRY_COUNT) {
                     printf(" DHCP timeout occurred and retry %d\n", dhcp_retry);
                 }
             }
 
-            if (dhcp_retry > DHCP_RETRY_COUNT)
-            {
+            if (dhcp_retry > DHCP_RETRY_COUNT) {
                 printf(" DHCP failed\n");
 
                 DHCP_stop();
@@ -196,12 +187,9 @@ int main()
         }
 
         /* Get IP through DNS */
-        if ((g_dns_get_ip_flag == 0) && (retval == DHCP_IP_LEASED))
-        {
-            while (1)
-            {
-                if (DNS_run(g_net_info.dns, g_dns_target_domain, g_dns_target_ip) > 0)
-                {
+        if ((g_dns_get_ip_flag == 0) && (retval == DHCP_IP_LEASED)) {
+            while (1) {
+                if (DNS_run(g_net_info.dns, g_dns_target_domain, g_dns_target_ip) > 0) {
                     printf(" DNS success\n");
                     printf(" Target domain : %s\n", g_dns_target_domain);
                     printf(" IP of target domain : %d.%d.%d.%d\n", g_dns_target_ip[0], g_dns_target_ip[1], g_dns_target_ip[2], g_dns_target_ip[3]);
@@ -209,19 +197,15 @@ int main()
                     g_dns_get_ip_flag = 1;
 
                     break;
-                }
-                else
-                {
+                } else {
                     dns_retry++;
 
-                    if (dns_retry <= DNS_RETRY_COUNT)
-                    {
+                    if (dns_retry <= DNS_RETRY_COUNT) {
                         printf(" DNS timeout occurred and retry %d\n", dns_retry);
                     }
                 }
 
-                if (dns_retry > DNS_RETRY_COUNT)
-                {
+                if (dns_retry > DNS_RETRY_COUNT) {
                     printf(" DNS failed\n");
 
                     while (1)
@@ -235,29 +219,13 @@ int main()
 }
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-static void set_clock_khz(void)
-{
-    // set a system clock frequency in khz
-    set_sys_clock_khz(PLL_SYS_KHZ, true);
-
-    // configure the specified clock
-    clock_configure(
-        clk_peri,
-        0,                                                // No glitchless mux
-        CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS, // System PLL on AUX mux
-        PLL_SYS_KHZ * 1000,                               // Input frequency
-        PLL_SYS_KHZ * 1000                                // Output (must be same as no divider)
-    );
-}
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
 
 /* DHCP */
-static void wizchip_dhcp_init(void)
-{
+static void wizchip_dhcp_init(void) {
     printf(" DHCP client running\n");
 
     DHCP_init(SOCKET_DHCP, g_ethernet_buf);
@@ -265,8 +233,7 @@ static void wizchip_dhcp_init(void)
     reg_dhcp_cbfunc(wizchip_dhcp_assign, wizchip_dhcp_assign, wizchip_dhcp_conflict);
 }
 
-static void wizchip_dhcp_assign(void)
-{
+static void wizchip_dhcp_assign(void) {
     getIPfromDHCP(g_net_info.ip);
     getGWfromDHCP(g_net_info.gw);
     getSNfromDHCP(g_net_info.sn);
@@ -281,8 +248,7 @@ static void wizchip_dhcp_assign(void)
     printf(" DHCP leased time : %ld seconds\n", getDHCPLeasetime());
 }
 
-static void wizchip_dhcp_conflict(void)
-{
+static void wizchip_dhcp_conflict(void) {
     printf(" Conflict IP from DHCP\n");
 
     // halt or reset or any...
@@ -291,12 +257,10 @@ static void wizchip_dhcp_conflict(void)
 }
 
 /* Timer */
-static void repeating_timer_callback(void)
-{
+static void repeating_timer_callback(void) {
     g_msec_cnt++;
 
-    if (g_msec_cnt >= 1000 - 1)
-    {
+    if (g_msec_cnt >= 1000 - 1) {
         g_msec_cnt = 0;
 
         DHCP_time_handler();
