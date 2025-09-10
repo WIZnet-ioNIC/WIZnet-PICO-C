@@ -1,14 +1,14 @@
 /**
- * Copyright (c) 2022 WIZnet Co.,Ltd
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+    Copyright (c) 2022 WIZnet Co.,Ltd
+
+    SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Includes
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Includes
+    ----------------------------------------------------------------------------------------------------
+*/
 #include <stdio.h>
 
 #include "port_common.h"
@@ -25,16 +25,16 @@
 #include "hardware/dma.h"
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Macros
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Macros
+    ----------------------------------------------------------------------------------------------------
+*/
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Variables
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Variables
+    ----------------------------------------------------------------------------------------------------
+*/
 static critical_section_t g_wizchip_cri_sec;
 
 #ifdef USE_SPI_DMA
@@ -45,52 +45,49 @@ static dma_channel_config dma_channel_config_rx;
 #endif
 
 #ifdef USE_PIO
-    #if   (_WIZCHIP_ == W6300)
-    wiznet_spi_config_t g_spi_config = {
-        .clock_div_major = PIO_CLOCK_DIV_MAJOR,
-        .clock_div_minor = PIO_CLOCK_DIV_MINOR,
-        .clock_pin = PIO_SPI_SCK_PIN,
-        .data_io0_pin = PIO_SPI_DATA_IO0_PIN,
-        .data_io1_pin = PIO_SPI_DATA_IO1_PIN,
-        .data_io2_pin = PIO_SPI_DATA_IO2_PIN,
-        .data_io3_pin = PIO_SPI_DATA_IO3_PIN,
-        .cs_pin = PIN_CS,
-        .reset_pin = PIN_RST,
-        .irq_pin = PIN_INT,
-    };
-    #else
-    wiznet_spi_config_t g_spi_config = {
-        .data_in_pin = PIN_MISO,
-        .data_out_pin = PIN_MOSI,
-        .cs_pin = PIN_CS,
-        .clock_pin = PIN_SCK,
-        .irq_pin = PIN_INT,
-        .reset_pin = PIN_RST,
-        .clock_div_major = PIO_CLOCK_DIV_MAJOR,
-        .clock_div_minor = PIO_CLOCK_DIV_MINOR,
-    };
-    #endif
+#if   (_WIZCHIP_ == W6300)
+wiznet_spi_config_t g_spi_config = {
+    .clock_div_major = WIZNET_SPI_CLKDIV_MAJOR_DEFAULT,
+    .clock_div_minor = WIZNET_SPI_CLKDIV_MINOR_DEFAULT,
+    .clock_pin = PIO_SPI_SCK_PIN,
+    .data_io0_pin = PIO_SPI_DATA_IO0_PIN,
+    .data_io1_pin = PIO_SPI_DATA_IO1_PIN,
+    .data_io2_pin = PIO_SPI_DATA_IO2_PIN,
+    .data_io3_pin = PIO_SPI_DATA_IO3_PIN,
+    .cs_pin = PIN_CS,
+    .reset_pin = PIN_RST,
+    .irq_pin = PIN_INT,
+};
+#else
+wiznet_spi_config_t g_spi_config = {
+    .data_in_pin = PIN_MISO,
+    .data_out_pin = PIN_MOSI,
+    .cs_pin = PIN_CS,
+    .clock_pin = PIN_SCK,
+    .irq_pin = PIN_INT,
+    .reset_pin = PIN_RST,
+    .clock_div_major = WIZNET_SPI_CLKDIV_MAJOR_DEFAULT,
+    .clock_div_minor = WIZNET_SPI_CLKDIV_MINOR_DEFAULT,
+};
+#endif
 #endif
 wiznet_spi_handle_t spi_handle;
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
-static inline void wizchip_select(void)
-{
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
+static inline void wizchip_select(void) {
     gpio_put(PIN_CS, 0);
 }
 
-static inline void wizchip_deselect(void)
-{
+static inline void wizchip_deselect(void) {
     gpio_put(PIN_CS, 1);
 
 }
 
-void wizchip_reset()
-{
+void wizchip_reset() {
     gpio_init(PIN_RST);
 
 #if defined(USE_PIO) && (_WIZCHIP_ == W5500)
@@ -110,8 +107,7 @@ void wizchip_reset()
 }
 
 #ifndef USE_PIO
-static uint8_t wizchip_read(void)
-{
+static uint8_t wizchip_read(void) {
     uint8_t rx_data = 0;
     uint8_t tx_data = 0xFF;
 
@@ -120,22 +116,19 @@ static uint8_t wizchip_read(void)
     return rx_data;
 }
 
-static void wizchip_write(uint8_t tx_data)
-{
+static void wizchip_write(uint8_t tx_data) {
     spi_write_blocking(SPI_PORT, &tx_data, 1);
 }
 
 
 #if (_WIZCHIP_ == W6100)
-static void wizchip_read_buf(uint8_t* rx_data, datasize_t len)
-{
+static void wizchip_read_buf(uint8_t* rx_data, datasize_t len) {
     uint8_t tx_data = 0xFF;
 
     spi_read_blocking(SPI_PORT, tx_data, rx_data, len);
 }
 
-static void wizchip_write_buf(uint8_t* tx_data, datasize_t len)
-{
+static void wizchip_write_buf(uint8_t* tx_data, datasize_t len) {
     spi_write_blocking(SPI_PORT, tx_data, len);
 }
 #endif
@@ -144,8 +137,7 @@ static void wizchip_write_buf(uint8_t* tx_data, datasize_t len)
 
 
 #ifdef USE_SPI_DMA
-static void wizchip_read_burst(uint8_t *pBuf, uint16_t len)
-{
+static void wizchip_read_burst(uint8_t *pBuf, uint16_t len) {
     uint8_t dummy_data = 0xFF;
 
     channel_config_set_read_increment(&dma_channel_config_tx, false);
@@ -168,8 +160,7 @@ static void wizchip_read_burst(uint8_t *pBuf, uint16_t len)
     dma_channel_wait_for_finish_blocking(dma_rx);
 }
 
-static void wizchip_write_burst(uint8_t *pBuf, uint16_t len)
-{
+static void wizchip_write_burst(uint8_t *pBuf, uint16_t len) {
     uint8_t dummy_data;
 
     channel_config_set_read_increment(&dma_channel_config_tx, true);
@@ -194,18 +185,15 @@ static void wizchip_write_burst(uint8_t *pBuf, uint16_t len)
 #endif
 #endif
 
-static void wizchip_critical_section_lock(void)
-{
+static void wizchip_critical_section_lock(void) {
     critical_section_enter_blocking(&g_wizchip_cri_sec);
 }
 
-static void wizchip_critical_section_unlock(void)
-{
+static void wizchip_critical_section_unlock(void) {
     critical_section_exit(&g_wizchip_cri_sec);
 }
 
-void wizchip_spi_initialize(void)
-{
+void wizchip_spi_initialize(void) {
 #ifdef USE_PIO
     spi_handle = wiznet_spi_pio_open(&g_spi_config);
     (*spi_handle)->set_active(spi_handle);
@@ -248,23 +236,21 @@ void wizchip_spi_initialize(void)
 #endif
 }
 
-void wizchip_cris_initialize(void)
-{
+void wizchip_cris_initialize(void) {
     critical_section_init(&g_wizchip_cri_sec);
     reg_wizchip_cris_cbfunc(wizchip_critical_section_lock, wizchip_critical_section_unlock);
 }
 
-void wizchip_initialize(void)
-{
+void wizchip_initialize(void) {
 
 #ifdef USE_PIO
     (*spi_handle)->frame_end();
-    #if   (_WIZCHIP_ == W6300)
-        reg_wizchip_qspi_cbfunc((*spi_handle)->read_byte, (*spi_handle)->write_byte);
-    #else
-        reg_wizchip_spi_cbfunc((*spi_handle)->read_byte, (*spi_handle)->write_byte);
-        reg_wizchip_spiburst_cbfunc((*spi_handle)->read_buffer, (*spi_handle)->write_buffer);
-    #endif
+#if   (_WIZCHIP_ == W6300)
+    reg_wizchip_qspi_cbfunc((*spi_handle)->read_byte, (*spi_handle)->write_byte);
+#else
+    reg_wizchip_spi_cbfunc((*spi_handle)->read_byte, (*spi_handle)->write_byte);
+    reg_wizchip_spiburst_cbfunc((*spi_handle)->read_buffer, (*spi_handle)->write_buffer);
+#endif
     reg_wizchip_cs_cbfunc((*spi_handle)->frame_start, (*spi_handle)->frame_end);
 
 #else
@@ -273,11 +259,11 @@ void wizchip_initialize(void)
     /* CS function register */
     reg_wizchip_cs_cbfunc(wizchip_select, wizchip_deselect);
     /* SPI function register */
-    #if (_WIZCHIP_ == W6100)
+#if (_WIZCHIP_ == W6100)
     reg_wizchip_spi_cbfunc(wizchip_read, wizchip_write, wizchip_read_buf, wizchip_write_buf);
-    #else
+#else
     reg_wizchip_spi_cbfunc(wizchip_read, wizchip_write);
-    #endif
+#endif
 #endif
 #ifdef USE_SPI_DMA
     reg_wizchip_spiburst_cbfunc(wizchip_read_burst, wizchip_write_burst);
@@ -285,31 +271,28 @@ void wizchip_initialize(void)
 
     /* W5x00, W6x00 initialize */
     uint8_t temp;
-    #if (_WIZCHIP_ == W5100S)
+#if (_WIZCHIP_ == W5100S)
     uint8_t memsize[2][4] = {{2, 2, 2, 2}, {2, 2, 2, 2}};
-    #elif (_WIZCHIP_ == W5500)
-        uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
-    #elif (_WIZCHIP_ == W6100)
-        uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
-    #elif (_WIZCHIP_ == W6300)
+#elif (_WIZCHIP_ == W5500)
+    uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+#elif (_WIZCHIP_ == W6100)
+    uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+#elif (_WIZCHIP_ == W6300)
     uint8_t memsize[2][8] = {{4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}};
-    #endif
+#endif
 
-    if (ctlwizchip(CW_INIT_WIZCHIP, (void *)memsize) == -1)
-    {
-        #if _WIZCHIP_ <= W5500
+    if (ctlwizchip(CW_INIT_WIZCHIP, (void *)memsize) == -1) {
+#if _WIZCHIP_ <= W5500
         printf(" W5x00 initialized fail\n");
-        #else
+#else
         printf(" W6x00 initialized fail\n");
-        #endif
+#endif
 
         return;
     }
     /* Check PHY link status */
-    do
-    {
-        if (ctlwizchip(CW_GET_PHYLINK, (void *)&temp) == -1)
-        {
+    do {
+        if (ctlwizchip(CW_GET_PHYLINK, (void *)&temp) == -1) {
             printf(" Unknown PHY link status\n");
 
             return;
@@ -317,12 +300,10 @@ void wizchip_initialize(void)
     } while (temp == PHY_LINK_OFF);
 }
 
-void wizchip_check(void)
-{
+void wizchip_check(void) {
 #if (_WIZCHIP_ == W5100S)
     /* Read version register */
-    if (getVER() != 0x51)
-    {
+    if (getVER() != 0x51) {
         printf(" ACCESS ERR : VERSION != 0x51, read value = 0x%02x\n", getVER());
 
         while (1)
@@ -330,8 +311,7 @@ void wizchip_check(void)
     }
 #elif (_WIZCHIP_ == W5500)
     /* Read version register */
-    if (getVERSIONR() != 0x04)
-    {
+    if (getVERSIONR() != 0x04) {
         printf(" ACCESS ERR : VERSION != 0x04, read value = 0x%02x\n", getVERSIONR());
 
         while (1)
@@ -339,8 +319,7 @@ void wizchip_check(void)
     }
 #elif (_WIZCHIP_ == W6100)
     /* Read version register */
-    if (getCIDR() != 0x6100)
-    {
+    if (getCIDR() != 0x6100) {
         printf(" ACCESS ERR : VERSION != 0x6100, read value = 0x%02x\n", getCIDR());
 
         while (1)
@@ -348,8 +327,7 @@ void wizchip_check(void)
     }
 #elif (_WIZCHIP_ == W6300)
     /* Read version register */
-    if (getCIDR() != 0x6300)
-    {
+    if (getCIDR() != 0x6300) {
         printf(" ACCESS ERR : VERSION != 0x6100, read value = 0x%02x\n", getCIDR());
 
         while (1)
@@ -359,19 +337,17 @@ void wizchip_check(void)
 }
 
 /* Network */
-void network_initialize(wiz_NetInfo net_info)
-{
-    #if _WIZCHIP_ <= W5500
+void network_initialize(wiz_NetInfo net_info) {
+#if _WIZCHIP_ <= W5500
     ctlnetwork(CN_SET_NETINFO, (void *)&net_info);
-    #else
+#else
     uint8_t syslock = SYS_NET_LOCK;
     ctlwizchip(CW_SYS_UNLOCK, &syslock);
     ctlnetwork(CN_SET_NETINFO, (void *)&net_info);
-    #endif
+#endif
 }
 
-void print_network_information(wiz_NetInfo net_info)
-{
+void print_network_information(wiz_NetInfo net_info) {
     uint8_t tmp_str[8] = {
         0,
     };
@@ -379,13 +355,10 @@ void print_network_information(wiz_NetInfo net_info)
     ctlnetwork(CN_GET_NETINFO, (void *)&net_info);
     ctlwizchip(CW_GET_ID, (void *)tmp_str);
 #if _WIZCHIP_ <= W5500
-    if (net_info.dhcp == NETINFO_DHCP)
-    {
+    if (net_info.dhcp == NETINFO_DHCP) {
         printf("====================================================================================================\n");
         printf(" %s network configuration : DHCP\n\n", (char *)tmp_str);
-    }
-    else
-    {
+    } else {
         printf("====================================================================================================\n");
         printf(" %s network configuration : static\n\n", (char *)tmp_str);
     }
@@ -414,11 +387,10 @@ void print_network_information(wiz_NetInfo net_info)
 #endif
 }
 
-void print_ipv6_addr(uint8_t* name, uint8_t* ip6addr)
-{
-	printf("%s        : ", name);
-	printf("%04X:%04X", ((uint16_t)ip6addr[0] << 8) | ((uint16_t)ip6addr[1]), ((uint16_t)ip6addr[2] << 8) | ((uint16_t)ip6addr[3]));
-	printf(":%04X:%04X", ((uint16_t)ip6addr[4] << 8) | ((uint16_t)ip6addr[5]), ((uint16_t)ip6addr[6] << 8) | ((uint16_t)ip6addr[7]));
-	printf(":%04X:%04X", ((uint16_t)ip6addr[8] << 8) | ((uint16_t)ip6addr[9]), ((uint16_t)ip6addr[10] << 8) | ((uint16_t)ip6addr[11]));
-	printf(":%04X:%04X\r\n", ((uint16_t)ip6addr[12] << 8) | ((uint16_t)ip6addr[13]), ((uint16_t)ip6addr[14] << 8) | ((uint16_t)ip6addr[15]));
+void print_ipv6_addr(uint8_t* name, uint8_t* ip6addr) {
+    printf("%s        : ", name);
+    printf("%04X:%04X", ((uint16_t)ip6addr[0] << 8) | ((uint16_t)ip6addr[1]), ((uint16_t)ip6addr[2] << 8) | ((uint16_t)ip6addr[3]));
+    printf(":%04X:%04X", ((uint16_t)ip6addr[4] << 8) | ((uint16_t)ip6addr[5]), ((uint16_t)ip6addr[6] << 8) | ((uint16_t)ip6addr[7]));
+    printf(":%04X:%04X", ((uint16_t)ip6addr[8] << 8) | ((uint16_t)ip6addr[9]), ((uint16_t)ip6addr[10] << 8) | ((uint16_t)ip6addr[11]));
+    printf(":%04X:%04X\r\n", ((uint16_t)ip6addr[12] << 8) | ((uint16_t)ip6addr[13]), ((uint16_t)ip6addr[14] << 8) | ((uint16_t)ip6addr[15]));
 }

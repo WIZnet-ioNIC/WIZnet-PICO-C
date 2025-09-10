@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2023 Raspberry Pi (Trading) Ltd.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+    Copyright (c) 2023 Raspberry Pi (Trading) Ltd.
+
+    SPDX-License-Identifier: BSD-3-Clause
+*/
 
 #include <stdio.h>
 #include <string.h>
@@ -34,20 +34,20 @@
 #endif
 
 #if   (_WIZCHIP_ == W6300)
-    #define PIO_PROGRAM_FUNC __CONCAT(PIO_PROGRAM_NAME, _program)
-    #define PIO_PROGRAM_GET_DEFAULT_CONFIG_FUNC __CONCAT(PIO_PROGRAM_NAME, _program_get_default_config)
-    #define PIO_OFFSET_WRITE_BITS __CONCAT(PIO_PROGRAM_NAME, _offset_write_bits)  
-    #define PIO_OFFSET_WRITE_BITS_END __CONCAT(PIO_PROGRAM_NAME, _offset_write_bits_end)  
-    #define PIO_OFFSET_READ_BITS_END __CONCAT(PIO_PROGRAM_NAME, _offset_read_bits_end)
+#define PIO_PROGRAM_FUNC __CONCAT(PIO_PROGRAM_NAME, _program)
+#define PIO_PROGRAM_GET_DEFAULT_CONFIG_FUNC __CONCAT(PIO_PROGRAM_NAME, _program_get_default_config)
+#define PIO_OFFSET_WRITE_BITS __CONCAT(PIO_PROGRAM_NAME, _offset_write_bits)
+#define PIO_OFFSET_WRITE_BITS_END __CONCAT(PIO_PROGRAM_NAME, _offset_write_bits_end)
+#define PIO_OFFSET_READ_BITS_END __CONCAT(PIO_PROGRAM_NAME, _offset_read_bits_end)
 
 #else
-    #define PIO_PROGRAM_NAME wiznet_spi_write_read
-    #define PIO_PROGRAM_FUNC __CONCAT(PIO_PROGRAM_NAME, _program)
-    #define PIO_PROGRAM_GET_DEFAULT_CONFIG_FUNC __CONCAT(PIO_PROGRAM_NAME, _program_get_default_config)
-    #define PIO_OFFSET_WRITE_BITS __CONCAT(PIO_PROGRAM_NAME, _offset_write_bits)
-    #define PIO_OFFSET_WRITE_BITS_END __CONCAT(PIO_PROGRAM_NAME, _offset_write_end)
-    #define PIO_OFFSET_READ_BITS_END __CONCAT(PIO_PROGRAM_NAME, _offset_read_end)
-    // All wiznet spi operations must start with writing a 3 byte header
+#define PIO_PROGRAM_NAME wiznet_spi_write_read
+#define PIO_PROGRAM_FUNC __CONCAT(PIO_PROGRAM_NAME, _program)
+#define PIO_PROGRAM_GET_DEFAULT_CONFIG_FUNC __CONCAT(PIO_PROGRAM_NAME, _program_get_default_config)
+#define PIO_OFFSET_WRITE_BITS __CONCAT(PIO_PROGRAM_NAME, _offset_write_bits)
+#define PIO_OFFSET_WRITE_BITS_END __CONCAT(PIO_PROGRAM_NAME, _offset_write_end)
+#define PIO_OFFSET_READ_BITS_END __CONCAT(PIO_PROGRAM_NAME, _offset_read_end)
+// All wiznet spi operations must start with writing a 3 byte header
 
 #endif
 
@@ -79,46 +79,45 @@ static void wiznet_spi_pio_close(wiznet_spi_handle_t funcs);
 static wiznet_spi_funcs_t *get_wiznet_spi_pio_impl(void);
 
 
-static uint16_t mk_cmd_buf(uint8_t *pdst, uint8_t opcode, uint16_t addr)
-{
+static uint16_t mk_cmd_buf(uint8_t *pdst, uint8_t opcode, uint16_t addr) {
 #if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
 
-  pdst[0] = opcode;
-  pdst[1] = (uint8_t)((addr >> 8) & 0xFF); 
-  pdst[2] = (uint8_t)((addr >> 0) & 0xFF); 
-  pdst[3] = 0;
+    pdst[0] = opcode;
+    pdst[1] = (uint8_t)((addr >> 8) & 0xFF);
+    pdst[2] = (uint8_t)((addr >> 0) & 0xFF);
+    pdst[3] = 0;
 
-  return 3 + 1;
+    return 3 + 1;
 #elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
-  pdst[0] = ((opcode >> 7 & 0x01) << 6) | ((opcode >> 6 & 0x01) << 4) | ((opcode >> 5 & 0x01) << 2) | ((opcode >> 4 & 0x01) << 0);
-  pdst[1] = ((opcode >> 3 & 0x01) << 6) | ((opcode >> 2 & 0x01) << 4) | ((opcode >> 1 & 0x01) << 2) | ((opcode >> 0 & 0x01) << 0);
-  pdst[2] = (uint8_t)((addr >> 8) & 0xFF); 
-  pdst[3] = (uint8_t)((addr >> 0) & 0xFF); 
+    pdst[0] = ((opcode >> 7 & 0x01) << 6) | ((opcode >> 6 & 0x01) << 4) | ((opcode >> 5 & 0x01) << 2) | ((opcode >> 4 & 0x01) << 0);
+    pdst[1] = ((opcode >> 3 & 0x01) << 6) | ((opcode >> 2 & 0x01) << 4) | ((opcode >> 1 & 0x01) << 2) | ((opcode >> 0 & 0x01) << 0);
+    pdst[2] = (uint8_t)((addr >> 8) & 0xFF);
+    pdst[3] = (uint8_t)((addr >> 0) & 0xFF);
 
-  pdst[4] = 0;
+    pdst[4] = 0;
 
-  return 4 + 1;
+    return 4 + 1;
 #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
-  pdst[0] = ( (opcode >> 7 & 0x01) << 4 ) | ( (opcode >> 6 & 0x01) << 0 );
-  pdst[1] = ( (opcode >> 5 & 0x01) << 4 ) | ( (opcode >> 4 & 0x01) << 0 );
-  pdst[2] = ( (opcode >> 3 & 0x01) << 4 ) | ( (opcode >> 2 & 0x01) << 0 );
-  pdst[3] = ( (opcode >> 1 & 0x01) << 4 ) | ( (opcode >> 0 & 0x01) << 0 );
+    pdst[0] = ((opcode >> 7 & 0x01) << 4) | ((opcode >> 6 & 0x01) << 0);
+    pdst[1] = ((opcode >> 5 & 0x01) << 4) | ((opcode >> 4 & 0x01) << 0);
+    pdst[2] = ((opcode >> 3 & 0x01) << 4) | ((opcode >> 2 & 0x01) << 0);
+    pdst[3] = ((opcode >> 1 & 0x01) << 4) | ((opcode >> 0 & 0x01) << 0);
 
-  pdst[4] = ((uint8_t)(addr >> 8) & 0xFF); 
-  pdst[5] = ((uint8_t)(addr >> 0) & 0xFF); 
+    pdst[4] = ((uint8_t)(addr >> 8) & 0xFF);
+    pdst[5] = ((uint8_t)(addr >> 0) & 0xFF);
 
-  pdst[6] = 0;
+    pdst[6] = 0;
 
-  return 6 + 1;
+    return 6 + 1;
 #endif
-  return 0;
+    return 0;
 }
 
 // Initialise our gpios
 static void pio_spi_gpio_setup(spi_pio_state_t *state) {
 
 #if   (_WIZCHIP_ == W6300)
-    #if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
+#if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
     // Setup DO and DI
     gpio_init(state->spi_config->data_io0_pin);
     gpio_init(state->spi_config->data_io1_pin);
@@ -126,7 +125,7 @@ static void pio_spi_gpio_setup(spi_pio_state_t *state) {
     gpio_set_dir(state->spi_config->data_io1_pin, GPIO_OUT);
     gpio_put(state->spi_config->data_io0_pin, false);
     gpio_put(state->spi_config->data_io1_pin, false);
-    #elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
     // Setup DO and DI
     gpio_init(state->spi_config->data_io0_pin);
     gpio_init(state->spi_config->data_io1_pin);
@@ -134,7 +133,7 @@ static void pio_spi_gpio_setup(spi_pio_state_t *state) {
     gpio_set_dir(state->spi_config->data_io1_pin, GPIO_OUT);
     gpio_put(state->spi_config->data_io0_pin, false);
     gpio_put(state->spi_config->data_io1_pin, false);
-    #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
     // Setup DO and DI
     gpio_init(state->spi_config->data_io0_pin);
     gpio_init(state->spi_config->data_io1_pin);
@@ -148,7 +147,7 @@ static void pio_spi_gpio_setup(spi_pio_state_t *state) {
     gpio_put(state->spi_config->data_io1_pin, false);
     gpio_put(state->spi_config->data_io2_pin, false);
     gpio_put(state->spi_config->data_io3_pin, false);
-    #endif
+#endif
 
     // Setup CS
     gpio_init(state->spi_config->cs_pin);
@@ -180,15 +179,17 @@ static void pio_spi_gpio_setup(spi_pio_state_t *state) {
 
 wiznet_spi_handle_t wiznet_spi_pio_open(const wiznet_spi_config_t *spi_config) {
 
-spi_pio_state_t *state;
-    for(int i = 0; i < count_of(spi_pio_state); i++) {
+    spi_pio_state_t *state;
+    for (int i = 0; i < count_of(spi_pio_state); i++) {
         if (!spi_pio_state[i].funcs) {
             state = &spi_pio_state[i];
             break;
         }
     }
     assert(state);
-    if (!state) return NULL;
+    if (!state) {
+        return NULL;
+    }
     state->spi_config = spi_config;
     state->funcs = get_wiznet_spi_pio_impl();
 
@@ -216,132 +217,144 @@ spi_pio_state_t *state;
         return NULL;
     }
 
-    state->pio_offset = pio_add_program(state->pio, &PIO_PROGRAM_FUNC);    
-    printf("[SPI CLOCK SPEED : %.2lf MHz]\r\n\r\n", 66.5 / (state->spi_config->clock_div_major + ((double)state->spi_config->clock_div_minor / 256)));
+    state->pio_offset = pio_add_program(state->pio, &PIO_PROGRAM_FUNC);
+
+    uint64_t f_sys = clock_get_hz(clk_sys); // Hz
+#if (_WIZCHIP_ == W6300)
+    const char *wizchip_pio_clock_str = "PIO QSPI CLOCK SPEED";
+#else
+    const char *wizchip_pio_clock_str = "PIO SPI CLOCK SPEED";
+#endif
+
+    printf("[%s : %.2f MHz] (sys=%.2f MHz)\r\n\r\n",
+           wizchip_pio_clock_str,
+           (double)f_sys / (2.0 * (state->spi_config->clock_div_major +
+                                   state->spi_config->clock_div_minor / 256.0)) / 1e6,
+           f_sys / 1e6);
+
     pio_sm_config sm_config = PIO_PROGRAM_GET_DEFAULT_CONFIG_FUNC(state->pio_offset);
 
     sm_config_set_clkdiv_int_frac(&sm_config, state->spi_config->clock_div_major, state->spi_config->clock_div_minor);
     hw_write_masked(&pads_bank0_hw->io[state->spi_config->clock_pin],
                     (uint)PADS_DRIVE_STRENGTH << PADS_BANK0_GPIO0_DRIVE_LSB,
                     PADS_BANK0_GPIO0_DRIVE_BITS
-    );
+                   );
     hw_write_masked(&pads_bank0_hw->io[state->spi_config->clock_pin],
                     (uint)1 << PADS_BANK0_GPIO0_SLEWFAST_LSB,
                     PADS_BANK0_GPIO0_SLEWFAST_BITS
-    );
+                   );
 
 #if   (_WIZCHIP_ == W6300)
 #if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
-  printf("\r\n[QSPI SINGLE MODE]\r\n");
-  sm_config_set_out_pins(&sm_config, state->spi_config->data_io0_pin, 1);
-  sm_config_set_in_pins(&sm_config, state->spi_config->data_io1_pin);
-  sm_config_set_set_pins(&sm_config, state->spi_config->data_io0_pin, 2);
-  sm_config_set_sideset(&sm_config, 1, false, false);
-  sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
+    printf("\r\n[QSPI SINGLE MODE]\r\n");
+    sm_config_set_out_pins(&sm_config, state->spi_config->data_io0_pin, 1);
+    sm_config_set_in_pins(&sm_config, state->spi_config->data_io1_pin);
+    sm_config_set_set_pins(&sm_config, state->spi_config->data_io0_pin, 2);
+    sm_config_set_sideset(&sm_config, 1, false, false);
+    sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
 
-  sm_config_set_in_shift(&sm_config, false, true, 8);
-  sm_config_set_out_shift(&sm_config, false, true, 8);
+    sm_config_set_in_shift(&sm_config, false, true, 8);
+    sm_config_set_out_shift(&sm_config, false, true, 8);
 
-  hw_set_bits(&state->pio->input_sync_bypass,
-              (1u << state->spi_config->data_io0_pin) | (1u << state->spi_config->data_io1_pin));
-  pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
-  pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
+    hw_set_bits(&state->pio->input_sync_bypass,
+                (1u << state->spi_config->data_io0_pin) | (1u << state->spi_config->data_io1_pin));
+    pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
+    pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
 
-  gpio_set_function(state->spi_config->data_io0_pin, state->pio_func_sel);
+    gpio_set_function(state->spi_config->data_io0_pin, state->pio_func_sel);
 
-  // Set data pin to pull down and schmitt
-  gpio_set_pulls(state->spi_config->data_io0_pin, false, true);
-  gpio_set_pulls(state->spi_config->data_io1_pin, false, true);
-  gpio_set_input_hysteresis_enabled(state->spi_config->data_io0_pin, true);
-  gpio_set_input_hysteresis_enabled(state->spi_config->data_io1_pin, true);
+    // Set data pin to pull down and schmitt
+    gpio_set_pulls(state->spi_config->data_io0_pin, false, true);
+    gpio_set_pulls(state->spi_config->data_io1_pin, false, true);
+    gpio_set_input_hysteresis_enabled(state->spi_config->data_io0_pin, true);
+    gpio_set_input_hysteresis_enabled(state->spi_config->data_io1_pin, true);
 #elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
-  printf("[QSPI DUAL MODE]\r\n\r\n");
-  sm_config_set_out_pins(&sm_config, state->spi_config->data_io0_pin, 2);
-  sm_config_set_in_pins(&sm_config, state->spi_config->data_io0_pin);
-  sm_config_set_set_pins(&sm_config, state->spi_config->data_io0_pin, 2);
-  sm_config_set_sideset(&sm_config, 1, false, false);
-  sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
+    printf("[QSPI DUAL MODE]\r\n\r\n");
+    sm_config_set_out_pins(&sm_config, state->spi_config->data_io0_pin, 2);
+    sm_config_set_in_pins(&sm_config, state->spi_config->data_io0_pin);
+    sm_config_set_set_pins(&sm_config, state->spi_config->data_io0_pin, 2);
+    sm_config_set_sideset(&sm_config, 1, false, false);
+    sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
 
-  sm_config_set_in_shift(&sm_config, false, true, 8);
-  sm_config_set_out_shift(&sm_config, false, true, 8);
+    sm_config_set_in_shift(&sm_config, false, true, 8);
+    sm_config_set_out_shift(&sm_config, false, true, 8);
 
-  hw_set_bits(&state->pio->input_sync_bypass,
-              (1u << state->spi_config->data_io0_pin) | (1u << state->spi_config->data_io1_pin));
-  pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
-  pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
+    hw_set_bits(&state->pio->input_sync_bypass,
+                (1u << state->spi_config->data_io0_pin) | (1u << state->spi_config->data_io1_pin));
+    pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
+    pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
 
-  gpio_set_function(state->spi_config->data_io0_pin, state->pio_func_sel);
-  gpio_set_function(state->spi_config->data_io1_pin, state->pio_func_sel);
+    gpio_set_function(state->spi_config->data_io0_pin, state->pio_func_sel);
+    gpio_set_function(state->spi_config->data_io1_pin, state->pio_func_sel);
 
-  // Set data pin to pull down and schmitt
-  gpio_set_pulls(state->spi_config->data_io0_pin, false, true);
-  gpio_set_pulls(state->spi_config->data_io1_pin, false, true);
-  gpio_set_input_hysteresis_enabled(state->spi_config->data_io0_pin, true);
-  gpio_set_input_hysteresis_enabled(state->spi_config->data_io1_pin, true);
+    // Set data pin to pull down and schmitt
+    gpio_set_pulls(state->spi_config->data_io0_pin, false, true);
+    gpio_set_pulls(state->spi_config->data_io1_pin, false, true);
+    gpio_set_input_hysteresis_enabled(state->spi_config->data_io0_pin, true);
+    gpio_set_input_hysteresis_enabled(state->spi_config->data_io1_pin, true);
 #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
-  printf("\r\n[QSPI QUAD MODE]\r\n");
-  sm_config_set_out_pins(&sm_config, state->spi_config->data_io0_pin, 4);
-  sm_config_set_in_pins(&sm_config, state->spi_config->data_io0_pin);
-  sm_config_set_set_pins(&sm_config, state->spi_config->data_io0_pin, 4);
-  sm_config_set_sideset(&sm_config, 1, false, false);
-  sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
+    printf("\r\n[QSPI QUAD MODE]\r\n");
+    sm_config_set_out_pins(&sm_config, state->spi_config->data_io0_pin, 4);
+    sm_config_set_in_pins(&sm_config, state->spi_config->data_io0_pin);
+    sm_config_set_set_pins(&sm_config, state->spi_config->data_io0_pin, 4);
+    sm_config_set_sideset(&sm_config, 1, false, false);
+    sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
 
-  sm_config_set_in_shift(&sm_config, false, true, 8);
-  sm_config_set_out_shift(&sm_config, false, true, 8);
+    sm_config_set_in_shift(&sm_config, false, true, 8);
+    sm_config_set_out_shift(&sm_config, false, true, 8);
 
-  hw_set_bits(&state->pio->input_sync_bypass,
-              (1u << state->spi_config->data_io0_pin) | (1u << state->spi_config->data_io1_pin) | (1u << state->spi_config->data_io2_pin) | (1u << state->spi_config->data_io3_pin));
-  pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
-  pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
+    hw_set_bits(&state->pio->input_sync_bypass,
+                (1u << state->spi_config->data_io0_pin) | (1u << state->spi_config->data_io1_pin) | (1u << state->spi_config->data_io2_pin) | (1u << state->spi_config->data_io3_pin));
+    pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
+    pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
 
-  gpio_set_function(state->spi_config->data_io0_pin, state->pio_func_sel);
-  gpio_set_function(state->spi_config->data_io1_pin, state->pio_func_sel);
-  gpio_set_function(state->spi_config->data_io2_pin, state->pio_func_sel);
-  gpio_set_function(state->spi_config->data_io3_pin, state->pio_func_sel);
+    gpio_set_function(state->spi_config->data_io0_pin, state->pio_func_sel);
+    gpio_set_function(state->spi_config->data_io1_pin, state->pio_func_sel);
+    gpio_set_function(state->spi_config->data_io2_pin, state->pio_func_sel);
+    gpio_set_function(state->spi_config->data_io3_pin, state->pio_func_sel);
 
-  // Set data pin to pull down and schmitt
-  gpio_set_pulls(state->spi_config->data_io0_pin, false, true);
-  gpio_set_pulls(state->spi_config->data_io1_pin, false, true);
-  gpio_set_pulls(state->spi_config->data_io2_pin, false, true);
-  gpio_set_pulls(state->spi_config->data_io3_pin, false, true);
-  gpio_set_input_hysteresis_enabled(state->spi_config->data_io0_pin, true);
-  gpio_set_input_hysteresis_enabled(state->spi_config->data_io1_pin, true);
-  gpio_set_input_hysteresis_enabled(state->spi_config->data_io2_pin, true);
-  gpio_set_input_hysteresis_enabled(state->spi_config->data_io3_pin, true);
-  /* @todo: Implement to use. */
+    // Set data pin to pull down and schmitt
+    gpio_set_pulls(state->spi_config->data_io0_pin, false, true);
+    gpio_set_pulls(state->spi_config->data_io1_pin, false, true);
+    gpio_set_pulls(state->spi_config->data_io2_pin, false, true);
+    gpio_set_pulls(state->spi_config->data_io3_pin, false, true);
+    gpio_set_input_hysteresis_enabled(state->spi_config->data_io0_pin, true);
+    gpio_set_input_hysteresis_enabled(state->spi_config->data_io1_pin, true);
+    gpio_set_input_hysteresis_enabled(state->spi_config->data_io2_pin, true);
+    gpio_set_input_hysteresis_enabled(state->spi_config->data_io3_pin, true);
+    /* @todo: Implement to use. */
 #endif
 #else //W55RP20
-sm_config_set_out_pins(&sm_config, state->spi_config->data_out_pin, 1);
-sm_config_set_in_pins(&sm_config, state->spi_config->data_in_pin);
-sm_config_set_set_pins(&sm_config, state->spi_config->data_out_pin, 1);
-sm_config_set_sideset(&sm_config, 1, false, false);
-sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
+    sm_config_set_out_pins(&sm_config, state->spi_config->data_out_pin, 1);
+    sm_config_set_in_pins(&sm_config, state->spi_config->data_in_pin);
+    sm_config_set_set_pins(&sm_config, state->spi_config->data_out_pin, 1);
+    sm_config_set_sideset(&sm_config, 1, false, false);
+    sm_config_set_sideset_pins(&sm_config, state->spi_config->clock_pin);
 
-sm_config_set_in_shift(&sm_config, false, true, 8);
-sm_config_set_out_shift(&sm_config, false, true, 8);
-hw_set_bits(&state->pio->input_sync_bypass, 1u << state->spi_config->data_in_pin);
-pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
-pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
-gpio_set_function(state->spi_config->data_out_pin, state->pio_func_sel);
-gpio_set_function(state->spi_config->clock_pin, state->pio_func_sel);
+    sm_config_set_in_shift(&sm_config, false, true, 8);
+    sm_config_set_out_shift(&sm_config, false, true, 8);
+    hw_set_bits(&state->pio->input_sync_bypass, 1u << state->spi_config->data_in_pin);
+    pio_sm_set_config(state->pio, state->pio_sm, &sm_config);
+    pio_sm_set_consecutive_pindirs(state->pio, state->pio_sm, state->spi_config->clock_pin, 1, true);
+    gpio_set_function(state->spi_config->data_out_pin, state->pio_func_sel);
+    gpio_set_function(state->spi_config->clock_pin, state->pio_func_sel);
 
-// Set data pin to pull down and schmitt
-gpio_set_pulls(state->spi_config->data_in_pin, false, true);
-gpio_set_input_hysteresis_enabled(state->spi_config->data_in_pin, true);
+    // Set data pin to pull down and schmitt
+    gpio_set_pulls(state->spi_config->data_in_pin, false, true);
+    gpio_set_input_hysteresis_enabled(state->spi_config->data_in_pin, true);
 #endif
 
-  pio_sm_exec(state->pio, state->pio_sm, pio_encode_set(pio_pins, 1));
+    pio_sm_exec(state->pio, state->pio_sm, pio_encode_set(pio_pins, 1));
 
-  state->dma_out = (int8_t)dma_claim_unused_channel(false); // todo: Should be able to use one dma channel?
-  state->dma_in = (int8_t)dma_claim_unused_channel(false);
-  if (state->dma_out < 0 || state->dma_in < 0)
-  {
-    wiznet_spi_pio_close(&state->funcs);
-    return NULL;
-  }
-  
-  return &state->funcs;
-  
+    state->dma_out = (int8_t)dma_claim_unused_channel(false); // todo: Should be able to use one dma channel?
+    state->dma_in = (int8_t)dma_claim_unused_channel(false);
+    if (state->dma_out < 0 || state->dma_in < 0) {
+        wiznet_spi_pio_close(&state->funcs);
+        return NULL;
+    }
+
+    return &state->funcs;
+
 }
 
 static void wiznet_spi_pio_close(wiznet_spi_handle_t handle) {
@@ -349,8 +362,9 @@ static void wiznet_spi_pio_close(wiznet_spi_handle_t handle) {
     spi_pio_state_t *state = (spi_pio_state_t *)handle;
     if (state) {
         if (state->pio_sm >= 0) {
-            if (state->pio_offset != -1)
-                pio_remove_program(state->pio, &PIO_PROGRAM_FUNC , state->pio_offset);
+            if (state->pio_offset != -1) {
+                pio_remove_program(state->pio, &PIO_PROGRAM_FUNC, state->pio_offset);
+            }
 
             pio_sm_unclaim(state->pio, state->pio_sm);
         }
@@ -378,27 +392,27 @@ static __noinline void ns_delay(uint32_t ns) {
 
 static void wiznet_spi_pio_frame_start(void) {
     assert(active_state);
-    #if   (_WIZCHIP_ == W6300)
-        #if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
-        gpio_set_function(active_state->spi_config->data_io0_pin, active_state->pio_func_sel);
-        gpio_set_function(active_state->spi_config->data_io1_pin, active_state->pio_func_sel);
-        #elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
-        gpio_set_function(active_state->spi_config->data_io0_pin, active_state->pio_func_sel);
-        gpio_set_function(active_state->spi_config->data_io1_pin, active_state->pio_func_sel);
-        #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
-        gpio_set_function(active_state->spi_config->data_io0_pin, active_state->pio_func_sel);
-        gpio_set_function(active_state->spi_config->data_io1_pin, active_state->pio_func_sel);
-        gpio_set_function(active_state->spi_config->data_io2_pin, active_state->pio_func_sel);
-        gpio_set_function(active_state->spi_config->data_io3_pin, active_state->pio_func_sel);
-        /* @todo: Implement to use. */
-        #endif
-        gpio_set_function(active_state->spi_config->clock_pin, active_state->pio_func_sel);
-        gpio_pull_down(active_state->spi_config->clock_pin);
-    #else
-        gpio_set_function(active_state->spi_config->data_out_pin, active_state->pio_func_sel);
-        gpio_set_function(active_state->spi_config->clock_pin, active_state->pio_func_sel);
-        gpio_pull_down(active_state->spi_config->clock_pin);
-    #endif
+#if   (_WIZCHIP_ == W6300)
+#if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
+    gpio_set_function(active_state->spi_config->data_io0_pin, active_state->pio_func_sel);
+    gpio_set_function(active_state->spi_config->data_io1_pin, active_state->pio_func_sel);
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
+    gpio_set_function(active_state->spi_config->data_io0_pin, active_state->pio_func_sel);
+    gpio_set_function(active_state->spi_config->data_io1_pin, active_state->pio_func_sel);
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
+    gpio_set_function(active_state->spi_config->data_io0_pin, active_state->pio_func_sel);
+    gpio_set_function(active_state->spi_config->data_io1_pin, active_state->pio_func_sel);
+    gpio_set_function(active_state->spi_config->data_io2_pin, active_state->pio_func_sel);
+    gpio_set_function(active_state->spi_config->data_io3_pin, active_state->pio_func_sel);
+    /* @todo: Implement to use. */
+#endif
+    gpio_set_function(active_state->spi_config->clock_pin, active_state->pio_func_sel);
+    gpio_pull_down(active_state->spi_config->clock_pin);
+#else
+    gpio_set_function(active_state->spi_config->data_out_pin, active_state->pio_func_sel);
+    gpio_set_function(active_state->spi_config->clock_pin, active_state->pio_func_sel);
+    gpio_pull_down(active_state->spi_config->clock_pin);
+#endif
     // Pull CS low
     cs_set(active_state, false);
 }
@@ -415,112 +429,110 @@ static void wiznet_spi_pio_frame_end(void) {
 
 #if   (_WIZCHIP_ == W6300)
 // To read a byte we must first have been asked to write a 3 byte spi header
-void wiznet_spi_pio_read_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *rx, uint16_t rx_length)  
-{
-  uint8_t command_buf[8] = {0,};
-  uint16_t command_len = mk_cmd_buf(command_buf, op_code, AddrSel);
-  uint32_t loop_cnt = 0;
+void wiznet_spi_pio_read_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *rx, uint16_t rx_length) {
+    uint8_t command_buf[8] = {0,};
+    uint16_t command_len = mk_cmd_buf(command_buf, op_code, AddrSel);
+    uint32_t loop_cnt = 0;
 
-  pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
-  pio_sm_set_wrap(active_state->pio, active_state->pio_sm, active_state->pio_offset, active_state->pio_offset + PIO_OFFSET_READ_BITS_END - 1);
-  //pio_sm_set_wrap(active_state->pio, active_state->pio_sm, active_state->pio_offset + PIO_SPI_OFFSET_WRITE_BITS, active_state->pio_offset + PIO_SPI_OFFSET_READ_BITS_END - 1);
-  pio_sm_clear_fifos(active_state->pio, active_state->pio_sm);
+    pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
+    pio_sm_set_wrap(active_state->pio, active_state->pio_sm, active_state->pio_offset, active_state->pio_offset + PIO_OFFSET_READ_BITS_END - 1);
+    //pio_sm_set_wrap(active_state->pio, active_state->pio_sm, active_state->pio_offset + PIO_SPI_OFFSET_WRITE_BITS, active_state->pio_offset + PIO_SPI_OFFSET_READ_BITS_END - 1);
+    pio_sm_clear_fifos(active_state->pio, active_state->pio_sm);
 
-  #if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
-  loop_cnt = 8;
-  pio_sm_set_pindirs_with_mask(active_state->pio,
-                                  active_state->pio_sm,
-                                  (1u << active_state->spi_config->data_io0_pin), (1u << active_state->spi_config->data_io0_pin));// | (1u << active_state->spi_config->data_io1_pin));
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
-  loop_cnt = 4;
-  pio_sm_set_pindirs_with_mask(active_state->pio,
-                                  active_state->pio_sm,
-                                  (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin),
-                                  (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin));
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
-  loop_cnt = 2;
-  pio_sm_set_pindirs_with_mask(active_state->pio,
-                                  active_state->pio_sm,
-                                  (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin),
-                                  (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin));
+#if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
+    loop_cnt = 8;
+    pio_sm_set_pindirs_with_mask(active_state->pio,
+                                 active_state->pio_sm,
+                                 (1u << active_state->spi_config->data_io0_pin), (1u << active_state->spi_config->data_io0_pin));// | (1u << active_state->spi_config->data_io1_pin));
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
+    loop_cnt = 4;
+    pio_sm_set_pindirs_with_mask(active_state->pio,
+                                 active_state->pio_sm,
+                                 (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin),
+                                 (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin));
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
+    loop_cnt = 2;
+    pio_sm_set_pindirs_with_mask(active_state->pio,
+                                 active_state->pio_sm,
+                                 (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin),
+                                 (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin));
 
-      /* @todo: Implement to use. */
-  #endif
+    /* @todo: Implement to use. */
+#endif
 
-  pio_sm_restart(active_state->pio, active_state->pio_sm);
-  pio_sm_clkdiv_restart(active_state->pio, active_state->pio_sm);
+    pio_sm_restart(active_state->pio, active_state->pio_sm);
+    pio_sm_clkdiv_restart(active_state->pio, active_state->pio_sm);
 
-  pio_sm_put(active_state->pio, active_state->pio_sm, command_len * loop_cnt - 1);  
-  pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_out(pio_x, 32));
+    pio_sm_put(active_state->pio, active_state->pio_sm, command_len * loop_cnt - 1);
+    pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_out(pio_x, 32));
 
-  pio_sm_put(active_state->pio, active_state->pio_sm, rx_length - 1);
-  pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_out(pio_y, 32));
+    pio_sm_put(active_state->pio, active_state->pio_sm, rx_length - 1);
+    pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_out(pio_y, 32));
 
-  pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_jmp(active_state->pio_offset));
+    pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_jmp(active_state->pio_offset));
 
-  dma_channel_abort(active_state->dma_out);
-  dma_channel_abort(active_state->dma_in);
+    dma_channel_abort(active_state->dma_out);
+    dma_channel_abort(active_state->dma_in);
 
-  dma_channel_config out_config = dma_channel_get_default_config(active_state->dma_out);
-  channel_config_set_transfer_data_size(&out_config, DMA_SIZE_8);
-  channel_config_set_bswap(&out_config, true);
-  channel_config_set_dreq(&out_config, pio_get_dreq(active_state->pio, active_state->pio_sm, true));
-  dma_channel_configure(active_state->dma_out, &out_config, &active_state->pio->txf[active_state->pio_sm], command_buf, command_len, true); 
+    dma_channel_config out_config = dma_channel_get_default_config(active_state->dma_out);
+    channel_config_set_transfer_data_size(&out_config, DMA_SIZE_8);
+    channel_config_set_bswap(&out_config, true);
+    channel_config_set_dreq(&out_config, pio_get_dreq(active_state->pio, active_state->pio_sm, true));
+    dma_channel_configure(active_state->dma_out, &out_config, &active_state->pio->txf[active_state->pio_sm], command_buf, command_len, true);
 
-  dma_channel_config in_config = dma_channel_get_default_config(active_state->dma_in);
-  channel_config_set_transfer_data_size(&in_config, DMA_SIZE_8);
-  channel_config_set_bswap(&in_config, true);
-  channel_config_set_dreq(&in_config, pio_get_dreq(active_state->pio, active_state->pio_sm, false));
-  channel_config_set_write_increment(&in_config, true);
-  channel_config_set_read_increment(&in_config, false);
-  dma_channel_configure(active_state->dma_in, &in_config, rx, &active_state->pio->rxf[active_state->pio_sm], rx_length, true);
+    dma_channel_config in_config = dma_channel_get_default_config(active_state->dma_in);
+    channel_config_set_transfer_data_size(&in_config, DMA_SIZE_8);
+    channel_config_set_bswap(&in_config, true);
+    channel_config_set_dreq(&in_config, pio_get_dreq(active_state->pio, active_state->pio_sm, false));
+    channel_config_set_write_increment(&in_config, true);
+    channel_config_set_read_increment(&in_config, false);
+    dma_channel_configure(active_state->dma_in, &in_config, rx, &active_state->pio->rxf[active_state->pio_sm], rx_length, true);
 
-  #if 1
-  pio_sm_set_enabled(active_state->pio, active_state->pio_sm, true);
+#if 1
+    pio_sm_set_enabled(active_state->pio, active_state->pio_sm, true);
 
-  __compiler_memory_barrier();
+    __compiler_memory_barrier();
 
-  dma_channel_wait_for_finish_blocking(active_state->dma_out);
-  dma_channel_wait_for_finish_blocking(active_state->dma_in);
+    dma_channel_wait_for_finish_blocking(active_state->dma_out);
+    dma_channel_wait_for_finish_blocking(active_state->dma_in);
 
-  __compiler_memory_barrier();
+    __compiler_memory_barrier();
 
-  pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
-  pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_mov(pio_pins, pio_null)); 
-  
-  #endif
+    pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
+    pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_mov(pio_pins, pio_null));
+
+#endif
 }
 
-void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, uint16_t tx_length)  
-{
+void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, uint16_t tx_length) {
     uint8_t command_buf[8] = {0,};
     uint16_t command_len = mk_cmd_buf(command_buf, op_code, AddrSel);
     uint32_t loop_cnt = 0;
     tx_length = tx_length + command_len;
-  
+
     pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
     pio_sm_set_wrap(active_state->pio, active_state->pio_sm, active_state->pio_offset, active_state->pio_offset + PIO_OFFSET_WRITE_BITS_END - 1);
     pio_sm_clear_fifos(active_state->pio, active_state->pio_sm);
-  
-  #if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
+
+#if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
     loop_cnt = 8;
     pio_sm_set_pindirs_with_mask(active_state->pio,
-                                  active_state->pio_sm,
-                                  (1u << active_state->spi_config->data_io0_pin), (1u << active_state->spi_config->data_io0_pin) );
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
+                                 active_state->pio_sm,
+                                 (1u << active_state->spi_config->data_io0_pin), (1u << active_state->spi_config->data_io0_pin));
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
     loop_cnt = 4;
     pio_sm_set_pindirs_with_mask(active_state->pio,
-                                  active_state->pio_sm,
-                                  (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin),
-                                  (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin));
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
+                                 active_state->pio_sm,
+                                 (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin),
+                                 (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin));
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
     loop_cnt = 2;
     pio_sm_set_pindirs_with_mask(active_state->pio,
-                                  active_state->pio_sm,
-                                  (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin),
-                                  (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin));
-  
-  #endif
+                                 active_state->pio_sm,
+                                 (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin),
+                                 (1u << active_state->spi_config->data_io0_pin) | (1u << active_state->spi_config->data_io1_pin) | (1u << active_state->spi_config->data_io2_pin) | (1u << active_state->spi_config->data_io3_pin));
+
+#endif
 
     pio_sm_restart(active_state->pio, active_state->pio_sm);
     pio_sm_clkdiv_restart(active_state->pio, active_state->pio_sm);
@@ -536,37 +548,36 @@ void wiznet_spi_pio_write_byte(uint8_t op_code, uint16_t AddrSel, uint8_t *tx, u
     channel_config_set_transfer_data_size(&out_config, DMA_SIZE_8);
     channel_config_set_bswap(&out_config, true);
     channel_config_set_dreq(&out_config, pio_get_dreq(active_state->pio, active_state->pio_sm, true));
-  
+
     pio_sm_set_enabled(active_state->pio, active_state->pio_sm, true);
-  
+
     dma_channel_configure(active_state->dma_out, &out_config, &active_state->pio->txf[active_state->pio_sm], command_buf, command_len, true);
     dma_channel_wait_for_finish_blocking(active_state->dma_out);
     dma_channel_configure(active_state->dma_out, &out_config, &active_state->pio->txf[active_state->pio_sm], tx, tx_length - command_len, true);
     dma_channel_wait_for_finish_blocking(active_state->dma_out);
-  
+
     const uint32_t fdebug_tx_stall = 1u << (PIO_FDEBUG_TXSTALL_LSB + active_state->pio_sm);
     active_state->pio->fdebug = fdebug_tx_stall;
     // pio_sm_set_enabled(active_state->pio, active_state->pio_sm, true);
-    while (!(active_state->pio->fdebug & fdebug_tx_stall))
-    {
-      tight_loop_contents(); // todo timeout
+    while (!(active_state->pio->fdebug & fdebug_tx_stall)) {
+        tight_loop_contents(); // todo timeout
     }
-  #if 1
-  
+#if 1
+
     __compiler_memory_barrier();
     //pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
-  #if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
+#if (_WIZCHIP_QSPI_MODE_ == QSPI_SINGLE_MODE)
     pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->spi_config->data_io0_pin, 1, false);
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_DUAL_MODE)
     pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->spi_config->data_io0_pin, 2, false);
-  #elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
+#elif (_WIZCHIP_QSPI_MODE_ == QSPI_QUAD_MODE)
     pio_sm_set_consecutive_pindirs(active_state->pio, active_state->pio_sm, active_state->spi_config->data_io0_pin, 4, false);
-  #endif
-  
-    pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_mov(pio_pins, pio_null)); 
+#endif
+
+    pio_sm_exec(active_state->pio, active_state->pio_sm, pio_encode_mov(pio_pins, pio_null));
     pio_sm_set_enabled(active_state->pio, active_state->pio_sm, false);
-  #endif
-  }
+#endif
+}
 #else
 // send tx then receive rx
 // rx can be null if you just want to send, but tx and tx_length must be valid
@@ -576,11 +587,11 @@ static bool pio_spi_transfer(spi_pio_state_t *state, const uint8_t *tx, size_t t
         return false;
     }
 
-    if (rx != NULL && tx != NULL) {    
+    if (rx != NULL && tx != NULL) {
         assert(tx && tx_length && rx_length);
 
         pio_sm_set_enabled(state->pio, state->pio_sm, false); // disable sm
-        pio_sm_set_wrap(state->pio, state->pio_sm, state->pio_offset + PIO_OFFSET_WRITE_BITS, state->pio_offset + PIO_OFFSET_READ_BITS_END - 1); 
+        pio_sm_set_wrap(state->pio, state->pio_sm, state->pio_offset + PIO_OFFSET_WRITE_BITS, state->pio_offset + PIO_OFFSET_READ_BITS_END - 1);
         pio_sm_clear_fifos(state->pio, state->pio_sm); // clear fifos from previous run
         pio_sm_set_pindirs_with_mask(state->pio, state->pio_sm, 1u << state->spi_config->data_out_pin, 1u << state->spi_config->data_out_pin);
         pio_sm_restart(state->pio, state->pio_sm);
@@ -654,7 +665,7 @@ static bool pio_spi_transfer(spi_pio_state_t *state, const uint8_t *tx, size_t t
 
 
 static uint8_t wiznet_spi_pio_read_byte(void) {
-    assert(active_state);    
+    assert(active_state);
     assert(active_state->spi_header_count == SPI_HEADER_LEN);
     uint8_t ret;
     if (!pio_spi_transfer(active_state, active_state->spi_header, active_state->spi_header_count, &ret, 1)) {
@@ -732,10 +743,10 @@ static wiznet_spi_funcs_t *get_wiznet_spi_pio_impl(void) {
         .frame_end = wiznet_spi_pio_frame_end,
         .read_byte = wiznet_spi_pio_read_byte,
         .write_byte = wiznet_spi_pio_write_byte,
-        #if   (_WIZCHIP_ == W5500)
+#if   (_WIZCHIP_ == W5500)
         .read_buffer = wiznet_spi_pio_read_buffer,
         .write_buffer = wiznet_spi_pio_write_buffer,
-        #endif
+#endif
         .reset = wizchip_spi_pio_reset,
     };
     return &funcs;
