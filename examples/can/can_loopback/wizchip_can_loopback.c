@@ -52,7 +52,6 @@ static volatile bool new_message = false;
     Functions
     ----------------------------------------------------------------------------------------------------
 */
-/* Clock */
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg);
 static void PIOx_IRQHandler(void);
 static int can_initialize();

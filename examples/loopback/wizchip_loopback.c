@@ -168,8 +168,6 @@ static volatile uint16_t g_msec_cnt = 0;
     Functions
     ----------------------------------------------------------------------------------------------------
 */
-/* Clock */
-
 
 /* Timer */
 static void repeating_timer_callback(void);
@@ -291,8 +289,6 @@ int main() {
     Functions
     ----------------------------------------------------------------------------------------------------
 */
-/* Clock */
-
 
 /* Timer */
 static void repeating_timer_callback(void) {
