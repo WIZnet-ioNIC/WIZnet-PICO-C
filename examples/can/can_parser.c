@@ -1,15 +1,15 @@
 
 /**
- * Copyright (c) 2021 WIZnet Co.,Ltd
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+    Copyright (c) 2021 WIZnet Co.,Ltd
+
+    SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Includes
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Includes
+    ----------------------------------------------------------------------------------------------------
+*/
 #include <stdio.h>
 
 #include "port_common.h"
@@ -17,61 +17,56 @@
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
 /**
- * ----------------------------------------------------------------------------------------------------
- * Macros
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Macros
+    ----------------------------------------------------------------------------------------------------
+*/
 #define CMD_STRING_SIZE     128
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Variables
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Variables
+    ----------------------------------------------------------------------------------------------------
+*/
 
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
 int getInputString(char *buffP);
 char* custom_strtok(char* str, const char* delim);
 // uint32_t string_to_hex32(const char* str);
 // uint64_t string_to_hex64(const char* str) ;
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
 
-int getInputString(char *buffP)
-{
+int getInputString(char *buffP) {
     int bytes_read = 0;
     char c = 0;
-    do
-    {
+    do {
         c = getchar_timeout_us(0xFFFFFFFF);
-        if (c == '\r')
+        if (c == '\r') {
             break;
-        if (c == '\b') /* Backspace */
-        {
-            if (bytes_read > 0)
-            {
+        }
+        if (c == '\b') { /* Backspace */
+            if (bytes_read > 0) {
                 printf("\b \b");
                 bytes_read--;
             }
             continue;
         }
-        if (bytes_read >= CMD_STRING_SIZE)
-        {
+        if (bytes_read >= CMD_STRING_SIZE) {
             printf("Command string size overflow\r\n");
             bytes_read = 0;
             continue;
         }
-        if (c >= 0x20 && c <= 0x7E)
-        {
+        if (c >= 0x20 && c <= 0x7E) {
             buffP[bytes_read++] = c;
             printf("%c", c);
         }
@@ -81,14 +76,13 @@ int getInputString(char *buffP)
     return bytes_read;
 }
 
-char* custom_strtok(char* str, const char* delim) 
-{
-    static char* next = NULL; 
+char* custom_strtok(char* str, const char* delim) {
+    static char* next = NULL;
     if (str != NULL) {
-        next = str; 
+        next = str;
     }
     if (next == NULL) {
-        return NULL; 
+        return NULL;
     }
 
     char* token_start = next;
@@ -96,13 +90,13 @@ char* custom_strtok(char* str, const char* delim)
     while (*next) {
         const char* d = delim;
         while (*d) {
-            if (*next == *d) { 
-                *next = '\0';  
-                next++;        
+            if (*next == *d) {
+                *next = '\0';
+                next++;
                 if (token_start != next - 1) {
-                    return token_start; 
+                    return token_start;
                 } else {
-                    token_start = next; 
+                    token_start = next;
                     break;
                 }
             }

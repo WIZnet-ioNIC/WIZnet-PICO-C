@@ -1,21 +1,21 @@
 /**
- * Copyright (c) 2021 WIZnet Co.,Ltd
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+    Copyright (c) 2021 WIZnet Co.,Ltd
+
+    SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Includes
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Includes
+    ----------------------------------------------------------------------------------------------------
+*/
 #include <stdio.h>
 
 #include "port_common.h"
 
 #include "wizchip_conf.h"
 #include "wizchip_spi.h"
-#include "can.h" 
+#include "can.h"
 #include "loopback.h"
 
 #include "pico/stdlib.h"
@@ -24,14 +24,11 @@
 #include "hardware/structs/pio.h"
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Macros
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Macros
+    ----------------------------------------------------------------------------------------------------
+*/
 //#define CAN_DEBUG
-
-/* Clock */
-#define PLL_SYS_KHZ (125 * 1000)
 
 /* Can */
 #define CAN_PIO_INDEX       0           // !! do not use PIO1 (using in w5x00) !!
@@ -40,10 +37,10 @@
 #define CAN_TX_PIN          5
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Variables
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Variables
+    ----------------------------------------------------------------------------------------------------
+*/
 static struct can2040 cbus;
 
 static struct can2040_msg latest_msg = {};
@@ -51,79 +48,54 @@ static volatile uint32_t latest_notify = 0;
 static volatile bool new_message = false;
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-static void set_clock_khz(void);
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg);
 static void PIOx_IRQHandler(void);
 static int can_initialize();
 static int is_pio_in_use(uint32_t pio_num);
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Main
- * ----------------------------------------------------------------------------------------------------
- */
+    ----------------------------------------------------------------------------------------------------
+    Main
+    ----------------------------------------------------------------------------------------------------
+*/
 
-int main()
-{
+int main() {
     /* Initialize */
     int retval = 0;
     uint64_t tx_msg_64 = 0;
     struct can2040_msg tx_msg;
 
-    set_clock_khz();
-
     stdio_init_all();
     sleep_ms(3000);
-    if(can_initialize() < 0)
-    {
+    if (can_initialize() < 0) {
         printf("CAN setup failed...\n");
-        while(1){}
+        while (1) {}
     }
 
     printf("CAN setup success\n");
-    
+
     can2040_start(&cbus, clock_get_hz(clk_sys), CAN_BITRATE, CAN_RX_PIN, CAN_TX_PIN);
 
-    while(1)
-    {
+    while (1) {
     }
 }
 
 
 /**
- * ----------------------------------------------------------------------------------------------------
- * Functions
- * ----------------------------------------------------------------------------------------------------
- */
-/* Clock */
-static void set_clock_khz(void)
-{
-    // set a system clock frequency in khz
-    set_sys_clock_khz(PLL_SYS_KHZ, true);
-
-    // configure the specified clock
-    clock_configure(
-        clk_peri,
-        0,                                                // No glitchless mux
-        CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS, // System PLL on AUX mux
-        PLL_SYS_KHZ * 1000,                               // Input frequency
-        PLL_SYS_KHZ * 1000                                // Output (must be same as no divider)
-    );
-}
-
-static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
-{
+    ----------------------------------------------------------------------------------------------------
+    Functions
+    ----------------------------------------------------------------------------------------------------
+*/
+static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg) {
     new_message = true;
     latest_notify = notify;
     latest_msg = *msg;
 
-    if (notify == CAN2040_NOTIFY_RX) 
-    {
+    if (notify == CAN2040_NOTIFY_RX) {
 #ifdef CAN_DEBUG
         printf("Callback RX: ID=0x%08X DLC=%d Data=", msg->id, msg->dlc);
         for (int i = 0; i < msg->dlc; i++) {
@@ -135,28 +107,23 @@ static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *
 #ifdef CAN_DEBUG
             printf("Transmit queue full. Failed to send message.\n\n");
 #endif
-        } 
-    }
-    else if(notify == CAN2040_NOTIFY_TX) 
-    {
+        }
+    } else if (notify == CAN2040_NOTIFY_TX) {
 #ifdef CAN_DEBUG
         printf("Callback TX\n");
 #endif
-    }
-    else {
+    } else {
 #ifdef CAN_DEBUG
         printf("Callback error!\n");
 #endif
     }
 }
 
-static void PIOx_IRQHandler(void)
-{
+static void PIOx_IRQHandler(void) {
     can2040_pio_irq_handler(&cbus);
 }
 
-static int can_initialize()
-{
+static int can_initialize() {
     if (is_pio_in_use(CAN_PIO_INDEX)) {
         printf("Error: PIO block %u is already in use\n", CAN_PIO_INDEX);
         return -1;
@@ -190,7 +157,7 @@ static int is_pio_in_use(uint32_t pio_num) {
 
     for (int sm = 0; sm < 4; sm++) {
         if ((pio_hw->ctrl & (1 << (PIO_CTRL_SM_ENABLE_LSB + sm))) != 0) {
-            return 1; 
+            return 1;
         }
     }
     return 0;

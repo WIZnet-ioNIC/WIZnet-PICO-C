@@ -170,28 +170,6 @@ For example, when using **QSPI QUAD MODE**:
 
 Please refer to 'README.md' in each example directory to find detail guide for testing ethernet examples.
 
-The following provides instructions for applying a patch file for example testing.
-> ※ If the board pauses when rebooting using W55RP20-EVB-Pico, patch it as follows.
->
-> ```cpp
-> // Patch
-> git apply ./patches/0001_pico_sdk_clocks.patch
-> ```
-
-> ※ To test the TFTP example, please apply the following patch.
-> 
-> ```cpp
-> cd libraries/ioLibrary_Driver
-> git apply ../../patches/0002_iolibrary_driver_tftp.patch
-> ```
-
-> ※ To test the FTP client example, please apply the following patch.
-> 
-> ```cpp
-> cd libraries/ioLibrary_Driver
-> git apply ../../patches/0003_iolibrary_driver_ftp_client.patch
-> ```
-
 
 <a name="how_to_use_port_directory"></a>
 ## How to use port directory
@@ -524,5 +502,6 @@ Link
 [link-w5500]: https://docs.wiznet.io/Product/iEthernet/W5500/overview
 [link-w6100]: https://docs.wiznet.io/Product/iEthernet/W6100
 [link-w6300]: https://docs.wiznet.io/Product/iEthernet/W6300
+
 
 

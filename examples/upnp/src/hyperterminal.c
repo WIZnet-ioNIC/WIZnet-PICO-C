@@ -15,30 +15,25 @@
 //#include "bsp_spi.h"
 
 
-typedef enum
-{
+typedef enum {
     RESET = 0,
     SET = !RESET
 } FlagStatus,
-    ITStatus;
+ITStatus;
 
 onboard_led_f UserLED_ctl_cb = NULL;
 
 uint8_t gMsgBuf[20];
 
 /**
- * @brief   LED Control init func
- * @param   fun_cb function pointer
- * @return  none
+    @brief   LED Control init func
+    @param   fun_cb function pointer
+    @return  none
 */
-void UserLED_Control_Init(onboard_led_f fun_cb)
-{
-    if (fun_cb != NULL)
-    {
+void UserLED_Control_Init(onboard_led_f fun_cb) {
+    if (fun_cb != NULL) {
         UserLED_ctl_cb = fun_cb;
-    }
-    else
-    {
+    } else {
         printf("No correlation function is registered!\r\n");
     }
 }
@@ -47,178 +42,147 @@ void UserLED_Control_Init(onboard_led_f fun_cb)
 // uint16_t num;
 // uint16_t num1;
 /*******************************************************************************
- * Function Name  : Int2Str
- * Description    : Convert an Integer to a string
- * Input          : - str: The string
- *                  - intnum: The intger to be converted
- * Output         : None
- * Return         : None
+    Function Name  : Int2Str
+    Description    : Convert an Integer to a string
+    Input          : - str: The string
+                    - intnum: The intger to be converted
+    Output         : None
+    Return         : None
  *******************************************************************************/
-void Int2Str(char *str, uint32_t intnum)
-{
+void Int2Str(char *str, uint32_t intnum) {
     int i, Div = 1000000000, j = 0, Status = 0;
-    for (i = 0; i < 10; i++)
-    {
+    for (i = 0; i < 10; i++) {
         str[j++] = (intnum / Div) + 48;
         intnum = intnum % Div;
         Div /= 10;
-        if ((str[j - 1] == '0') & (Status == 0))
-        {
+        if ((str[j - 1] == '0') & (Status == 0)) {
             j = 0;
-        }
-        else
-        {
+        } else {
             Status++;
         }
     }
 }
 
 /*******************************************************************************
- * Function Name  : Str2Int
- * Description    : Convert a string to an integer
- * Input 1        : - inputstr: The string to be converted
- *                  - intnum: The intger value
- * Output         : None
- * Return         : 1: Correct
- *                  0: Error
+    Function Name  : Str2Int
+    Description    : Convert a string to an integer
+    Input 1        : - inputstr: The string to be converted
+                    - intnum: The intger value
+    Output         : None
+    Return         : 1: Correct
+                    0: Error
  *******************************************************************************/
-uint8_t Str2Int(char *inputstr, uint32_t *intnum)
-{
+uint8_t Str2Int(char *inputstr, uint32_t *intnum) {
     uint8_t i = 0, res = 0;
     uint32_t val = 0;
-    if (inputstr[0] == '0' && (inputstr[1] == 'x' || inputstr[1] == 'X'))
-    {
-        if (inputstr[2] == '\0')
-        {
+    if (inputstr[0] == '0' && (inputstr[1] == 'x' || inputstr[1] == 'X')) {
+        if (inputstr[2] == '\0') {
             return 0;
         }
-        for (i = 2; i < 11; i++)
-        {
-            if (inputstr[i] == '\0')
-            {
+        for (i = 2; i < 11; i++) {
+            if (inputstr[i] == '\0') {
                 *intnum = val;
                 res = 1; /* return 1; */
                 break;
             }
-            if (ISVALIDHEX(inputstr[i]))
-            {
+            if (ISVALIDHEX(inputstr[i])) {
                 val = (val << 4) + CONVERTHEX(inputstr[i]);
-            }
-            else
-            {
+            } else {
                 /* return 0; Invalid input */
                 res = 0;
                 break;
             }
         }
-        if (i >= 11)
-            res = 0; /* over 8 digit hex --invalid */
-    }
-    else /* max 10-digit decimal input */
-    {
-        for (i = 0; i < 11; i++)
-        {
-            if (inputstr[i] == '\0')
-            {
+        if (i >= 11) {
+            res = 0;    /* over 8 digit hex --invalid */
+        }
+    } else { /* max 10-digit decimal input */
+        for (i = 0; i < 11; i++) {
+            if (inputstr[i] == '\0') {
                 *intnum = val;
                 /* return 1; */
                 res = 1;
                 break;
-            }
-            else if ((inputstr[i] == 'k' || inputstr[i] == 'K') && (i > 0))
-            {
+            } else if ((inputstr[i] == 'k' || inputstr[i] == 'K') && (i > 0)) {
                 val = val << 10;
                 *intnum = val;
                 res = 1;
                 break;
-            }
-            else if ((inputstr[i] == 'm' || inputstr[i] == 'M') && (i > 0))
-            {
+            } else if ((inputstr[i] == 'm' || inputstr[i] == 'M') && (i > 0)) {
                 val = val << 20;
                 *intnum = val;
                 res = 1;
                 break;
-            }
-            else if (ISVALIDDEC(inputstr[i]))
+            } else if (ISVALIDDEC(inputstr[i])) {
                 val = val * 10 + CONVERTDEC(inputstr[i]);
-            else
-            {
+            } else {
                 /* return 0; Invalid input */
                 res = 0;
                 break;
             }
         }
-        if (i >= 11)
-            res = 0; /* Over 10 digit decimal --invalid */
+        if (i >= 11) {
+            res = 0;    /* Over 10 digit decimal --invalid */
+        }
     }
     return res;
 }
 
 /*******************************************************************************
- * Function Name  : GetIntegerInput
- * Description    : Get an integer from the HyperTerminal
- * Input          : - num: The inetger
- * Output         : None
- * Return         : 1: Correct
- *                  0: Error
+    Function Name  : GetIntegerInput
+    Description    : Get an integer from the HyperTerminal
+    Input          : - num: The inetger
+    Output         : None
+    Return         : 1: Correct
+                    0: Error
  *******************************************************************************/
-uint8_t GetIntegerInput(uint32_t *num)
-{
+uint8_t GetIntegerInput(uint32_t *num) {
     char inputstr[16];
-    while (1)
-    {
+    while (1) {
         GetInputString(inputstr);
-        if (inputstr[0] == '\0')
+        if (inputstr[0] == '\0') {
             continue;
-        if ((inputstr[0] == 'a' || inputstr[0] == 'A') && inputstr[1] == '\0')
-        {
+        }
+        if ((inputstr[0] == 'a' || inputstr[0] == 'A') && inputstr[1] == '\0') {
             printf("User Cancelled \r\n");
             return 0;
         }
-        if (Str2Int(inputstr, num) == 0)
-        {
+        if (Str2Int(inputstr, num) == 0) {
             printf("Error, Input again: \r\n");
-        }
-        else
-        {
+        } else {
             return 1;
         }
     }
 }
 
 /*******************************************************************************
- * Function Name  : GetInputString
- * Description    : Get Input string from the HyperTerminal
- * Input          : - buffP: The input string
- * Output         : None
- * Return         : None
+    Function Name  : GetInputString
+    Description    : Get Input string from the HyperTerminal
+    Input          : - buffP: The input string
+    Output         : None
+    Return         : None
  *******************************************************************************/
-void GetInputString(char *buffP)
-{
+void GetInputString(char *buffP) {
     int bytes_read = 0;
     char c = 0;
-    do
-    {
+    do {
         c = getchar_timeout_us(0xFFFFFFFF);
-        if (c == '\r')
+        if (c == '\r') {
             break;
-        if (c == '\b') /* Backspace */
-        {
-            if (bytes_read > 0)
-            {
+        }
+        if (c == '\b') { /* Backspace */
+            if (bytes_read > 0) {
                 printf("\b \b");
                 bytes_read--;
             }
             continue;
         }
-        if (bytes_read >= CMD_STRING_SIZE)
-        {
+        if (bytes_read >= CMD_STRING_SIZE) {
             printf("Command string size overflow\r\n");
             bytes_read = 0;
             continue;
         }
-        if (c >= 0x20 && c <= 0x7E)
-        {
+        if (c >= 0x20 && c <= 0x7E) {
             buffP[bytes_read++] = c;
             printf("%c", c);
         }
@@ -227,43 +191,35 @@ void GetInputString(char *buffP)
     buffP[bytes_read] = '\0';
 }
 
-uint8_t SerialKeyPressed(char *key)
-{
-    FlagStatus flag;
-    uint8_t i = 0, c;
+uint8_t SerialKeyPressed(char *key) {
+    uint8_t c;
 
     c = getchar_timeout_us(0);
-    if (c > 0)
-    {
+    if (c > 0) {
         // putchar_raw(c);
         *key = c;
         return SET;
-    }
-    else
-    {
+    } else {
         return RESET;
     }
 }
 
-char *STRTOK(char *strToken, const char *strDelimit)
-{
+char *STRTOK(char *strToken, const char *strDelimit) {
     static char *pCurrent;
     char *pDelimit;
 
-    if (strToken != NULL)
+    if (strToken != NULL) {
         pCurrent = strToken;
-    else
+    } else {
         strToken = pCurrent;
+    }
 
     //       if ( *pCurrent == NULL ) return NULL;
 
-    while (*pCurrent)
-    {
+    while (*pCurrent) {
         pDelimit = (char *)strDelimit;
-        while (*pDelimit)
-        {
-            if (*pCurrent == *pDelimit)
-            {
+        while (*pDelimit) {
+            if (*pCurrent == *pDelimit) {
                 //*pCurrent = NULL;
                 *pCurrent = 0;
                 ++pCurrent;
@@ -278,15 +234,14 @@ char *STRTOK(char *strToken, const char *strDelimit)
 }
 
 /*******************************************************************************
- * Function Name  : Main_Menu
- * Description    : Display/Manage a Menu on HyperTerminal Window
- * Input          : sn: use for SSDP; sn2: use for run tcp/udp loopback; sn3: use for listenes IGD event message 
- *                  buf: use for tcp/udp loopback rx/tx buff; tcps_port: use for tcp loopback listen; udps_port: use for udp loopback receive
- * Output         : None
- * Return         : None
+    Function Name  : Main_Menu
+    Description    : Display/Manage a Menu on HyperTerminal Window
+    Input          : sn: use for SSDP; sn2: use for run tcp/udp loopback; sn3: use for listenes IGD event message
+                    buf: use for tcp/udp loopback rx/tx buff; tcps_port: use for tcp loopback listen; udps_port: use for udp loopback receive
+    Output         : None
+    Return         : None
  *******************************************************************************/
-void Main_Menu(uint8_t sn, uint8_t sn2, uint8_t sn3, uint8_t *buf, uint16_t tcps_port, uint16_t udps_port)
-{
+void Main_Menu(uint8_t sn, uint8_t sn2, uint8_t sn3, uint8_t *buf, uint16_t tcps_port, uint16_t udps_port) {
     static char choice[3];
     static char msg[256], ipaddr[16], protocol[4];
     static unsigned short ret, external_port, internal_port;
@@ -295,8 +250,7 @@ void Main_Menu(uint8_t sn, uint8_t sn2, uint8_t sn3, uint8_t *buf, uint16_t tcps
     static char key = 0;
     static wiz_NetInfo net_info;
 
-    while (1)
-    {
+    while (1) {
         /* Display Menu on HyperTerminal Window */
         bTreat = (bool)RESET;
         printf("\r\n====================== WIZnet Chip Control Point ===================\r\n");
@@ -317,57 +271,49 @@ void Main_Menu(uint8_t sn, uint8_t sn2, uint8_t sn3, uint8_t *buf, uint16_t tcps
         printf("Enter your choice : ");
         GetInputString(choice);
         /* Set LD1 on */
-        if (strcmp(choice, "1") == 0)
-        {
+        if (strcmp(choice, "1") == 0) {
             bTreat = (bool)SET;
             UserLED_ctl_cb(LED_OFF);
         }
         /* Set LD1 off */
-        if ((strcmp(choice, "2") == 0))
-        {
+        if ((strcmp(choice, "2") == 0)) {
             bTreat = (bool)SET;
             UserLED_ctl_cb(LED_ON);
         }
-        if (strcmp(choice, "3") == 0)
-        {
+        if (strcmp(choice, "3") == 0) {
             bTreat = (bool)SET;
             print_network_information(net_info);
         }
 
-        if (strcmp(choice, "4") == 0)
-        {
+        if (strcmp(choice, "4") == 0) {
             bTreat = (bool)SET;
             wiz_NetInfo get_info;
             wizchip_getnetinfo(&get_info);
             // IP address
             printf("\r\nIP address : ");
             GetInputString(msg);
-            if (!VerifyIPAddress(msg, get_info.ip))
-            {
+            if (!VerifyIPAddress(msg, get_info.ip)) {
                 printf("\aInvalid.");
             }
 
             // Subnet mask
             printf("\r\nSubnet mask : ");
             GetInputString(msg);
-            if (!VerifyIPAddress(msg, get_info.sn))
-            {
+            if (!VerifyIPAddress(msg, get_info.sn)) {
                 printf("\aInvalid.");
             }
 
             // gateway address
             printf("\r\nGateway address : ");
             GetInputString(msg);
-            if (!VerifyIPAddress(msg, get_info.gw))
-            {
+            if (!VerifyIPAddress(msg, get_info.gw)) {
                 printf("\aInvalid.");
             }
 
             // DNS address
             printf("\r\nDNS address : ");
             GetInputString(msg);
-            if (!VerifyIPAddress(msg, get_info.dns))
-            {
+            if (!VerifyIPAddress(msg, get_info.dns)) {
                 printf("\aInvalid.");
             }
 
@@ -376,19 +322,16 @@ void Main_Menu(uint8_t sn, uint8_t sn2, uint8_t sn3, uint8_t *buf, uint16_t tcps
             wizchip_setnetinfo(&get_info);
         }
 
-        if (strcmp(choice, "5") == 0)
-        {
+        if (strcmp(choice, "5") == 0) {
             bTreat = (bool)SET;
 
             printf("\r\nRun TCP loopback");
             printf("\r\nRun TCP loopback, port number [%d] is listened", tcps_port);
             printf("\r\nTo Exit, press [Q]\r\n");
             close(sn2);
-            while (1)
-            {
+            while (1) {
 
-                if ((SerialKeyPressed((char *)&key) == 1) && (key == 'Q'))
-                {
+                if ((SerialKeyPressed((char *)&key) == 1) && (key == 'Q')) {
                     printf("\r\n Stop ");
                     break;
                 }
@@ -396,27 +339,23 @@ void Main_Menu(uint8_t sn, uint8_t sn2, uint8_t sn3, uint8_t *buf, uint16_t tcps
             }
         }
 
-        if (strcmp(choice, "6") == 0)
-        {
+        if (strcmp(choice, "6") == 0) {
             bTreat = (bool)SET;
 
             printf("\r\nRun UDP loopback");
             printf("\r\nRun UDP loopback, port number [%d] is listened", udps_port);
             printf("\r\nTo Exit, press [Q]\r\n");
             close(sn2);
-            while (1)
-            {
+            while (1) {
 
-                if ((SerialKeyPressed((char *)&key) == 1) && (key == 'Q'))
-                {
+                if ((SerialKeyPressed((char *)&key) == 1) && (key == 'Q')) {
                     printf("\r\n Stop ");
                     break;
                 }
                 loopback_udps(sn2, buf, udps_port);
             }
         }
-        if (strcmp(choice, "7") == 0)
-        {
+        if (strcmp(choice, "7") == 0) {
             bTreat = (bool)SET;
 
             printf("\r\nType a Protocol(TCP/UDP) : ");
@@ -436,14 +375,14 @@ void Main_Menu(uint8_t sn, uint8_t sn2, uint8_t sn3, uint8_t *buf, uint16_t tcps
             // Try to Add Port Action
             getSIPR(Sip);
             sprintf(ipaddr, "%d.%d.%d.%d", Sip[0], Sip[1], Sip[2], Sip[3]);
-            if ((ret = AddPortProcess(sn, protocol, external_port, ipaddr, internal_port, "W5500_uPnPGetway")) == 0)
+            if ((ret = AddPortProcess(sn, protocol, external_port, ipaddr, internal_port, "W5500_uPnPGetway")) == 0) {
                 printf("AddPort Success!!\r\n");
-            else
+            } else {
                 printf("AddPort Error Code is %d\r\n", ret);
+            }
         }
 
-        if (strcmp(choice, "8") == 0)
-        {
+        if (strcmp(choice, "8") == 0) {
             bTreat = (bool)SET;
 
             printf("\r\nType a Protocol(TCP/UDP) : ");
@@ -460,15 +399,15 @@ void Main_Menu(uint8_t sn, uint8_t sn2, uint8_t sn3, uint8_t *buf, uint16_t tcps
             external_port = ATOI(msg, 10);
 
             // Try to Delete Port Action
-            if ((ret = DeletePortProcess(sn, protocol, external_port)) == 0)
+            if ((ret = DeletePortProcess(sn, protocol, external_port)) == 0) {
                 printf("DeletePort Success!!\r\n");
-            else
+            } else {
                 printf("DeletePort Error Code is %d\r\n", ret);
+            }
         }
 
         /* OTHERS CHOICE*/
-        if (bTreat == (bool)RESET)
-        {
+        if (bTreat == (bool)RESET) {
             printf(" wrong choice  \r\n");
         }
 

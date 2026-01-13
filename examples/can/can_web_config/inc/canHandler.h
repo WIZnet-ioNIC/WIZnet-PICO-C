@@ -7,7 +7,7 @@
 #include "can.h"
 #include "w5x00_can_config.h"
 
-#define CAN_PIO_INDEX       0 
+#define CAN_PIO_INDEX       0
 #define CAN_RX_PIN          4
 #define CAN_TX_PIN          5
 
@@ -16,8 +16,7 @@
 #define CAN_ERR_FORMAT          -1
 #define CAN_ERR_ID_OVERFLOW     -2
 
-typedef struct _CAN_RX_RBUF
-{
+typedef struct _CAN_RX_RBUF {
     bool        rx_flag;
     uint32_t    push_idx;
     uint32_t    pop_idx;

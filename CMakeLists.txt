@@ -24,14 +24,10 @@ set(BOARD_NAME WATER_MODULE)
 # set(BOARD_NAME W55RP20_EVB_PICO)
 # set(BOARD_NAME W6100_EVB_PICO)
 # set(BOARD_NAME W6300_EVB_PICO)
-# set(BOARD_NAME W5100S_EVB_PICO2)
 # set(BOARD_NAME W5500_EVB_PICO2)
 # set(BOARD_NAME W6100_EVB_PICO2)
-# set(BOARD_NAME W6300_EVB_PICO2)
+set(BOARD_NAME W6300_EVB_PICO2)
 
-# Set WIZchip Clock Speed
-set(WIZCHIP_SPI_SCLK_SPEED 12)
-add_definitions(-D_WIZCHIP_SPI_SCLK_SPEED=${WIZCHIP_SPI_SCLK_SPEED})
 
 set(WIZNET_CHIP W5500)
 add_definitions(-D_WIZCHIP_=W5500) 
@@ -82,6 +78,7 @@ set(ENABLE_PROGRAMS OFF CACHE BOOL "Build mbedtls programs")
 set(ENABLE_TESTING OFF CACHE BOOL "Build mbedtls testing")
 add_definitions(-DMBEDTLS_CONFIG_FILE="${PORT_DIR}/mbedtls/inc/ssl_config.h")
 add_definitions(-DSET_TRUSTED_CERT_IN_SAMPLES)
+add_definitions(-DPICO_USE_FASTEST_SUPPORTED_CLOCK=1)
 
 # Set compile options
 add_compile_options(

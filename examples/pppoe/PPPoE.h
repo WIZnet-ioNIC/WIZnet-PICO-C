@@ -22,10 +22,10 @@
 #define 	PPPoE_SESSION		0x8864
 
 // PPPoE Frame field definition
-#define		PPPoE_VER_TYPE		0x11	  
+#define		PPPoE_VER_TYPE		0x11
 
 // PPPoE Code definition
-#define 	PPPoE_PADI			0x09			
+#define 	PPPoE_PADI			0x09
 #define 	PPPoE_PADO			0x07
 #define 	PPPoE_PADR			0x19
 #define 	PPPoE_PADS			0x65
@@ -38,7 +38,7 @@
 #define 	PPPoED_AC_NAME				0x0102
 #define 	PPPoED_HOST_UNIQ			0x0103
 #define 	PPPoED_AC_COOKIE			0x0104
-#define 	PPPoED_VENDER_SPECIFIC		0x0105	
+#define 	PPPoED_VENDER_SPECIFIC		0x0105
 
 // PPPoE Protocol definition
 #define		PPPoE_LCP			0xC021
@@ -47,10 +47,10 @@
 #define		PPPoE_IPCP			0x8021
 
 // PPPoE Protocol Code definition
-	// LCP using 0x01 ~ 0x0b
-	// PAP using 0x01 ~ 0x03
-	// IPCP using 0x01 ~ 0x07
-#define		PPP_CONFIG_REQ		0x01		
+// LCP using 0x01 ~ 0x0b
+// PAP using 0x01 ~ 0x03
+// IPCP using 0x01 ~ 0x07
+#define		PPP_CONFIG_REQ		0x01
 #define		PPP_CONFIG_ACK		0x02
 #define		PPP_CONFIG_NAK		0x03
 #define		PPP_CONFIG_REJ		0x04
@@ -67,10 +67,10 @@
 #define		LCP_AUTH			0x03
 #define		LCP_MAGICNUM		0x05
 #define		LCP_PROTOCOMP		0x07
-#define		LCP_ADDRCOMP		0x08		
+#define		LCP_ADDRCOMP		0x08
 
 // PPPoE CHAP Algorithm
-#define		MD5					0x05 
+#define		MD5					0x05
 #define		MS_CHAP				0x80
 #define		MS_CHAP_V2			0x81
 
@@ -88,10 +88,10 @@
 #define   FLAG_PADO_SERVICENAME		0X0400
 
 /*
-// PPPoE Field value definition 
-// -> not used.		
-#define		PPPoE_SESSION_ID	0x0000
-#define		LCP_MAGICNUM_VAL	0x00112299
+    // PPPoE Field value definition
+    // -> not used.
+    #define		PPPoE_SESSION_ID	0x0000
+    #define		LCP_MAGICNUM_VAL	0x00112299
 */
 
 // Logical variable definition
@@ -110,26 +110,24 @@
 
 
 // PPPoE message
-typedef struct _PPPMSG
-{
-	uint8_t dst_mac[6];
-	uint8_t src_mac[6];
-	uint16_t ether_type; 			// 0x8863 : PPPoE Discovery, 0x8864 : PPPoE Session
-	uint8_t version_type; 		// 4-bit 'version' = 0001, 4-bit 'type' = 0001 default
-	uint8_t frame_code;
-	uint16_t session_id;
-	uint16_t len;
-}PPPMSG;   
+typedef struct _PPPMSG {
+    uint8_t dst_mac[6];
+    uint8_t src_mac[6];
+    uint16_t ether_type; 			// 0x8863 : PPPoE Discovery, 0x8864 : PPPoE Session
+    uint8_t version_type; 		// 4-bit 'version' = 0001, 4-bit 'type' = 0001 default
+    uint8_t frame_code;
+    uint16_t session_id;
+    uint16_t len;
+} PPPMSG;
 
 // PPPoE Protocol
-typedef struct _PROTOCOL
-{
-	uint16_t protocol;
-	uint8_t pcode;
-	uint8_t id;
-	uint16_t len;
-	uint8_t opt[OPTMSG_LEN];
-}PROTOCOL;
+typedef struct _PROTOCOL {
+    uint16_t protocol;
+    uint8_t pcode;
+    uint8_t id;
+    uint16_t len;
+    uint8_t opt[OPTMSG_LEN];
+} PROTOCOL;
 
 // PPPoE Start function
 uint8_t ppp_start(uint8_t * pppoe_buf);
