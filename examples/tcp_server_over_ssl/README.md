@@ -172,7 +172,7 @@ In order to change SSL settings, modify 'ssl_config.h' in 'WIZnet-PICO-C/port/mb
 
 4. Reset your board. If the TCP Server over SSL example works normally, you can see the network information and the SSL server listening on port 443.
 
-![][link-see_network_information_of_raspberry_pi_pico_connecting_to_ssl_server_and_sending_message_1]
+![][link-server_and_sending_message]
 
 5. Run OpenSSL client from your PC to connect to the SSL server running on the Pico.
 
@@ -186,17 +186,12 @@ openssl s_client -connect 192.168.11.2:443
 
 Replace `192.168.11.2` with the IP address configured in your Pico board.
 
-![][link-create_ssl_server_using_openssl]
+1. Once connected successfully, you will see the SSL handshake complete message and the server's welcome banner. You can now send data to the server.
 
-7. Once connected successfully, you will see the SSL handshake complete message and the server's welcome banner. You can now send data to the server.
+2. Any data you type in the OpenSSL client will be echoed back by the server running on the Pico.
 
-![][link-see_network_information_of_raspberry_pi_pico_connecting_to_ssl_server_and_sending_message_2]
+![][link-receive_sent_message]
 
-8. Any data you type in the OpenSSL client will be echoed back by the server running on the Pico.
-
-![][link-receive_sent_message_1]
-
-![][link-receive_sent_message_2]
 
 
 
@@ -214,12 +209,14 @@ Link
 
 [link-tera_term]: https://osdn.net/projects/ttssh2/releases/
 [link-openssl]: https://www.openssl.org/source/
-[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_client_over_ssl/raspberry_pi_pico_usb_mass_storage.png
-[link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_client_over_ssl/connect_to_serial_com_port.png
-[link-run_openssl]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_client_over_ssl/run_openssl.png
-[link-create_ssl_server_using_openssl]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_client_over_ssl/create_ssl_server_using_openssl.png
-[link-see_network_information_of_raspberry_pi_pico_connecting_to_ssl_server_and_sending_message_1]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_client_over_ssl/see_network_information_of_raspberry_pi_pico_connecting_to_ssl_server_and_sending_message_1.png
-[link-see_network_information_of_raspberry_pi_pico_connecting_to_ssl_server_and_sending_message_2]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_client_over_ssl/see_network_information_of_raspberry_pi_pico_connecting_to_ssl_server_and_sending_message_2.png
-[link-receive_sent_message_1]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_client_over_ssl/receive_sent_message_1.png
-[link-receive_sent_message_2]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_client_over_ssl/receive_sent_message_2.png
+[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_server_over_ssl/raspberry_pi_pico_usb_mass_storage.png
+
+[link-connect_to_serial_com_port]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_server_over_ssl/connect_to_serial_com_port.png
+
+[link-run_openssl]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_server_over_ssl/run_openssl.png
+
+[link-server_and_sending_message]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_server_over_ssl/server_and_sending_message.png
+
+[link-receive_sent_message]: https://github.com/WIZnet-ioNIC/WIZnet-PICO-C/blob/main/static/images/tcp_server_over_ssl/receive_sent_message.png
+
 [link-mbed_tls]: https://github.com/Mbed-TLS/mbedtls/tree/8df2f8e7b9c7bb9390ac74bb7bace27edca81a2b
