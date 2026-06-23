@@ -228,6 +228,7 @@ int main() {
 static void wizchip_dhcp_init(void) {
     printf(" DHCP client running\n");
 
+    setSHAR(g_net_info.mac);
     DHCP_init(SOCKET_DHCP, g_ethernet_buf);
 
     reg_dhcp_cbfunc(wizchip_dhcp_assign, wizchip_dhcp_assign, wizchip_dhcp_conflict);
